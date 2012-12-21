@@ -37,16 +37,7 @@ class EdnRoundTripTest(unittest.TestCase):
                                     "[1 true nil]")
 
 
-    def _compare_loads(self, expected_output, actual_input):
-        self.assertEqual(expected_output, edn_format.loads(actual_input))
-
-
-    def test_loads(self):
-        self._compare_loads([1, True, None],
-                            "[1, true, nil]")
-
-
-    def test_round_trips(self):
+    def test_round_trip(self):
         EDN_LITERALS = (
             "nil",
             "true",
