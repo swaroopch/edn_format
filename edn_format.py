@@ -1,14 +1,8 @@
 
-import pytz
-import pyrfc3339
-from datetime import datetime
-import uuid
-import logging
-
+import edn_parse
 
 def loads(text):
-    obj = text # TODO Parse EDN format
-    return obj
+    return edn_parse.parse(text)
 
 
 def dumps(obj):
