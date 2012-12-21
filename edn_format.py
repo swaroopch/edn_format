@@ -8,7 +8,7 @@ import ply.lex as lex
 import edn_lex
 
 
-def _lexer(text):
+def lexer(text):
     kwargs = {}
     if __debug__:
         kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
@@ -18,8 +18,6 @@ def _lexer(text):
 
 
 def loads(text):
-    for token in _lexer(text):
-        pass
     obj = text # TODO Parse EDN format
     return obj
 

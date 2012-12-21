@@ -14,7 +14,7 @@ def t_BOOLEAN(t):
     r"""(true)|(false)"""
     if t.value == "false":
         t.value = False
-    if t.value == "true":
+    elif t.value == "true":
         t.value = True
     return t
 

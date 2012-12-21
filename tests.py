@@ -26,11 +26,11 @@ class EdnRoundTripTest(unittest.TestCase):
                              '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"')
 
 
-    def test_basic(self):
-        print edn.loads("nil")
-        print edn.loads("true")
-        print edn.loads("123")
-        print edn.loads("456 nil false")
+    def test_lexer(self):
+        print list(edn.lexer("nil"))
+        print list(edn.lexer("true"))
+        print list(edn.lexer("123"))
+        print list(edn.lexer("456 nil false"))
 
 
 #    def test_round_trips(self):
