@@ -2,6 +2,7 @@
 import ply.yacc
 from edn_lex import tokens
 
+if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 
 start = 'expression'
 
