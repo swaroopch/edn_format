@@ -27,10 +27,14 @@ class EdnRoundTripTest(unittest.TestCase):
 
 
     def test_lexer(self):
-        print list(edn.lexer("nil"))
-        print list(edn.lexer("true"))
-        print list(edn.lexer("123"))
-        print list(edn.lexer("456 nil false"))
+        self.assertEqual("[LexToken(NIL,'nil',1,0)]",
+                         str(list(edn.lexer("nil"))))
+        self.assertEqual("[LexToken(BOOLEAN,True,1,0)]",
+                         str(list(edn.lexer("true"))))
+        self.assertEqual("[LexToken(NUMBER,123,1,0)]",
+                         str(list(edn.lexer("123"))))
+        self.assertEqual("[LexToken(NUMBER,456,1,0), LexToken(NIL,'nil',1,4), LexToken(BOOLEAN,False,1,8)]",
+                         str(list(edn.lexer("456 nil false"))))
 
 
 #    def test_round_trips(self):
