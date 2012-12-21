@@ -44,17 +44,17 @@ class EdnRoundTripTest(unittest.TestCase):
 
 
     def _compare_parser_output(self, expected_output, actual_input):
-        self.assertEqual(expected_output, str(edn_parse.parse(actual_input)))
+        self.assertEqual(expected_output, edn_parse.parse(actual_input))
 
 
     def test_parser(self):
-        self._compare_parser_output("1",
+        self._compare_parser_output(1,
                                     "1")
-        self._compare_parser_output("[1, 2, 3]",
+        self._compare_parser_output([1, 2, 3],
                                     "[1 2 3]")
-        self._compare_parser_output("set([1, 2, 3])",
+        self._compare_parser_output({1, 2, 3},
                                     "#{1 2 3}")
-        self._compare_parser_output("[1, True, None]",
+        self._compare_parser_output([1, True, None],
                                     "[1 true nil]")
 
 
