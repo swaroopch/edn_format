@@ -1,6 +1,6 @@
 
 import ply.yacc
-from edn_lex import tokens
+from edn_lex import tokens, lex
 
 if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 
@@ -71,4 +71,5 @@ def parse(text):
     if __debug__:
         kwargs = dict(debug=True)
     p = ply.yacc.yacc(**kwargs)
-    return p.parse(text)
+
+    return p.parse(text, lexer=lex())

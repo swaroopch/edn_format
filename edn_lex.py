@@ -52,10 +52,11 @@ def t_error(t):
     t.lexer.skip(1)
 
 
-def lex(text):
+def lex(text=None):
     kwargs = {}
     if __debug__:
         kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
     l = ply.lex.lex(**kwargs)
-    l.input(text)
+    if text is not None:
+        l.input(text)
     return l

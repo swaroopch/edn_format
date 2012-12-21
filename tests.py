@@ -6,6 +6,17 @@ import edn_parse
 import edn_format
 
 
+class ConsoleTest(unittest.TestCase):
+    def test_dumping(self):
+        is_exception = False
+        try:
+            edn_format.loads("[1 true nil]")
+        except AttributeError as x:
+            is_exception = True
+            print x
+        self.assertFalse(is_exception)
+
+
 class EdnTest(unittest.TestCase):
     def check_lex(self, expected_output, actual_input):
         self.assertEqual(expected_output, str(list(edn_lex.lex(actual_input))))
