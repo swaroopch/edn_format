@@ -37,6 +37,15 @@ class EdnTest(unittest.TestCase):
                          "[1 true nil]")
 
 
+    def check_dump(self, expected_output, actual_input):
+        self.assertEqual(expected_output, edn_format.dumps(actual_input))
+
+
+    def test_dump(self):
+        self.check_dump("#{1 2 3}",
+                        {1, 2, 3})
+
+
     def test_round_trip(self):
         EDN_LITERALS = (
             "nil",
