@@ -1,9 +1,12 @@
 
-# TODO Handle tagged elements
 # TODO Handle integers with N, minus, plus
 # TODO Handle floats with e, M, minus, plus
+# TODO Handle custom tagged element serializer / deserializer
 # TODO Handle symbols
 
+
+import datetime
+import pytz
 
 import unittest
 import edn_lex
@@ -45,6 +48,8 @@ class EdnTest(unittest.TestCase):
                        "; a comment")
         self.check_lex("[LexToken(KEYWORD,':abc',1,0)]",
                        ":abc ; a comment")
+        self.check_lex("[LexToken(TAG,'inst',1,0), LexToken(STRING,'1985-04-12T23:20:50.52Z',1,6)]",
+                       '#inst "1985-04-12T23:20:50.52Z"')
 
 
     def check_parse(self, expected_output, actual_input):
@@ -78,6 +83,8 @@ class EdnTest(unittest.TestCase):
                           "foo" : ":gone",
                           ":bar" : [1, 2, 3]},
                          '{:bar [1 2 3] "foo" :gone :a 1}')
+        self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
+                        '#inst "2012-12-22T19:40:18Z"')
 
 
     def check_dump(self, expected_output, actual_input):
@@ -139,8 +146,8 @@ class EdnTest(unittest.TestCase):
             '(1 "abc" true :ghi)',
             #'#{:a :b [1 2 3]',
             #'#myapp/Person {:first "Fred" :last "Mertz',
-            #'#inst "1985-04-12T23:20:50.52Z"',
-            #'#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"'
+            '#inst "1985-04-12T23:20:50Z"',
+            '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"'
         )
 
         for literal in EDN_LITERALS:

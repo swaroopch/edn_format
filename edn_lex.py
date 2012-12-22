@@ -18,7 +18,8 @@ tokens = ('WHITESPACE',
           'LIST_END',
           'MAP_START',
           'SET_START',
-          'MAP_OR_SET_END')
+          'MAP_OR_SET_END',
+          'TAG')
 
 
 SYMBOL_FIRST_CHAR = r'\w+!\-_$&=\.'
@@ -88,6 +89,12 @@ def t_COMMENT(t):
 def t_DISCARD(t):
     r'\#_\S+\b'
     pass # ignore
+
+
+@ply.lex.TOKEN(r'\#{}'.format(SYMBOL))
+def t_TAG(t):
+    t.value = t.value[1:]
+    return t
 
 
 def t_error(t):

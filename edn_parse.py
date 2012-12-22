@@ -1,4 +1,7 @@
 
+import uuid
+import pyrfc3339
+
 import ply.yacc
 from edn_lex import tokens, lex
 
@@ -41,6 +44,16 @@ def p_map(p):
     p[0] = dict([terms[i:i+2] for i in range(0, len(terms), 2)]) # partition terms in pairs
 
 
+def p_expressions_expressions_expression(p):
+    """expressions : expressions expression"""
+    p[0] = p[1] + [p[2]]
+
+
+def p_expressions_expression(p):
+    """expressions : expression"""
+    p[0] = [p[1]]
+
+
 def p_expression(p):
     """expression : vector
                   | list
@@ -50,14 +63,19 @@ def p_expression(p):
     p[0] = p[1]
 
 
-def p_expressions_expressions_expression(p):
-    """expressions : expressions expression"""
-    p[0] = p[1] + [p[2]]
+def p_expression_tagged_element(p):
+    """expression : TAG expression"""
+    tag = p[1]
+    element = p[2]
 
+    if tag == 'inst':
+        output = pyrfc3339.parse(element)
+    elif tag == 'uuid':
+        output = uuid.UUID(element)
+    else:
+        raise NotImplementedError("Don't know how to handle tag {}".format(tag))
 
-def p_expressions_expression(p):
-    """expressions : expression"""
-    p[0] = [p[1]]
+    p[0] = output
 
 
 def p_error(p):

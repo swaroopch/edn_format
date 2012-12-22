@@ -1,6 +1,10 @@
 
 import itertools
 
+import datetime
+import uuid
+import pyrfc3339
+
 
 def dump(obj):
     def seq(obj):
@@ -28,5 +32,9 @@ def dump(obj):
         return "#{{{}}}".format(seq(obj))
     elif isinstance(obj, dict):
         return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
+    elif isinstance(obj, datetime.datetime):
+        return '#inst "{}"'.format(pyrfc3339.generate(obj))
+    elif isinstance(obj, uuid.UUID):
+        return '#uuid "{}"'.format(obj)
     else:
         raise Exception("Don't know how to handle {} : {}", type(obj), obj)
