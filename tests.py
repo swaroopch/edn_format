@@ -1,5 +1,4 @@
 
-# TODO Handle comments
 # TODO Handle discard #_
 # TODO Handle tagged elements
 # TODO Handle integers with N, minus, plus
@@ -43,6 +42,10 @@ class EdnTest(unittest.TestCase):
                        r":abc")
         self.check_lex("[LexToken(KEYWORD,':+',1,0)]",
                        r":+")
+        self.check_lex("[]",
+                       "; a comment")
+        self.check_lex("[LexToken(KEYWORD,':abc',1,0)]",
+                       ":abc ; a comment")
 
 
     def check_parse(self, expected_output, actual_input):
