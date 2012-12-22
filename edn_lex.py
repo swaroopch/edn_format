@@ -4,7 +4,8 @@ import logging
 import ply.lex
 
 
-tokens = ('CHAR',
+tokens = ('WHITESPACE',
+          'CHAR',
           'STRING',
           'NIL',
           'BOOLEAN',
@@ -30,11 +31,24 @@ t_LIST_END = '\)'
 t_MAP_START = '\{'
 t_SET_START = '\#\{'
 t_MAP_OR_SET_END = '\}'
-t_ignore = "".join([" ", "\t", ","])
+t_ignore = "".join([" ", "\t", "\n", ","])
+
+
+def t_WHITESPACE(t):
+    r"(\\newline)|(\\return)|(\\space)|(\\tab)"
+    if t.value == r"\newline":
+        t.value = "\n"
+    elif t.value == r"\return":
+        t.value = "\r"
+    elif t.value == r"\space":
+        t.value = " "
+    elif t.value == r"\tab":
+        t.value = "\t"
+    return t
 
 
 def t_CHAR(t):
-    r"\\\w"
+    r"(\\\w)"
     t.value = t.value[1]
     return t
 

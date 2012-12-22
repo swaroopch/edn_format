@@ -1,6 +1,4 @@
 
-
-
 # TODO Handle list inside map
 # TODO Handle comments
 # TODO Handle discard #_
@@ -61,8 +59,10 @@ class EdnTest(unittest.TestCase):
                          "#{1 2 3}")
         self.check_parse([1, True, None],
                          "[1 true nil]")
-#        self.check_parse(r"\c",
-#                         "c")
+        self.check_parse("c",
+                         r"\c")
+        self.check_parse("\n",
+                         r"\newline")
         self.check_parse(":abc",
                          ":abc")
         self.check_parse([":abc", 1, True, None],

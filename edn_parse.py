@@ -13,7 +13,8 @@ def p_term_leaf(p):
             | NUMBER
             | BOOLEAN
             | NIL
-            | KEYWORD"""
+            | KEYWORD
+            | WHITESPACE"""
     p[0] = p[1]
 
 
