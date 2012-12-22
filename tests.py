@@ -1,9 +1,4 @@
 
-# TODO Handle floats with e, M, minus, plus
-# TODO Handle custom tagged element serializer / deserializer
-# TODO Handle symbols
-
-
 import datetime
 import pytz
 
