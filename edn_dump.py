@@ -1,12 +1,10 @@
 
 import itertools
 
+
 def dump(obj):
     def seq(obj):
         return " ".join([dump(i) for i in obj])
-
-    def flatten(obj):
-        output = []
 
     if obj is None:
         return "nil"
