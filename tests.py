@@ -1,7 +1,8 @@
 
-# TODO Handle tagged elements
+# TODO Handle character round-trip
 # TODO Handle comments
 # TODO Handle discard #_
+# TODO Handle tagged elements
 # TODO Handle integers with N, minus, plus
 # TODO Handle floats with e, M, minus, plus
 # TODO Handle symbols
@@ -108,8 +109,8 @@ class EdnTest(unittest.TestCase):
             '[1 "abc" true]',
             '[:ghi]',
             '(:ghi)',
-#            '[1 "abc" true :ghi]',
-#            '(1 "abc" true :ghi)',
+            '[1 "abc" true :ghi]',
+            '(1 "abc" true :ghi)',
 #            '{:a 1 "foo" :gone :bar [1 2 3]}',
             #'#{:a :b [1 2 3]',
             #'#myapp/Person {:first "Fred" :last "Mertz',
