@@ -43,7 +43,7 @@ def p_map(p):
     terms = p[2]
     if len(terms) % 2 != 0:
         raise SyntaxError("Even number of terms required for map")
-    p[0] = dict([terms[i*2:i*2+2] for i in range(len(terms) / 2)]) # partition terms in pairs
+    p[0] = dict([terms[i:i+2] for i in range(0, len(terms), 2)]) # partition terms in pairs
 
 
 def p_expression(p):
