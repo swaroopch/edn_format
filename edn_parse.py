@@ -38,9 +38,18 @@ def p_set(p):
     p[0] = set(p[2])
 
 
+def p_map(p):
+    """map : MAP_START terms MAP_OR_SET_END"""
+    terms = p[2]
+    if len(terms) % 2 != 0:
+        raise SyntaxError("Even number of terms required for map")
+    p[0] = dict([terms[i*2:i*2+2] for i in range(len(terms) / 2)]) # partition terms in pairs
+
+
 def p_expression(p):
     """expression : vector
                   | set
+                  | map
                   | term"""
     p[0] = p[1]
 

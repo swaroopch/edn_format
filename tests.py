@@ -60,6 +60,8 @@ class EdnTest(unittest.TestCase):
                          "[:abc 1 true nil]")
         self.check_parse([":abc", 1, True, None],
             "(:abc 1 true nil)")
+        self.check_parse({":a" : 1, ":b" : 2},
+                         "{:a 1 :b 2}")
 
 
     def check_dump(self, expected_output, actual_input):
