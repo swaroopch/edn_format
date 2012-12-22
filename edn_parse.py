@@ -28,7 +28,8 @@ def p_terms_term(p):
 
 
 def p_vector(p):
-    """vector : VECTOR_START terms VECTOR_END"""
+    """vector : VECTOR_START terms VECTOR_END
+              | LIST_START terms LIST_END"""
     p[0] = p[2]
 
 

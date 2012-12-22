@@ -5,6 +5,8 @@ import ply.lex
 
 
 # TODO Handle symbols
+# TODO Handle integers with N, minus, plus
+# TODO Handle floats with e, M, minus, plus
 
 
 tokens = ('CHAR',
