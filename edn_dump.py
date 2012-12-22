@@ -1,5 +1,13 @@
 
+import itertools
+
 def dump(obj):
+    def seq(obj):
+        return " ".join([dump(i) for i in obj])
+
+    def flatten(obj):
+        output = []
+
     if obj is None:
         return "nil"
     elif isinstance(obj, bool):
@@ -15,10 +23,12 @@ def dump(obj):
         else:
             return '"{}"'.format(obj)
     elif isinstance(obj, tuple):
-        return "({})".format(" ".join([dump(i) for i in obj]))
+        return "({})".format(seq(obj))
     elif isinstance(obj, list):
-        return "[{}]".format(" ".join([dump(i) for i in obj]))
+        return "[{}]".format(seq(obj))
     elif isinstance(obj, set):
-        return "#{{{}}}".format(" ".join([dump(i) for i in obj]))
+        return "#{{{}}}".format(seq(obj))
+    elif isinstance(obj, dict):
+        return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
     else:
         raise Exception("Don't know how to handle {} : {}", type(obj), obj)

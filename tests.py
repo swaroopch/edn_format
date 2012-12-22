@@ -1,5 +1,4 @@
 
-# TODO Handle list inside map
 # TODO Handle comments
 # TODO Handle discard #_
 # TODO Handle tagged elements
@@ -71,6 +70,12 @@ class EdnTest(unittest.TestCase):
             "(:abc 1 true nil)")
         self.check_parse({":a" : 1, ":b" : 2},
                          "{:a 1 :b 2}")
+        self.check_parse({"a" : [1, 2, 3]},
+                         '{"a" [1 2 3]}')
+        self.check_parse({":a" : 1,
+                          "foo" : ":gone",
+                          ":bar" : [1, 2, 3]},
+                         '{:bar [1 2 3] "foo" :gone :a 1}')
 
 
     def check_dump(self, expected_output, actual_input):
@@ -80,6 +85,10 @@ class EdnTest(unittest.TestCase):
     def test_dump(self):
         self.check_dump("#{1 2 3}",
                         {1, 2, 3})
+        self.check_dump('{:bar [1 2 3] "foo" :gone :a 1}',
+                        {":a" : 1,
+                         "foo" : ":gone",
+                         ":bar" : [1, 2, 3]})
 
 
     def test_round_trip_conversion(self):
@@ -125,7 +134,6 @@ class EdnTest(unittest.TestCase):
             '(:ghi)',
             '[1 "abc" true :ghi]',
             '(1 "abc" true :ghi)',
-#            '{:a 1 "foo" :gone :bar [1 2 3]}',
             #'#{:a :b [1 2 3]',
             #'#myapp/Person {:first "Fred" :last "Mertz',
             #'#inst "1985-04-12T23:20:50.52Z"',

@@ -18,33 +18,23 @@ def p_term_leaf(p):
     p[0] = p[1]
 
 
-def p_terms_terms_term(p):
-    """terms : terms term"""
-    p[0] = p[1] + [p[2]]
-
-
-def p_terms_term(p):
-    """terms : term"""
-    p[0] = [p[1]]
-
-
 def p_vector(p):
-    """vector : VECTOR_START terms VECTOR_END"""
+    """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = p[2]
 
 
 def p_list(p):
-    """list : LIST_START terms LIST_END"""
+    """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
 
 
 def p_set(p):
-    """set : SET_START terms MAP_OR_SET_END"""
+    """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = set(p[2])
 
 
 def p_map(p):
-    """map : MAP_START terms MAP_OR_SET_END"""
+    """map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
     if len(terms) % 2 != 0:
         raise SyntaxError("Even number of terms required for map")
@@ -58,6 +48,16 @@ def p_expression(p):
                   | map
                   | term"""
     p[0] = p[1]
+
+
+def p_expressions_expressions_expression(p):
+    """expressions : expressions expression"""
+    p[0] = p[1] + [p[2]]
+
+
+def p_expressions_expression(p):
+    """expressions : expression"""
+    p[0] = [p[1]]
 
 
 def p_error(p):
