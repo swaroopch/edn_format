@@ -31,6 +31,8 @@ class EdnTest(unittest.TestCase):
                        "123")
         self.check_lex("[LexToken(NUMBER,456,1,0), LexToken(NIL,None,1,4), LexToken(BOOLEAN,False,1,8)]",
                        "456 nil false")
+        self.check_lex("[LexToken(CHAR,'\\\\c',1,0)]",
+                       r"\c")
 
 
     def check_parse(self, expected_output, actual_input):

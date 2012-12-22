@@ -8,7 +8,8 @@ start = 'expression'
 
 
 def p_term_leaf(p):
-    """term : STRING
+    """term : CHAR
+            | STRING
             | NUMBER
             | BOOLEAN
             | NIL"""

@@ -1,8 +1,10 @@
 
+import re
 import logging
 import ply.lex
 
-tokens = ('STRING',
+tokens = ('CHAR',
+          'STRING',
           'NIL',
           'BOOLEAN',
           'NUMBER',
@@ -15,6 +17,7 @@ tokens = ('STRING',
           'MAP_OR_SET_END')
 
 
+t_CHAR = r'\\\S'
 t_STRING = '"[^"]*"'
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
@@ -56,7 +59,7 @@ def lex(text=None):
     kwargs = {}
     if __debug__:
         kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
-    l = ply.lex.lex(**kwargs)
+    l = ply.lex.lex(reflags=re.UNICODE, **kwargs)
     if text is not None:
         l.input(text)
     return l
