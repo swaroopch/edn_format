@@ -40,4 +40,4 @@ def dump(obj):
     elif isinstance(obj, uuid.UUID):
         return '#uuid "{}"'.format(obj)
     else:
-        raise Exception("Don't know how to handle {} : {}", type(obj), obj)
+        raise NotImplementedError("Don't know how to handle {} : {}", type(obj), obj)
