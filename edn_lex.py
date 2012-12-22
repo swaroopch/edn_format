@@ -1,7 +1,9 @@
 
-import re
-import logging
 import ply.lex
+import logging
+
+import re
+import decimal
 
 
 tokens = ('WHITESPACE',
@@ -76,7 +78,9 @@ def t_BOOLEAN(t):
 
 
 def t_NUMBER(t):
-    r"""\d+"""
+    r"""[+-]?\d+N?"""
+    if t.value.endswith("N"):
+        t.value = t.value[:-1]
     t.value = int(t.value)
     return t
 

@@ -1,5 +1,4 @@
 
-# TODO Handle integers with N, minus, plus
 # TODO Handle floats with e, M, minus, plus
 # TODO Handle custom tagged element serializer / deserializer
 # TODO Handle symbols
@@ -105,6 +104,10 @@ class EdnTest(unittest.TestCase):
             [r"\c", '"c"'],
             ["[ :ghi ]", "[:ghi]"],
             ["[:a #_foo 42]", "[:a 42]"],
+            ["123N", "123"],
+            ["-123N", "-123"],
+            ["+123", "123"],
+            ["+123N", "123"],
         ]
 
         for literal in EDN_LITERALS:
@@ -133,7 +136,7 @@ class EdnTest(unittest.TestCase):
             ":abc/def",
             #"symbol",
             "123",
-            #"123N",
+            "-123",
             #"32.23",
             #"32.23M",
             '["abc"]',
