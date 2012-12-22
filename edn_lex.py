@@ -4,11 +4,6 @@ import logging
 import ply.lex
 
 
-# TODO Handle symbols
-# TODO Handle integers with N, minus, plus
-# TODO Handle floats with e, M, minus, plus
-
-
 tokens = ('CHAR',
           'STRING',
           'NIL',
@@ -26,9 +21,8 @@ tokens = ('CHAR',
 
 
 t_CHAR = r"""\\\S"""
-t_STRING = '"[^"]*"'
-SYMBOL_FIRST_CHAR = r'?\w.+!-_$%&=/\\*'
-SYMBOL = r"[{0}][{0}\d]*".format(SYMBOL_FIRST_CHAR)
+SYMBOL_FIRST_CHAR = r'\w+!\-_$&=\.'
+SYMBOL = r"[{0}][{0}\d/]*".format(SYMBOL_FIRST_CHAR)
 t_KEYWORD = ":{}".format(SYMBOL)
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
@@ -38,6 +32,12 @@ t_MAP_START = '\{'
 t_SET_START = '\#\{'
 t_MAP_OR_SET_END = '\}'
 t_ignore = "".join([" ", "\t", ","])
+
+
+def t_STRING(t):
+    '"[^"]*"'
+    t.value = t.value[1:-1]
+    return t
 
 
 def t_NIL(t):

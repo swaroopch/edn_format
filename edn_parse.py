@@ -55,7 +55,10 @@ def p_expression(p):
 
 
 def p_error(p):
-    print "Syntax error! : {}".format(p)
+    if p is None:
+        print "Syntax Error! Reached EOF!"
+    else:
+        print "Syntax error! {}".format(p)
 
 
 def parse(text):

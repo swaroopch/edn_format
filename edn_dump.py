@@ -10,7 +10,10 @@ def dump(obj):
     elif isinstance(obj, (int, long, float)):
         return str(obj)
     elif isinstance(obj, basestring):
-        return obj
+        if obj.startswith(":"):
+            return obj
+        else:
+            return '"{}"'.format(obj)
     elif isinstance(obj, list):
         return "[{}]".format(" ".join([dump(i) for i in obj]))
     elif isinstance(obj, set):

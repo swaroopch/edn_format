@@ -1,4 +1,12 @@
 
+# TODO list in EDN => tuple in Python ; vector in EDN => list in Python
+# TODO Handle tagged elements
+# TODO Handle comments
+# TODO Handle discard #_
+# TODO Handle integers with N, minus, plus
+# TODO Handle floats with e, M, minus, plus
+# TODO Handle symbols
+
 
 import unittest
 import edn_lex
@@ -78,17 +86,31 @@ class EdnTest(unittest.TestCase):
             "nil",
             "true",
             "false",
-            #r"\c",
+#            r"\\c",
             '"hello world"',
-            #":keyword",
+            ":keyword",
+            ":+",
+            ":!",
+            ":-",
+            ":_",
+            ":$",
+            ":&",
+            ":=",
+            ":.",
+            ":abc/def",
             #"symbol",
             "123",
             #"123N",
             #"32.23",
             #"32.23M",
-            #'(1 "abc" true :ghi)',
-            #'[1 "abc" true :ghi]',
-            #'{:a 1 "foo" :bar, [1 2 3]}',
+            '["abc"]',
+            '[1]',
+            '[1 "abc"]',
+            '[1 "abc" true]',
+            '[:ghi]',
+#            '[1 "abc" true :ghi]',
+#            '(1 "abc" true :ghi)',
+#            '{:a 1 "foo" :gone :bar [1 2 3]}',
             #'#{:a :b [1 2 3]',
             #'#myapp/Person {:first "Fred" :last "Mertz',
             #'#inst "1985-04-12T23:20:50.52Z"',
@@ -96,4 +118,8 @@ class EdnTest(unittest.TestCase):
         )
 
         for literal in EDN_LITERALS:
-            self.assertEqual(literal, edn_format.dumps(edn_format.loads(literal)))
+            step1 = literal
+            step2 = edn_format.loads(literal)
+            step3 = edn_format.dumps(step2)
+            print step1, "->", step2, "->", step3
+            self.assertEqual(step1, step3)
