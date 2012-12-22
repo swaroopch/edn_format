@@ -7,23 +7,11 @@ if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 start = 'expression'
 
 
-def p_term_string(p):
-    """term : STRING"""
-    p[0] = p[1]
-
-
-def p_term_number(p):
-    """term : NUMBER"""
-    p[0] = p[1]
-
-
-def p_term_boolean(p):
-    """term : BOOLEAN"""
-    p[0] = p[1]
-
-
-def p_term_nil(p):
-    """term : NIL"""
+def p_term_leaf(p):
+    """term : STRING
+            | NUMBER
+            | BOOLEAN
+            | NIL"""
     p[0] = p[1]
 
 
@@ -47,18 +35,10 @@ def p_set(p):
     p[0] = set(p[2])
 
 
-def p_expression_vector(p):
-    """expression : vector"""
-    p[0] = p[1]
-
-
-def p_expression_set(p):
-    """expression : set"""
-    p[0] = p[1]
-
-
-def p_expression_term(p):
-    """expression : term"""
+def p_expression(p):
+    """expression : vector
+                  | set
+                  | term"""
     p[0] = p[1]
 
 
