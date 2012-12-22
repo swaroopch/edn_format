@@ -1,5 +1,4 @@
 
-# TODO Handle discard #_
 # TODO Handle tagged elements
 # TODO Handle integers with N, minus, plus
 # TODO Handle floats with e, M, minus, plus
@@ -97,7 +96,8 @@ class EdnTest(unittest.TestCase):
     def test_round_trip_conversion(self):
         EDN_LITERALS = [
             [r"\c", '"c"'],
-            ["[ :ghi ]", "[:ghi]"]
+            ["[ :ghi ]", "[:ghi]"],
+            ["[:a #_foo 42]", "[:a 42]"],
         ]
 
         for literal in EDN_LITERALS:

@@ -85,6 +85,11 @@ def t_COMMENT(t):
     pass # ignore
 
 
+def t_DISCARD(t):
+    r'\#_\S+\b'
+    pass # ignore
+
+
 def t_error(t):
     print "Illegal character '%s'" % t.value[0]
     t.lexer.skip(1)
