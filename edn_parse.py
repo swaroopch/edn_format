@@ -13,7 +13,8 @@ start = 'expression'
 def p_term_leaf(p):
     """term : CHAR
             | STRING
-            | NUMBER
+            | INTEGER
+            | FLOAT
             | BOOLEAN
             | NIL
             | KEYWORD

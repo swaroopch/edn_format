@@ -33,9 +33,9 @@ class EdnTest(unittest.TestCase):
                        "nil")
         self.check_lex("[LexToken(BOOLEAN,True,1,0)]",
                        "true")
-        self.check_lex("[LexToken(NUMBER,123,1,0)]",
+        self.check_lex("[LexToken(INTEGER,123,1,0)]",
                        "123")
-        self.check_lex("[LexToken(NUMBER,456,1,0), LexToken(NIL,None,1,4), LexToken(BOOLEAN,False,1,8)]",
+        self.check_lex("[LexToken(INTEGER,456,1,0), LexToken(NIL,None,1,4), LexToken(BOOLEAN,False,1,8)]",
                        "456 nil false")
         self.check_lex("[LexToken(CHAR,'c',1,0)]",
                        r"\c")
@@ -108,6 +108,9 @@ class EdnTest(unittest.TestCase):
             ["-123N", "-123"],
             ["+123", "123"],
             ["+123N", "123"],
+            ["123.2", "123.2"],
+            ["+32.23M", "32.23M"],
+            ["3.23e10", "32300000000.0"],
         ]
 
         for literal in EDN_LITERALS:
@@ -137,8 +140,10 @@ class EdnTest(unittest.TestCase):
             #"symbol",
             "123",
             "-123",
-            #"32.23",
-            #"32.23M",
+            "32.23",
+            "32.23M",
+            "-32.23M",
+            "3.23e-10",
             '["abc"]',
             '[1]',
             '[1 "abc"]',

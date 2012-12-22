@@ -11,7 +11,8 @@ tokens = ('WHITESPACE',
           'STRING',
           'NIL',
           'BOOLEAN',
-          'NUMBER',
+          'INTEGER',
+          'FLOAT',
 #          'SYMBOL',
           'KEYWORD',
           'VECTOR_START',
@@ -77,7 +78,22 @@ def t_BOOLEAN(t):
     return t
 
 
-def t_NUMBER(t):
+def t_FLOAT(t):
+    r"""[+-]?\d+\.\d+[M]?([eE][+-]?\d+)?"""
+    e_value = 0
+    if 'e' in t.value or 'E' in t.value:
+        matches = re.search("[eE]([+-]?\d+)$", t.value)
+        if matches is None:
+            raise SyntaxError("Invalid float : {}".format(t.value))
+        e_value = int(matches.group()[1:])
+    if t.value.endswith("M"):
+        t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
+    else:
+        t.value = float(t.value) * pow(1, e_value)
+    return t
+
+
+def t_INTEGER(t):
     r"""[+-]?\d+N?"""
     if t.value.endswith("N"):
         t.value = t.value[:-1]

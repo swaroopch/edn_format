@@ -1,6 +1,7 @@
 
 import itertools
 
+import decimal
 import datetime
 import uuid
 import pyrfc3339
@@ -19,6 +20,8 @@ def dump(obj):
             return "false"
     elif isinstance(obj, (int, long, float)):
         return str(obj)
+    elif isinstance(obj, decimal.Decimal):
+        return "{}M".format(obj)
     elif isinstance(obj, basestring):
         if obj.startswith(":"):
             return obj
