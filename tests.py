@@ -48,6 +48,8 @@ class EdnTest(unittest.TestCase):
                          "#{1 2 3}")
         self.check_parse([1, True, None],
                          "[1 true nil]")
+        self.check_parse("\\c",
+                         "\\c")
 
 
     def check_dump(self, expected_output, actual_input):
