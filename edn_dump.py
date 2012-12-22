@@ -14,6 +14,8 @@ def dump(obj):
             return obj
         else:
             return '"{}"'.format(obj)
+    elif isinstance(obj, tuple):
+        return "({})".format(" ".join([dump(i) for i in obj]))
     elif isinstance(obj, list):
         return "[{}]".format(" ".join([dump(i) for i in obj]))
     elif isinstance(obj, set):

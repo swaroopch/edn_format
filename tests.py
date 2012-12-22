@@ -1,5 +1,4 @@
 
-# TODO list in EDN => tuple in Python ; vector in EDN => list in Python
 # TODO Handle tagged elements
 # TODO Handle comments
 # TODO Handle discard #_
@@ -66,7 +65,7 @@ class EdnTest(unittest.TestCase):
                          ":abc")
         self.check_parse([":abc", 1, True, None],
                          "[:abc 1 true nil]")
-        self.check_parse([":abc", 1, True, None],
+        self.check_parse((":abc", 1, True, None),
             "(:abc 1 true nil)")
         self.check_parse({":a" : 1, ":b" : 2},
                          "{:a 1 :b 2}")
@@ -108,6 +107,7 @@ class EdnTest(unittest.TestCase):
             '[1 "abc"]',
             '[1 "abc" true]',
             '[:ghi]',
+            '(:ghi)',
 #            '[1 "abc" true :ghi]',
 #            '(1 "abc" true :ghi)',
 #            '{:a 1 "foo" :gone :bar [1 2 3]}',
@@ -121,5 +121,5 @@ class EdnTest(unittest.TestCase):
             step1 = literal
             step2 = edn_format.loads(literal)
             step3 = edn_format.dumps(step2)
-            print step1, "->", step2, "->", step3
+#            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
