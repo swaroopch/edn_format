@@ -12,7 +12,8 @@ def p_term_leaf(p):
             | STRING
             | NUMBER
             | BOOLEAN
-            | NIL"""
+            | NIL
+            | KEYWORD"""
     p[0] = p[1]
 
 

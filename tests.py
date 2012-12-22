@@ -33,6 +33,10 @@ class EdnTest(unittest.TestCase):
                        "456 nil false")
         self.check_lex("[LexToken(CHAR,'\\\\c',1,0)]",
                        r"\c")
+        self.check_lex("[LexToken(KEYWORD,':abc',1,0)]",
+                       r":abc")
+        self.check_lex("[LexToken(KEYWORD,':+',1,0)]",
+                       r":+")
 
 
     def check_parse(self, expected_output, actual_input):
@@ -50,6 +54,10 @@ class EdnTest(unittest.TestCase):
                          "[1 true nil]")
         self.check_parse("\\c",
                          "\\c")
+        self.check_parse(":abc",
+                         ":abc")
+        self.check_parse([":abc", 1, True, None],
+                         "[:abc 1 true nil]")
 
 
     def check_dump(self, expected_output, actual_input):

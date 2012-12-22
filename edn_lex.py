@@ -3,11 +3,17 @@ import re
 import logging
 import ply.lex
 
+
+# TODO Handle symbols
+
+
 tokens = ('CHAR',
           'STRING',
           'NIL',
           'BOOLEAN',
           'NUMBER',
+#          'SYMBOL',
+          'KEYWORD',
           'VECTOR_START',
           'VECTOR_END',
           'LIST_START',
@@ -17,8 +23,11 @@ tokens = ('CHAR',
           'MAP_OR_SET_END')
 
 
-t_CHAR = r'\\\S'
+t_CHAR = r"""\\\S"""
 t_STRING = '"[^"]*"'
+SYMBOL_FIRST_CHAR = r'?\w.+!-_$%&=/\\*'
+SYMBOL = r"[{0}][{0}\d]*".format(SYMBOL_FIRST_CHAR)
+t_KEYWORD = ":{}".format(SYMBOL)
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
 t_LIST_START = '\('
