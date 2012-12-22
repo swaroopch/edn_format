@@ -2,6 +2,10 @@
 
 Implements the [EDN format](https://github.com/edn-format/edn) reader in Python.
 
+# Installation
+
+    pip install edn_format
+
 # Usage
 
     >>> import edn_format
