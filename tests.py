@@ -1,5 +1,7 @@
 
-# TODO Handle character round-trip
+
+
+# TODO Handle list inside map
 # TODO Handle comments
 # TODO Handle discard #_
 # TODO Handle tagged elements
@@ -21,7 +23,6 @@ class ConsoleTest(unittest.TestCase):
             edn_format.loads("[1 true nil]")
         except AttributeError as x:
             is_exception = True
-            print x
         self.assertFalse(is_exception)
 
 
@@ -39,7 +40,7 @@ class EdnTest(unittest.TestCase):
                        "123")
         self.check_lex("[LexToken(NUMBER,456,1,0), LexToken(NIL,None,1,4), LexToken(BOOLEAN,False,1,8)]",
                        "456 nil false")
-        self.check_lex("[LexToken(CHAR,'\\\\c',1,0)]",
+        self.check_lex("[LexToken(CHAR,'c',1,0)]",
                        r"\c")
         self.check_lex("[LexToken(KEYWORD,':abc',1,0)]",
                        r":abc")
@@ -60,8 +61,8 @@ class EdnTest(unittest.TestCase):
                          "#{1 2 3}")
         self.check_parse([1, True, None],
                          "[1 true nil]")
-        self.check_parse("\\c",
-                         "\\c")
+#        self.check_parse(r"\c",
+#                         "c")
         self.check_parse(":abc",
                          ":abc")
         self.check_parse([":abc", 1, True, None],
@@ -81,12 +82,25 @@ class EdnTest(unittest.TestCase):
                         {1, 2, 3})
 
 
-    def test_round_trip(self):
+    def test_round_trip_conversion(self):
+        EDN_LITERALS = [
+            [r"\c", '"c"'],
+            ["[ :ghi ]", "[:ghi]"]
+        ]
+
+        for literal in EDN_LITERALS:
+            step1 = literal[0]
+            step2 = edn_format.loads(step1)
+            step3 = edn_format.dumps(step2)
+#            print step1, "->", step2, "->", step3
+            self.assertEqual(literal[1], step3)
+
+
+    def test_round_trip_same(self):
         EDN_LITERALS = (
             "nil",
             "true",
             "false",
-#            r"\\c",
             '"hello world"',
             ":keyword",
             ":+",
@@ -120,7 +134,7 @@ class EdnTest(unittest.TestCase):
 
         for literal in EDN_LITERALS:
             step1 = literal
-            step2 = edn_format.loads(literal)
+            step2 = edn_format.loads(step1)
             step3 = edn_format.dumps(step2)
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)

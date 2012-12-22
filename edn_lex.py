@@ -20,7 +20,6 @@ tokens = ('CHAR',
           'MAP_OR_SET_END')
 
 
-t_CHAR = r"""\\\S"""
 SYMBOL_FIRST_CHAR = r'\w+!\-_$&=\.'
 SYMBOL = r"[{0}][{0}\d/]*".format(SYMBOL_FIRST_CHAR)
 t_KEYWORD = ":{}".format(SYMBOL)
@@ -32,6 +31,12 @@ t_MAP_START = '\{'
 t_SET_START = '\#\{'
 t_MAP_OR_SET_END = '\}'
 t_ignore = "".join([" ", "\t", ","])
+
+
+def t_CHAR(t):
+    r"\\\w"
+    t.value = t.value[1]
+    return t
 
 
 def t_STRING(t):
