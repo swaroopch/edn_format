@@ -6,6 +6,31 @@ import re
 import decimal
 
 
+class BaseEdnType(object):
+    def __init__(self, name):
+        self._name = unicode(name)
+
+    def __eq__(self, other):
+        if isinstance(other, basestring):
+            return repr(self) == other
+        if not isinstance(other, self.__class__):
+            return False
+        return repr(self) == repr(other)
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, self._name)
+
+
+class Keyword(BaseEdnType):
+    def __str__(self):
+        return ":{}".format(self._name)
+
+
+class Symbol(BaseEdnType):
+    def __str__(self):
+        return self._name
+
+
 tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
@@ -13,7 +38,7 @@ tokens = ('WHITESPACE',
           'BOOLEAN',
           'INTEGER',
           'FLOAT',
-#          'SYMBOL',
+          'SYMBOL',
           'KEYWORD',
           'VECTOR_START',
           'VECTOR_END',
@@ -27,7 +52,6 @@ tokens = ('WHITESPACE',
 
 SYMBOL_FIRST_CHAR = r'\w+!\-_$&=\.'
 SYMBOL = r"[{0}][{0}\d/]*".format(SYMBOL_FIRST_CHAR)
-t_KEYWORD = ":{}".format(SYMBOL)
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
 t_LIST_START = '\('
@@ -114,6 +138,18 @@ def t_DISCARD(t):
 @ply.lex.TOKEN(r'\#{}'.format(SYMBOL))
 def t_TAG(t):
     t.value = t.value[1:]
+    return t
+
+
+@ply.lex.TOKEN(":{}".format(SYMBOL))
+def t_KEYWORD(t):
+    t.value = Keyword(t.value[1:])
+    return t
+
+
+@ply.lex.TOKEN(SYMBOL)
+def t_SYMBOL(t):
+    t.value = Symbol(t.value)
     return t
 
 

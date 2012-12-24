@@ -3,7 +3,7 @@ import uuid
 import pyrfc3339
 
 import ply.yacc
-from edn_lex import tokens, lex
+from .edn_lex import tokens, lex
 
 if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 
@@ -18,6 +18,7 @@ def p_term_leaf(p):
             | BOOLEAN
             | NIL
             | KEYWORD
+            | SYMBOL
             | WHITESPACE"""
     p[0] = p[1]
 
