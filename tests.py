@@ -74,13 +74,16 @@ class EdnTest(unittest.TestCase):
 
 
     def check_dump(self, expected_output, actual_input):
-        self.assertEqual(expected_output, dumps(actual_input))
+        if isinstance(expected_output, list):
+            self.assertIn(dumps(actual_input), expected_output)
+        else:
+            self.assertEqual(expected_output, dumps(actual_input))
 
 
     def test_dump(self):
         self.check_dump("#{1 2 3}",
                         {1, 2, 3})
-        self.check_dump('{:bar [1 2 3] "foo" :gone :a 1}',
+        self.check_dump(['{:bar [1 2 3] "foo" :gone :a 1}', '{:a 1 "foo" :gone :bar [1 2 3]}'],
                         {Keyword("a") : 1,
                          "foo" : Keyword("gone"),
                          Keyword("bar") : [1, 2, 3]})
