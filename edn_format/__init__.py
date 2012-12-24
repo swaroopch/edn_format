@@ -1,14 +1,14 @@
 
-from edn_format import edn_dump, edn_parse
-from edn_format.edn_lex import Keyword, Symbol
+from .edn_lex import Keyword, Symbol
+from .edn_parse import parse as loads
+from .edn_parse import add_tag, remove_tag, TaggedElement
+from .edn_dump import dump as dumps
 
 
-def loads(text):
-    return edn_parse.parse(text)
-
-
-def dumps(obj):
-    return edn_dump.dump(obj)
-
-
-__all__ = ['loads', 'dumps', 'Keyword', 'Symbol']
+__all__ = ('loads',
+           'dumps',
+           'Keyword',
+           'Symbol',
+           'add_tag',
+           'remove_tag',
+           'TaggedElement')

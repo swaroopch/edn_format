@@ -3,7 +3,7 @@ import datetime
 import pytz
 
 import unittest
-from edn_format import edn_lex, edn_parse, loads, dumps, Keyword, Symbol
+from edn_format import edn_lex, edn_parse, loads, dumps, Keyword, TaggedElement, add_tag
 
 
 class ConsoleTest(unittest.TestCase):
@@ -81,9 +81,9 @@ class EdnTest(unittest.TestCase):
         self.check_dump("#{1 2 3}",
                         {1, 2, 3})
         self.check_dump('{:bar [1 2 3] "foo" :gone :a 1}',
-                        {":a" : 1,
-                         "foo" : ":gone",
-                         ":bar" : [1, 2, 3]})
+                        {Keyword("a") : 1,
+                         "foo" : Keyword("gone"),
+                         Keyword("bar") : [1, 2, 3]})
 
 
     def test_round_trip_conversion(self):
@@ -145,8 +145,19 @@ class EdnTest(unittest.TestCase):
             '(1 "abc" true :ghi)',
             #'#myapp/Person {:first "Fred" :last "Mertz',
             '#inst "1985-04-12T23:20:50Z"',
-            '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"'
+            '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
+            '#date "19/07/1984"'
         )
+
+        class TagDate(TaggedElement):
+            def __init__(self, value):
+                self.name = 'date'
+                self.value = datetime.datetime.strptime(value, "%d/%m/%Y").date()
+
+            def __str__(self):
+                return '#{} "{}"'.format(self.name, self.value.strftime("%d/%m/%Y"))
+
+        add_tag('date', TagDate)
 
         for literal in EDN_LITERALS:
             step1 = literal

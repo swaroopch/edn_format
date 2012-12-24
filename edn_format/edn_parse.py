@@ -10,6 +10,27 @@ if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 start = 'expression'
 
 
+_serializers = {}
+
+
+class TaggedElement(object):
+    def __init__(self, name, value):
+        raise NotImplementedError("To be implemented by derived classes")
+
+    def __str__(self):
+        raise NotImplementedError("To be implemented by derived classes")
+
+
+def add_tag(tag_name, tag_object):
+    assert isinstance(tag_name, basestring)
+    _serializers[tag_name] = tag_object
+
+
+def remove_tag(tag_name):
+    assert isinstance(tag_name, basestring)
+    del _serializers[tag_name]
+
+
 def p_term_leaf(p):
     """term : CHAR
             | STRING
@@ -74,6 +95,8 @@ def p_expression_tagged_element(p):
         output = pyrfc3339.parse(element)
     elif tag == 'uuid':
         output = uuid.UUID(element)
+    elif tag in _serializers:
+        output = _serializers[tag](element)
     else:
         raise NotImplementedError("Don't know how to handle tag {}".format(tag))
 
