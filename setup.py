@@ -6,7 +6,7 @@ except ImportError:
 
 
 setup(name="edn_format",
-      version="0.1",
+      version="0.2",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",
