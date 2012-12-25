@@ -9,7 +9,6 @@ if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 
 start = 'expression'
 
-
 _serializers = {}
 
 
@@ -21,9 +20,9 @@ class TaggedElement(object):
         raise NotImplementedError("To be implemented by derived classes")
 
 
-def add_tag(tag_name, tag_object):
+def add_tag(tag_name, tag_class):
     assert isinstance(tag_name, basestring)
-    _serializers[tag_name] = tag_object
+    _serializers[tag_name] = tag_class
 
 
 def remove_tag(tag_name):
