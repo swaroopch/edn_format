@@ -1,4 +1,6 @@
 
+import os
+
 try:
     from setuptools import setup
 except ImportError:
@@ -6,11 +8,13 @@ except ImportError:
 
 
 setup(name="edn_format",
-      version="0.2",
+      version="0.3",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",
-      long_description=open('README.md').read(),
+      long_description=open(
+          os.path.join(os.getcwdu(),
+                       'README.md')).read(),
       url="https://github.com/swaroopch/edn_format",
       install_requires=[
           "pytz==2012h",
