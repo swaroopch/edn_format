@@ -169,3 +169,6 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
+
+if __name__ == "__main__":
+    unittest.main()
