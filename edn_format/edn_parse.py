@@ -64,6 +64,9 @@ def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = set(p[2])
 
+def p_empty_map(p):
+    """map : MAP_START MAP_OR_SET_END"""
+    p[0] = {}
 
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
