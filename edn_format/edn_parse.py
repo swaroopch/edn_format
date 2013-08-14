@@ -1,10 +1,16 @@
 from __future__ import print_function
 
+import sys
 import uuid
 import pyrfc3339
 
 import ply.yacc
 from .edn_lex import tokens, lex
+
+if sys.version_info[0] == 3:
+    long = int
+    basestring = str
+    unicode = str
 
 if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 

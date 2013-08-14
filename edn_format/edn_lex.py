@@ -1,11 +1,17 @@
 from __future__ import print_function
 
+import sys
+
 import ply.lex
 import logging
 
 import re
 import decimal
 
+if sys.version_info[0] == 3:
+    long = int
+    basestring = str
+    unicode = str
 
 class BaseEdnType(object):
     def __init__(self, name):
@@ -20,6 +26,9 @@ class BaseEdnType(object):
 
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, self._name)
+
+    def __hash__(self):
+        return hash(self._name)
 
 
 class Keyword(BaseEdnType):

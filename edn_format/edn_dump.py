@@ -14,6 +14,7 @@ from .edn_parse import TaggedElement
 if sys.version_info[0] == 3:
     long = int
     basestring = str
+    unicode = str
 
 def dump(obj):
     def seq(obj):
