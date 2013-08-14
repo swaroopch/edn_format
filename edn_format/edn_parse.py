@@ -48,6 +48,9 @@ def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = p[2]
 
+def p_empty_list(p):
+    """list : LIST_START LIST_END"""
+    p[0] = tuple()
 
 def p_list(p):
     """list : LIST_START expressions LIST_END"""

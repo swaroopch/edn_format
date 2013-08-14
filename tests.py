@@ -67,6 +67,7 @@ class EdnTest(unittest.TestCase):
                          "[:abc 1 true nil]")
         self.check_parse((Keyword("abc"), 1, True, None),
             "(:abc 1 true nil)")
+        self.check_parse(tuple(), "()")
         self.check_parse({"a" : [1, 2, 3]},
                          '{"a" [1 2 3]}')
         self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
