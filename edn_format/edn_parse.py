@@ -123,9 +123,9 @@ def p_expression_tagged_element(p):
 
 def p_error(p):
     if p is None:
-        print("Syntax Error! Reached EOF!")
+        raise SyntaxError("EOF Reached")
     else:
-        print("Syntax error! {}".format(p))
+        raise SyntaxError(p)
 
 
 def parse(text):

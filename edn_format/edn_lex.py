@@ -164,9 +164,7 @@ def t_SYMBOL(t):
 
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
-
+    raise SyntaxError("Illegal character '%s'" % t.value[0])
 
 def lex(text=None):
     kwargs = {}
