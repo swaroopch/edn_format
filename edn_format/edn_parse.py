@@ -56,6 +56,9 @@ def p_list(p):
     """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
 
+def p_empty_set(p):
+    """set : SET_START MAP_OR_SET_END"""
+    p[0] = set()
 
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
