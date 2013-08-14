@@ -67,6 +67,10 @@ class EdnTest(unittest.TestCase):
                          "[:abc 1 true nil]")
         self.check_parse((Keyword("abc"), 1, True, None),
             "(:abc 1 true nil)")
+        self.check_parse(tuple(), "()")
+        self.check_parse(set(), "#{}")
+        self.check_parse({}, "{}")
+        self.check_parse([], "[]")
         self.check_parse({"a" : [1, 2, 3]},
                          '{"a" [1 2 3]}')
         self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
@@ -168,3 +172,6 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
+
+if __name__ == "__main__":
+    unittest.main()

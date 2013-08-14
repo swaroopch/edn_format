@@ -1,9 +1,16 @@
+from __future__ import print_function
 
+import sys
 import uuid
 import pyrfc3339
 
 import ply.yacc
 from .edn_lex import tokens, lex
+
+if sys.version_info[0] == 3:
+    long = int
+    basestring = str
+    unicode = str
 
 if tokens: pass # Dummy statement to indicate that 'tokens' is used.
 
@@ -42,21 +49,33 @@ def p_term_leaf(p):
             | WHITESPACE"""
     p[0] = p[1]
 
+def p_empty_vector(p):
+    """vector : VECTOR_START VECTOR_END"""
+    p[0] = []
 
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = p[2]
 
+def p_empty_list(p):
+    """list : LIST_START LIST_END"""
+    p[0] = tuple()
 
 def p_list(p):
     """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
 
+def p_empty_set(p):
+    """set : SET_START MAP_OR_SET_END"""
+    p[0] = set()
 
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = set(p[2])
 
+def p_empty_map(p):
+    """map : MAP_START MAP_OR_SET_END"""
+    p[0] = {}
 
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
@@ -104,9 +123,9 @@ def p_expression_tagged_element(p):
 
 def p_error(p):
     if p is None:
-        print "Syntax Error! Reached EOF!"
+        raise SyntaxError("EOF Reached")
     else:
-        print "Syntax error! {}".format(p)
+        raise SyntaxError(p)
 
 
 def parse(text):
