@@ -43,6 +43,9 @@ def p_term_leaf(p):
             | WHITESPACE"""
     p[0] = p[1]
 
+def p_empty_vector(p):
+    """vector : VECTOR_START VECTOR_END"""
+    p[0] = []
 
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""

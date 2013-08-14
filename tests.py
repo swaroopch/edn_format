@@ -70,6 +70,7 @@ class EdnTest(unittest.TestCase):
         self.check_parse(tuple(), "()")
         self.check_parse(set(), "#{}")
         self.check_parse({}, "{}")
+        self.check_parse([], "[]")
         self.check_parse({"a" : [1, 2, 3]},
                          '{"a" [1 2 3]}')
         self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
