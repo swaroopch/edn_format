@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import uuid
 import pyrfc3339
@@ -104,9 +105,9 @@ def p_expression_tagged_element(p):
 
 def p_error(p):
     if p is None:
-        print "Syntax Error! Reached EOF!"
+        print("Syntax Error! Reached EOF!")
     else:
-        print "Syntax error! {}".format(p)
+        print("Syntax error! {}".format(p))
 
 
 def parse(text):
