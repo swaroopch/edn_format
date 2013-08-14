@@ -1,4 +1,6 @@
 
+import sys
+
 import itertools
 
 import decimal
@@ -9,6 +11,9 @@ import pyrfc3339
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
+if sys.version_info[0] == 3:
+    long = int
+    basestring = str
 
 def dump(obj):
     def seq(obj):
