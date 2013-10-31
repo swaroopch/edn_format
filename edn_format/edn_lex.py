@@ -60,14 +60,14 @@ tokens = ('WHITESPACE',
           'TAG')
 
 PARTS = {}
-PARTS["non_nums"] = r"\w.*+!-_?$%&=:#"
+PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
 PARTS["first"] = r"\w*!_?$%&="
-PARTS["special"] = r"-+."
+PARTS["special"] = r"\-+."
 PARTS["start"] = r"([{first}]|[{special}][{non_nums}])".format(**PARTS)
-SYMBOL = r"({start}[{all}]*|{start}[{all}]*\/[{all}]+|\/)".format(**PARTS)
-KEYWORD = r":([{all}]+|[{all}]+\/[{all}]+)".format(**PARTS)
-TAG = r"\#\w([{all}]*|[{all}]*\/[{all}]+)".format(**PARTS)
+SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
+KEYWORD = r":([{all}]+\/[{all}]+|[{all}]+)".format(**PARTS)
+TAG = r"\#\w([{all}]*\/[{all}]+|[{all}]*)".format(**PARTS)
 
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
