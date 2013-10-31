@@ -34,14 +34,22 @@ class EdnTest(unittest.TestCase):
                        r"\c")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
                        r":abc")
-        self.check_lex("[LexToken(KEYWORD,Keyword(+),1,0)]",
-                       r":+")
+        self.check_lex("[LexToken(KEYWORD,Keyword(++),1,0)]",
+                       r":++")
         self.check_lex("[]",
                        "; a comment")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
                        ":abc ; a comment")
         self.check_lex("[LexToken(TAG,'inst',1,0), LexToken(STRING,'1985-04-12T23:20:50.52Z',1,6)]",
                        '#inst "1985-04-12T23:20:50.52Z"')
+        self.check_lex("[LexToken(SYMBOL,Symbol(abc),1,0)]",
+                       "abc")
+        self.check_lex("[LexToken(SYMBOL,Symbol(?abc),1,0)]",
+                       "?abc")
+        self.check_lex("[LexToken(SYMBOL,Symbol(/),1,0)]",
+                       "/")
+        self.check_lex("[LexToken(SYMBOL,Symbol(prefix/name),1,0)]",
+                       "prefix/name")
 
 
     def check_parse(self, expected_output, actual_input):

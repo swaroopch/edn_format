@@ -59,9 +59,16 @@ tokens = ('WHITESPACE',
           'MAP_OR_SET_END',
           'TAG')
 
+PARTS = {}
+PARTS["non_nums"] = r"\w.*+!-_?$%&=:#"
+PARTS["all"] = PARTS["non_nums"] + r"\d"
+PARTS["first"] = r"\w*!_?$%&="
+PARTS["special"] = r"-+."
+PARTS["start"] = r"([{first}]|[{special}][{non_nums}])".format(**PARTS)
+SYMBOL = r"({start}[{all}]*|{start}[{all}]*\/[{all}]+|\/)".format(**PARTS)
+KEYWORD = r":([{all}]+|[{all}]+\/[{all}]+)".format(**PARTS)
+TAG = r"\#\w([{all}]*|[{all}]*\/[{all}]+)".format(**PARTS)
 
-SYMBOL_FIRST_CHAR = r'\w+!\-_$&=\.'
-SYMBOL = r"[{0}][{0}\d/]*".format(SYMBOL_FIRST_CHAR)
 t_VECTOR_START = '\['
 t_VECTOR_END = '\]'
 t_LIST_START = '\('
@@ -145,13 +152,13 @@ def t_DISCARD(t):
     pass # ignore
 
 
-@ply.lex.TOKEN(r'\#{}'.format(SYMBOL))
+@ply.lex.TOKEN(TAG)
 def t_TAG(t):
     t.value = t.value[1:]
     return t
 
 
-@ply.lex.TOKEN(":{}".format(SYMBOL))
+@ply.lex.TOKEN(KEYWORD)
 def t_KEYWORD(t):
     t.value = Keyword(t.value[1:])
     return t
