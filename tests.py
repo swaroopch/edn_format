@@ -34,8 +34,8 @@ class EdnTest(unittest.TestCase):
                        r"\c")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
                        r":abc")
-        self.check_lex("[LexToken(KEYWORD,Keyword(++),1,0)]",
-                       r":++")
+        self.check_lex("[LexToken(KEYWORD,Keyword(+),1,0)]",
+                       r":+")
         self.check_lex("[]",
                        "; a comment")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
