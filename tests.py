@@ -50,6 +50,8 @@ class EdnTest(unittest.TestCase):
                        "/")
         self.check_lex("[LexToken(SYMBOL,Symbol(prefix/name),1,0)]",
                        "prefix/name")
+        self.check_lex("[LexToken(SYMBOL,Symbol(true.),1,0)]",
+                       "true.")
 
 
     def check_parse(self, expected_output, actual_input):

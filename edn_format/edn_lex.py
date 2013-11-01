@@ -64,7 +64,7 @@ PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
 PARTS["first"] = r"\w*!_?$%&="
 PARTS["special"] = r"\-+."
-PARTS["start"] = r"([{first}]|[{special}][{non_nums}])".format(**PARTS)
+PARTS["start"] = r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
 SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
 KEYWORD = r":([{all}]+\/[{all}]+|[{all}]+)".format(**PARTS)
 TAG = r"\#\w([{all}]*\/[{all}]+|[{all}]*)".format(**PARTS)
@@ -111,7 +111,7 @@ def t_NIL(t):
 
 
 def t_BOOLEAN(t):
-    r"""(true)|(false)"""
+    r"""(true|false)(?=([\s\])}]|$))"""
     if t.value == "false":
         t.value = False
     elif t.value == "true":
