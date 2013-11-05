@@ -5,14 +5,14 @@ except ImportError:
     from distutils.core import setup
 
 setup(name="edn_format",
-      version="0.3.6",
+      version="0.4",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",
       long_description=open('README.txt').read(),
       url="https://github.com/swaroopch/edn_format",
       install_requires=[
-          "pytz==2012h",
+          "pytz==2013.8",
           "pyRFC3339==0.1",
           "ply==3.4",
       ],
