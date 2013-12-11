@@ -60,9 +60,9 @@ tokens = ('WHITESPACE',
           'TAG')
 
 PARTS = {}
-PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>"
+PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
-PARTS["first"] = r"\w*!_?$%&=<>"
+PARTS["first"] = r"\w*!_?$%&=<>@"
 PARTS["special"] = r"\-+."
 PARTS["start"] = r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
 SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
