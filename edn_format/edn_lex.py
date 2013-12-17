@@ -7,6 +7,7 @@ import logging
 
 import re
 import decimal
+from immutable_dict import ImmutableDict
 
 if sys.version_info[0] == 3:
     long = int
@@ -28,15 +29,23 @@ class BaseEdnType(object):
         return "{}({})".format(self.__class__.__name__, self._name)
 
     def __hash__(self):
-        return hash(self._name)
+        return ImmutableDict(self.__dict__).__hash__()
 
 
 class Keyword(BaseEdnType):
+    def __init__(self, name):
+        self._name = unicode(name)
+        self._type = Keyword
+
     def __str__(self):
         return ":{}".format(self._name)
 
 
 class Symbol(BaseEdnType):
+    def __init__(self, name):
+        self._name = unicode(name)
+        self._type = Symbol
+
     def __str__(self):
         return self._name
 

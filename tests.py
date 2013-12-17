@@ -3,8 +3,8 @@ import datetime
 import pytz
 
 import unittest
-from edn_format import edn_lex, edn_parse, loads, dumps, Keyword, TaggedElement, add_tag
-
+from edn_format import edn_lex, edn_parse, \
+     loads, dumps, Keyword, Symbol, TaggedElement, add_tag
 
 class ConsoleTest(unittest.TestCase):
     def test_dumping(self):
@@ -182,6 +182,12 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
+
+
+class EdnInstanceTest(unittest.TestCase):
+    def test_hashing(self):
+        pop_count = len(set(map(hash, ["db/id", Keyword("db/id"), Symbol("db/id")])))
+        self.assertEqual(pop_count, 3)
 
 if __name__ == "__main__":
     unittest.main()
