@@ -189,5 +189,13 @@ class EdnInstanceTest(unittest.TestCase):
         pop_count = len(set(map(hash, ["db/id", Keyword("db/id"), Symbol("db/id")])))
         self.assertEqual(pop_count, 3)
 
+    def test_equality(self):
+        self.assertTrue("db/id" != Keyword("db/id"))
+        self.assertTrue("db/id" != Symbol("db/id"))
+        self.assertTrue(Symbol("db/id") != Keyword("db/id"))
+        self.assertTrue("db/id" == "db/id")
+        self.assertTrue(Keyword("db/id") == Keyword("db/id"))
+        self.assertTrue(Symbol("db/id") == Symbol("db/id"))
+
 if __name__ == "__main__":
     unittest.main()
