@@ -7,6 +7,7 @@ import decimal
 import datetime
 import uuid
 import pyrfc3339
+from edn_format.immutable_dict import ImmutableDict
 
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
@@ -41,7 +42,7 @@ def dump(obj):
         return "[{}]".format(seq(obj))
     elif isinstance(obj, set):
         return "#{{{}}}".format(seq(obj))
-    elif isinstance(obj, dict):
+    elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj))

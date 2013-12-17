@@ -163,7 +163,8 @@ class EdnTest(unittest.TestCase):
             #'#myapp/Person {:first "Fred" :last "Mertz',
             '#inst "1985-04-12T23:20:50Z"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
-            '#date "19/07/1984"'
+            '#date "19/07/1984"',
+            '#{{"a" 1}}'
         )
 
         class TagDate(TaggedElement):
