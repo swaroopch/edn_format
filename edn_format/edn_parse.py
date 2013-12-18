@@ -68,11 +68,11 @@ def p_list(p):
 
 def p_empty_set(p):
     """set : SET_START MAP_OR_SET_END"""
-    p[0] = set()
+    p[0] = frozenset()
 
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
-    p[0] = set(p[2])
+    p[0] = frozenset(p[2])
 
 def p_empty_map(p):
     """map : MAP_START MAP_OR_SET_END"""
