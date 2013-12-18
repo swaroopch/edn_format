@@ -40,7 +40,7 @@ def dump(obj):
         return "({})".format(seq(obj))
     elif isinstance(obj, list):
         return "[{}]".format(seq(obj))
-    elif isinstance(obj, set):
+    elif isinstance(obj, set) or isinstance(obj, frozenset):
         return "#{{{}}}".format(seq(obj))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))

@@ -165,7 +165,9 @@ class EdnTest(unittest.TestCase):
             '#inst "1985-04-12T23:20:50Z"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
             '#date "19/07/1984"',
-            '#{{"a" 1}}'
+            '#{{"a" 1}}',
+            '#{{"a" #{{"b" 2}}}}',
+            '|'
         )
 
         class TagDate(TaggedElement):
