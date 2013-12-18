@@ -109,7 +109,8 @@ def t_CHAR(t):
 
 
 def t_STRING(t):
-    '"[^"]*"'
+    '"([^\\"]|\\\\|\\")*"'
+    #     '"[^"]*"'
     t.value = t.value[1:-1]
     return t
 
@@ -181,7 +182,7 @@ def t_SYMBOL(t):
 
 
 def t_error(t):
-    raise SyntaxError("Illegal character '%s'" % t.value[0])
+    raise SyntaxError("Illegal character '%s' with lexpos %s in the area of -  %s  -" % (t.value[0], t.lexpos, t.value[0:100]))
 
 def lex(text=None):
     kwargs = {}
