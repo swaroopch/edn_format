@@ -86,7 +86,7 @@ class EdnTest(unittest.TestCase):
         self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
                         '#inst "2012-12-22T19:40:18Z"')
         self.check_parse("|", "\"|\"")
-
+        self.check_parse("%", "\"%\"")
 
     def check_dump(self, expected_output, actual_input):
         if isinstance(expected_output, list):
