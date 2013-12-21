@@ -88,6 +88,7 @@ class EdnTest(unittest.TestCase):
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
 
+
     def check_dump(self, expected_output, actual_input):
         if isinstance(expected_output, list):
             self.assertIn(dumps(actual_input), expected_output)
@@ -166,7 +167,7 @@ class EdnTest(unittest.TestCase):
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
             '#date "19/07/1984"',
             '#{{"a" 1}}',
-            '#{{:a #{{:b 2}}}}',
+            '#{{"a" #{{:b 2}}}}',
             '"|"'
         )
 
