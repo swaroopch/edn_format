@@ -87,7 +87,9 @@ class EdnTest(unittest.TestCase):
                         '#inst "2012-12-22T19:40:18Z"')
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
-
+        self.check_parse(['bl\\"ah'], """["bl\\"ah"]""")
+        self.check_parse(['bl\\\\"ah'], """["bl\\\\"ah"]""")
+        self.check_parse("blah\n", '"blah\n"')
 
     def check_dump(self, expected_output, actual_input):
         if isinstance(expected_output, list):

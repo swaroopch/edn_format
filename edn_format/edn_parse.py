@@ -135,5 +135,4 @@ def parse(text):
     if __debug__:
         kwargs = dict({"debug": True})
     p = ply.yacc.yacc(**kwargs)
-
     return p.parse(text, lexer=lex())
