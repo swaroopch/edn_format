@@ -88,8 +88,9 @@ class EdnTest(unittest.TestCase):
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
         self.check_parse(['bl\\"ah'], """["bl\\"ah"]""")
-        self.check_parse(['bl\\\\"ah'], """["bl\\\\"ah"]""")
         self.check_parse("blah\n", '"blah\n"')
+        self.check_parse(["abc", "123"], '["abc", "123"]')
+        self.check_parse({"key": "value"}, '{"key" "value"}')
 
     def check_dump(self, expected_output, actual_input):
         if isinstance(expected_output, list):

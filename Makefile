@@ -1,8 +1,11 @@
 all: test install
 
-test:
+clean:
+	rm -rf build/
+	python setup.py clean
+
+test: clean
 	python tests.py
 
-install:
-	python setup.py clean
+install: clean
 	python setup.py install
