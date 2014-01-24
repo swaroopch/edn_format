@@ -62,7 +62,7 @@ tokens = ('WHITESPACE',
 PARTS = {}
 PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
-PARTS["first"] = r"\w*!_?$%&="
+PARTS["first"] = r"\w*!_?$%&=<>"
 PARTS["special"] = r"\-+."
 PARTS["start"] = \
     (r"("
