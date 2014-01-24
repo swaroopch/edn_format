@@ -40,6 +40,7 @@ class Symbol(BaseEdnType):
         return self._name
 
 
+# http://www.dabeaz.com/ply/ply.html
 tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
@@ -59,24 +60,56 @@ tokens = ('WHITESPACE',
           'TAG')
 
 PARTS = {}
-PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#"
+PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
 PARTS["first"] = r"\w*!_?$%&="
 PARTS["special"] = r"\-+."
 PARTS["start"] = \
-    r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
-SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
-KEYWORD = r":([{all}]+\/[{all}]+|[{all}]+)".format(**PARTS)
-TAG = r"\#\w([{all}]*\/[{all}]+|[{all}]*)".format(**PARTS)
+    (r"("
+     r"[{first}]"
+     r"|"
+     r"[{special}]"
+     r"[{non_nums}]"
+     r"|"
+     r"[{special}]"
+     r")").format(**PARTS)
+SYMBOL = (r"("
+          r"{start}"
+          r"[{all}]*"
+          r"\/"
+          r"[{all}]+"
+          r"|"
+          r"\/"
+          r"|"
+          r"{start}"
+          r"[{all}]*"
+          r")").format(**PARTS)
+KEYWORD = (r":"
+           r"("
+           r"[{all}]+"
+           r"\/"
+           r"[{all}]+"
+           r"|"
+           r"[{all}]+"
+           r")").format(**PARTS)
+TAG = (r"\#"
+       r"\w"
+       r"("
+       r"[{all}]*"
+       r"\/"
+       r"[{all}]+"
+       r"|"
+       r"[{all}]*"
+       r")").format(**PARTS)
 
-t_VECTOR_START = '\['
-t_VECTOR_END = '\]'
-t_LIST_START = '\('
-t_LIST_END = '\)'
-t_MAP_START = '\{'
-t_SET_START = '\#\{'
-t_MAP_OR_SET_END = '\}'
-t_ignore = "".join([" ", "\t", "\n", ","])
+t_VECTOR_START = r'\['
+t_VECTOR_END = r'\]'
+t_LIST_START = r'\('
+t_LIST_END = r'\)'
+t_MAP_START = r'\{'
+t_SET_START = r'\#\{'
+t_MAP_OR_SET_END = r'\}'
+t_ignore = r"".join([" ", "\t", "\n", ","])
 
 
 def t_WHITESPACE(t):
