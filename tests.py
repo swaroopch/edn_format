@@ -5,6 +5,7 @@ from edn_format import edn_lex, \
     edn_parse, \
     loads, \
     dumps, \
+    Symbol, \
     Keyword, \
     TaggedElement, \
     add_tag
@@ -196,6 +197,14 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
+
+    def test_equality(self):
+        self.assertTrue("db/id" != Keyword("db/id"))
+        self.assertTrue("db/id" != Symbol("db/id"))
+        self.assertTrue(Symbol("db/id") != Keyword("db/id"))
+        self.assertTrue("db/id" == "db/id")
+        self.assertTrue(Keyword("db/id") == Keyword("db/id"))
+        self.assertTrue(Symbol("db/id") == Symbol("db/id"))
 
 if __name__ == "__main__":
     unittest.main()
