@@ -62,6 +62,10 @@ class EdnTest(unittest.TestCase):
                          '"ab"')
         self.check_parse("a\"b",
                          '"a\"b"')
+        self.check_parse("blah\n",
+                         '"blah\n"')
+        self.check_parse("blah blah",
+                         '"blah\spaceblah"')
         self.check_parse([1, 2, 3],
                          "[1 2 3]")
         self.check_parse({1, 2, 3},

@@ -132,8 +132,12 @@ def t_CHAR(t):
 
 
 def t_STRING(t):
-    r'"(.|\")*"'
+    r'"(.|\"|\t|\n|\r|\newline|\return|\space|\tab)*"'
     t.value = t.value[1:-1]
+    t.value = t.value.replace(r"\newline", "\n") \
+                     .replace(r"\return", "\r") \
+                     .replace(r"\space", " ") \
+                     .replace(r"\tab", "\t")
     return t
 
 
