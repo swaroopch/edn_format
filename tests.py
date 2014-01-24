@@ -59,6 +59,8 @@ class EdnTest(unittest.TestCase):
     def test_parser(self):
         self.check_parse(1,
                          "1")
+        self.check_parse(Symbol("a*b"),
+                         'a*b')
         self.check_parse("ab",
                          '"ab"')
         self.check_parse("a\"b",
