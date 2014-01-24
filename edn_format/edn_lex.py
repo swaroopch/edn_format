@@ -1,17 +1,16 @@
 from __future__ import print_function
-
 import sys
-
 import ply.lex
 import logging
-
 import re
 import decimal
+
 
 if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
+
 
 class BaseEdnType(object):
     def __init__(self, name):
@@ -64,7 +63,8 @@ PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
 PARTS["first"] = r"\w*!_?$%&="
 PARTS["special"] = r"\-+."
-PARTS["start"] = r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
+PARTS["start"] = \
+    r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
 SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
 KEYWORD = r":([{all}]+\/[{all}]+|[{all}]+)".format(**PARTS)
 TAG = r"\#\w([{all}]*\/[{all}]+|[{all}]*)".format(**PARTS)
@@ -144,12 +144,12 @@ def t_INTEGER(t):
 
 def t_COMMENT(t):
     r'[;][^\n]*'
-    pass # ignore
+    pass  # ignore
 
 
 def t_DISCARD(t):
     r'\#_\S+\b'
-    pass # ignore
+    pass  # ignore
 
 
 @ply.lex.TOKEN(TAG)
@@ -172,6 +172,7 @@ def t_SYMBOL(t):
 
 def t_error(t):
     raise SyntaxError("Illegal character '%s'" % t.value[0])
+
 
 def lex(text=None):
     kwargs = {}

@@ -12,7 +12,9 @@ if sys.version_info[0] == 3:
     basestring = str
     unicode = str
 
-if tokens: pass # Dummy statement to indicate that 'tokens' is used.
+# Dummy statement to indicate that 'tokens' is used.
+if tokens:
+    pass
 
 start = 'expression'
 
@@ -49,40 +51,49 @@ def p_term_leaf(p):
             | WHITESPACE"""
     p[0] = p[1]
 
+
 def p_empty_vector(p):
     """vector : VECTOR_START VECTOR_END"""
     p[0] = []
+
 
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = p[2]
 
+
 def p_empty_list(p):
     """list : LIST_START LIST_END"""
     p[0] = tuple()
+
 
 def p_list(p):
     """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
 
+
 def p_empty_set(p):
     """set : SET_START MAP_OR_SET_END"""
     p[0] = set()
+
 
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = set(p[2])
 
+
 def p_empty_map(p):
     """map : MAP_START MAP_OR_SET_END"""
     p[0] = {}
+
 
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
     if len(terms) % 2 != 0:
         raise SyntaxError("Even number of terms required for map")
-    p[0] = dict([terms[i:i+2] for i in range(0, len(terms), 2)]) # partition terms in pairs
+    # partition terms in pairs
+    p[0] = dict([terms[i:i+2] for i in range(0, len(terms), 2)])
 
 
 def p_expressions_expressions_expression(p):
@@ -116,7 +127,8 @@ def p_expression_tagged_element(p):
     elif tag in _serializers:
         output = _serializers[tag](element)
     else:
-        raise NotImplementedError("Don't know how to handle tag {}".format(tag))
+        raise NotImplementedError(
+            "Don't know how to handle tag {}".format(tag))
 
     p[0] = output
 
