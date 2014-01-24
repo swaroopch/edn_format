@@ -10,16 +10,6 @@ from edn_format import edn_lex, \
     add_tag
 
 
-class ConsoleTest(unittest.TestCase):
-    def test_dumping(self):
-        is_exception = False
-        try:
-            loads("[1 true nil]")
-        except AttributeError:
-            is_exception = True
-        self.assertFalse(is_exception)
-
-
 class EdnTest(unittest.TestCase):
     def check_lex(self, expected_output, actual_input):
         self.assertEqual(expected_output, str(list(edn_lex.lex(actual_input))))
@@ -59,6 +49,8 @@ class EdnTest(unittest.TestCase):
                        "prefix/name")
         self.check_lex("[LexToken(SYMBOL,Symbol(true.),1,0)]",
                        "true.")
+        self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
+                       "$:ABC?")
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
@@ -152,7 +144,7 @@ class EdnTest(unittest.TestCase):
             ":=",
             ":.",
             ":abc/def",
-            #"symbol",
+            "symbol",
             "123",
             "-123",
             "32.23",
@@ -167,10 +159,12 @@ class EdnTest(unittest.TestCase):
             '(:ghi)',
             '[1 "abc" true :ghi]',
             '(1 "abc" true :ghi)',
-            #'#myapp/Person {:first "Fred" :last "Mertz',
             '#inst "1985-04-12T23:20:50Z"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
             '#date "19/07/1984"'
+            ## http://git.io/wQy2_g
+            ## (part of https://github.com/shaunxcode/edn-tests)
+            # '#myapp/Person {:first "Fred" :last "Mertz"}',
         )
 
         class TagDate(TaggedElement):
