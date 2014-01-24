@@ -167,9 +167,10 @@ class EdnTest(unittest.TestCase):
             '(:ghi)',
             '[1 "abc" true :ghi]',
             '(1 "abc" true :ghi)',
+            '{"a" 2}',
             '#inst "1985-04-12T23:20:50Z"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
-            '#date "19/07/1984"'
+            '#date "19/07/1984"',
             ## http://git.io/wQy2_g
             ## (part of https://github.com/shaunxcode/edn-tests)
             # '#myapp/Person {:first "Fred" :last "Mertz"}',
