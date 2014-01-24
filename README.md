@@ -27,3 +27,12 @@ Almost all features of EDN have been implemented, including custom
 tagged elements.
 
 But expect bugs since this has not yet been used in production.
+
+## Contributors ##
+
+Special thanks to the following contributors for making this library
+usable:
+
+- [@marianoguerra](https://github.com/marianoguerra)
+- [@bitemyapp](https://github.com/bitemyapp)
+- [@jashugan](https://github.com/jashugan)
