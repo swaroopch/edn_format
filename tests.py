@@ -103,7 +103,7 @@ class EdnTest(unittest.TestCase):
         self.check_dump("#{1 2 3}",
                         {1, 2, 3})
         self.check_dump(
-            ['{:bar [1 2 3] "foo" :gone :a 1}',
+            ['{:bar [1 2 3] :a 1 "foo" :gone}',
              '{:a 1 "foo" :gone :bar [1 2 3]}'],
             {Keyword("a"): 1,
              "foo": Keyword("gone"),

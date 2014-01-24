@@ -28,7 +28,7 @@ class BaseEdnType(object):
         return "{}({})".format(self.__class__.__name__, self._name)
 
     def __hash__(self):
-        return hash(self._name)
+        return hash(repr(self))
 
 
 class Keyword(BaseEdnType):
