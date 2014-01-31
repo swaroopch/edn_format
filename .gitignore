@@ -5,3 +5,4 @@ parser.out
 parsetab.py
 dist
 edn_format.egg-info/
+*_flymake.py

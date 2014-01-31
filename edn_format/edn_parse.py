@@ -13,7 +13,9 @@ if sys.version_info[0] == 3:
     basestring = str
     unicode = str
 
-if tokens: pass # Dummy statement to indicate that 'tokens' is used.
+# Dummy statement to indicate that 'tokens' is used.
+if tokens:
+    pass
 
 start = 'expression'
 
@@ -50,33 +52,41 @@ def p_term_leaf(p):
             | WHITESPACE"""
     p[0] = p[1]
 
+
 def p_empty_vector(p):
     """vector : VECTOR_START VECTOR_END"""
     p[0] = []
+
 
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = p[2]
 
+
 def p_empty_list(p):
     """list : LIST_START LIST_END"""
     p[0] = tuple()
+
 
 def p_list(p):
     """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
 
+
 def p_empty_set(p):
     """set : SET_START MAP_OR_SET_END"""
     p[0] = frozenset()
+
 
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = frozenset(p[2])
 
+
 def p_empty_map(p):
     """map : MAP_START MAP_OR_SET_END"""
     p[0] = ImmutableDict({})
+
 
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""

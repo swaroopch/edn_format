@@ -1,8 +1,5 @@
-
 import sys
-
 import itertools
-
 import decimal
 import datetime
 import uuid
@@ -12,10 +9,12 @@ from edn_format.immutable_dict import ImmutableDict
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
+
 if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
+
 
 def dump(obj):
     def seq(obj):
@@ -51,4 +50,5 @@ def dump(obj):
     elif isinstance(obj, TaggedElement):
         return str(obj)
     else:
-        raise NotImplementedError("Don't know how to handle {} : {}", type(obj), obj)
+        raise NotImplementedError(
+            "Don't know how to handle {} : {}", type(obj), obj)

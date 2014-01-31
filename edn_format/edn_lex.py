@@ -1,18 +1,17 @@
 from __future__ import print_function
-
 import sys
-
 import ply.lex
 import logging
-
 import re
 import decimal
 from immutable_dict import ImmutableDict
+
 
 if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
+
 
 class BaseEdnType(object):
     def __init__(self, name):
@@ -22,6 +21,9 @@ class BaseEdnType(object):
         if not isinstance(other, self.__class__):
             return False
         return self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -51,6 +53,7 @@ class Symbol(BaseEdnType):
         return self._name
 
 
+# http://www.dabeaz.com/ply/ply.html
 tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
@@ -74,19 +77,52 @@ PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
 PARTS["all"] = PARTS["non_nums"] + r"\d"
 PARTS["first"] = r"\w*!_?$%&=<>@"
 PARTS["special"] = r"\-+."
-PARTS["start"] = r"([{first}]|[{special}][{non_nums}]|[{special}])".format(**PARTS)
-SYMBOL = r"({start}[{all}]*\/[{all}]+|\/|{start}[{all}]*)".format(**PARTS)
-KEYWORD = r":([{all}]+\/[{all}]+|[{all}]+)".format(**PARTS)
-TAG = r"\#\w([{all}]*\/[{all}]+|[{all}]*)".format(**PARTS)
+PARTS["start"] = \
+    (r"("
+     r"[{first}]"
+     r"|"
+     r"[{special}]"
+     r"[{non_nums}]"
+     r"|"
+     r"[{special}]"
+     r")").format(**PARTS)
+SYMBOL = (r"("
+          r"{start}"
+          r"[{all}]*"
+          r"\/"
+          r"[{all}]+"
+          r"|"
+          r"\/"
+          r"|"
+          r"{start}"
+          r"[{all}]*"
+          r")").format(**PARTS)
+KEYWORD = (r":"
+           r"("
+           r"[{all}]+"
+           r"\/"
+           r"[{all}]+"
+           r"|"
+           r"[{all}]+"
+           r")").format(**PARTS)
+TAG = (r"\#"
+       r"\w"
+       r"("
+       r"[{all}]*"
+       r"\/"
+       r"[{all}]+"
+       r"|"
+       r"[{all}]*"
+       r")").format(**PARTS)
 
-t_VECTOR_START = '\['
-t_VECTOR_END = '\]'
-t_LIST_START = '\('
-t_LIST_END = '\)'
-t_MAP_START = '\{'
-t_SET_START = '\#\{'
-t_MAP_OR_SET_END = '\}'
-t_ignore = "".join([" ", "\t", "\n", ","])
+t_VECTOR_START = r'\['
+t_VECTOR_END = r'\]'
+t_LIST_START = r'\('
+t_LIST_END = r'\)'
+t_MAP_START = r'\{'
+t_SET_START = r'\#\{'
+t_MAP_OR_SET_END = r'\}'
+t_ignore = r"".join([" ", "\t", "\n", ","])
 
 
 def t_WHITESPACE(t):
@@ -110,6 +146,10 @@ def t_CHAR(t):
 def t_STRING(t):
     r"\"(\\.|[^\"])*\""
     t.value = t.value[1:-1]
+    t.value = t.value.replace(r"\newline", "\n") \
+                     .replace(r"\return", "\r") \
+                     .replace(r"\space", " ") \
+                     .replace(r"\tab", "\t")
     return t
 
 
@@ -153,12 +193,12 @@ def t_INTEGER(t):
 
 def t_COMMENT(t):
     r'[;][^\n]*'
-    pass # ignore
+    pass  # ignore
 
 
 def t_DISCARD(t):
     r'\#_\S+\b'
-    pass # ignore
+    pass  # ignore
 
 
 @ply.lex.TOKEN(TAG)
@@ -181,6 +221,7 @@ def t_SYMBOL(t):
 
 def t_error(t):
     raise SyntaxError("Illegal character '%s' with lexpos %s in the area of -  %s  -" % (t.value[0], t.lexpos, t.value[0:100]))
+
 
 def lex(text=None):
     kwargs = {}
