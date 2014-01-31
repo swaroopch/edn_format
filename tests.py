@@ -66,8 +66,8 @@ class EdnTest(unittest.TestCase):
                          'a*b')
         self.check_parse("ab",
                          '"ab"')
-        self.check_parse("a\"b",
-                         '"a\"b"')
+        self.check_parse("a\\\"b",
+                         '"a\\"b"')
         self.check_parse("blah\n",
                          '"blah\n"')
         self.check_parse("blah blah",
@@ -103,18 +103,12 @@ class EdnTest(unittest.TestCase):
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
 
-    def check_dump(self, expected_output, actual_input):
-        if isinstance(expected_output, list):
-            self.assertIn(dumps(actual_input), expected_output)
-        else:
-            self.assertEqual(expected_output, dumps(actual_input))
+    def check_roundtrip(self, data_input):
+        self.assertEqual(data_input, loads(dumps(data_input)))
 
     def test_dump(self):
-        self.check_dump("#{1 2 3}",
-                        {1, 2, 3})
-        self.check_dump(
-            ['{:bar [1 2 3] :a 1 "foo" :gone}',
-             '{:a 1 "foo" :gone :bar [1 2 3]}'],
+        self.check_roundtrip({1, 2, 3})
+        self.check_roundtrip(
             {Keyword("a"): 1,
              "foo": Keyword("gone"),
              Keyword("bar"): [1, 2, 3]})
