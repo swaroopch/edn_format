@@ -16,7 +16,7 @@ setup(name="edn_format",
           "pyRFC3339==0.1",
           "ply==3.4",
       ],
-      license="LICENSE.txt",
+      license="Apache 2.0",
       packages=['edn_format'],
       classifiers=[
           'Development Status :: 4 - Beta',
