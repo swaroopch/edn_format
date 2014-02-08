@@ -6,7 +6,7 @@ import pyrfc3339
 
 import ply.yacc
 from .edn_lex import tokens, lex
-from immutable_dict import ImmutableDict
+from .immutable_dict import ImmutableDict
 
 if sys.version_info[0] == 3:
     long = int
