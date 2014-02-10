@@ -4,7 +4,7 @@ import decimal
 import datetime
 import uuid
 import pyrfc3339
-from edn_format.immutable_dict import ImmutableDict
+from .immutable_dict import ImmutableDict
 
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement

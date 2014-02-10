@@ -4,7 +4,7 @@ import ply.lex
 import logging
 import re
 import decimal
-from immutable_dict import ImmutableDict
+from .immutable_dict import ImmutableDict
 
 
 if sys.version_info[0] == 3:
