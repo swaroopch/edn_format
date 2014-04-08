@@ -9,7 +9,7 @@ class ConsoleTest(unittest.TestCase):
         is_exception = False
         try:
             loads("[1 true nil]")
-        except AttributeError as x:
+        except AttributeError:
             is_exception = True
         self.assertFalse(is_exception)
 
@@ -126,7 +126,9 @@ class EdnTest(unittest.TestCase):
             ["+32.23M", "32.23M"],
             ["3.23e10", "32300000000.0"],
             ['#{:a (1 2 3) :b}', ['#{:a (1 2 3) :b}',
+                                  '#{:b (1 2 3) :a}',
                                   '#{(1 2 3) :a :b}',
+                                  '#{(1 2 3) :b :a}',
                                   '#{:a :b (1 2 3)}',
                                   '#{:b :a (1 2 3)}']]
         ]
