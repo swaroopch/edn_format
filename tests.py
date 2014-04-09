@@ -124,24 +124,26 @@ class EdnTest(unittest.TestCase):
             ["+123N", "123"],
             ["123.2", "123.2"],
             ["+32.23M", "32.23M"],
-            ["3.23e10", "32300000000.0"],
-            ['#{:a (1 2 3) :b}', ['#{:a (1 2 3) :b}',
-                                  '#{:b (1 2 3) :a}',
-                                  '#{(1 2 3) :a :b}',
-                                  '#{(1 2 3) :b :a}',
-                                  '#{:a :b (1 2 3)}',
-                                  '#{:b :a (1 2 3)}']]
+            ["3.23e10", "32300000000.0"]
         ]
 
         for literal in EDN_LITERALS:
             step1 = literal[0]
             step2 = loads(step1)
             step3 = dumps(step2)
-#            print step1, "->", step2, "->", step3
             if isinstance(literal[1], list):
                 self.assertIn(step3, literal[1])
             else:
                 self.assertEqual(literal[1], step3)
+
+    def test_round_trip_sets(self):
+        step1 = '#{:a (1 2 3) :b}'
+        step2 = loads(step1)
+        step3 = dumps(step2)
+        step4 = loads(step3)
+        self.assertIn(Keyword("a"), step4)
+        self.assertIn(Keyword("b"), step4)
+        self.assertIn((1, 2, 3), step4)
 
     def test_round_trip_same(self):
         EDN_LITERALS = (
