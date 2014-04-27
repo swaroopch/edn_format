@@ -2,7 +2,8 @@ import datetime
 import pytz
 import unittest
 from edn_format import edn_lex, edn_parse, \
-     loads, dumps, Keyword, Symbol, TaggedElement, add_tag
+    loads, dumps, Keyword, Symbol, TaggedElement, add_tag
+
 
 class ConsoleTest(unittest.TestCase):
     def test_dumping(self):
@@ -94,8 +95,9 @@ class EdnTest(unittest.TestCase):
         self.check_parse([], "[]")
         self.check_parse({"a": [1, 2, 3]},
                          '{"a" [1 2 3]}')
-        self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
-                        '#inst "2012-12-22T19:40:18Z"')
+        self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0,
+                                           tzinfo=pytz.utc),
+                         '#inst "2012-12-22T19:40:18Z"')
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
         self.check_parse(['bl\\"ah'], """["bl\\"ah"]""")
@@ -206,9 +208,13 @@ class EdnTest(unittest.TestCase):
 #            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
 
+
 class EdnInstanceTest(unittest.TestCase):
     def test_hashing(self):
-        pop_count = len(set(map(hash, ["db/id", Keyword("db/id"), Symbol("db/id")])))
+        pop_count = len(set(map(hash,
+                                ["db/id",
+                                 Keyword("db/id"),
+                                 Symbol("db/id")])))
         self.assertEqual(pop_count, 3)
 
     def test_equality(self):
