@@ -45,6 +45,8 @@ def dump(obj):
         return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj))
+    elif isinstance(obj, datetime.date):
+        return '#inst "{}"'.format(obj.isoformat())
     elif isinstance(obj, uuid.UUID):
         return '#uuid "{}"'.format(obj)
     elif isinstance(obj, TaggedElement):
