@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import sys
 import uuid
+import datetime
 import pyrfc3339
 
 import ply.yacc
@@ -122,13 +123,21 @@ def p_expression_tagged_element(p):
     element = p[2]
 
     if tag == 'inst':
-        output = pyrfc3339.parse(element)
+        if len(element) == 10 and element.count("-") == 2:
+            output = datetime.datetime.strptime(element, "%Y-%m-%d").date()
+        elif len(element) == 7 and element.count("-") == 1:
+            output = datetime.datetime.strptime(element, "%Y-%m").date()
+        elif len(element) == 4 and element.count("-") == 0:
+            output = datetime.datetime.strptime(element, "%Y").date()
+        else:
+            output = pyrfc3339.parse(element)
     elif tag == 'uuid':
         output = uuid.UUID(element)
     elif tag in _serializers:
         output = _serializers[tag](element)
     else:
-        raise NotImplementedError("Don't know how to handle tag ImmutableDict({})".format(tag))
+        raise NotImplementedError(
+            "Don't know how to handle tag ImmutableDict({})".format(tag))
 
     p[0] = output
 

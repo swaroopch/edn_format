@@ -98,6 +98,8 @@ class EdnTest(unittest.TestCase):
         self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0,
                                            tzinfo=pytz.utc),
                          '#inst "2012-12-22T19:40:18Z"')
+        self.check_parse(datetime.date(2011, 10, 9),
+                         '#inst "2011-10-09"')
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
         self.check_parse(['bl\\"ah'], """["bl\\"ah"]""")
@@ -147,6 +149,14 @@ class EdnTest(unittest.TestCase):
         self.assertIn(Keyword("b"), step4)
         self.assertIn((1, 2, 3), step4)
 
+    def test_round_trip_inst_short(self):
+        step1 = '#inst "2011"'
+        step2 = loads(step1)
+        step3 = dumps(step2)
+        step4 = loads(step3)
+        self.assertEqual('#inst "2011-01-01"', step3)
+        self.assertEqual(datetime.date(2011, 1, 1), step4)
+
     def test_round_trip_same(self):
         EDN_LITERALS = (
             "nil",
@@ -180,6 +190,7 @@ class EdnTest(unittest.TestCase):
             '(1 "abc" true :ghi)',
             '{"a" 2}',
             '#inst "1985-04-12T23:20:50Z"',
+            '#inst "2011-10-09"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
             '#date "19/07/1984"',
             '#{{"a" 1}}',
@@ -205,7 +216,6 @@ class EdnTest(unittest.TestCase):
             step1 = literal
             step2 = loads(step1)
             step3 = dumps(step2)
-#            print step1, "->", step2, "->", step3
             self.assertEqual(step1, step3)
 
 
