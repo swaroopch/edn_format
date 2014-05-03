@@ -1,7 +1,6 @@
 # edn_format #
 
-Implements the [EDN format](https://github.com/edn-format/edn) reader in
-Python.
+Implements the [EDN format](https://github.com/edn-format/edn) in Python.
 
 ## Installation ##
 
