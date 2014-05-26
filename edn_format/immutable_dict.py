@@ -1,5 +1,6 @@
 import collections
 
+
 class ImmutableDict(collections.Mapping):
     def __init__(self, somedict):
         self.dict = dict(somedict)   # make a copy

@@ -25,9 +25,6 @@ class BaseEdnType(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, self._name)
 
@@ -143,6 +140,7 @@ def t_CHAR(t):
     t.value = t.value[1]
     return t
 
+
 def t_STRING(t):
     r"\"(\\.|[^\"])*\""
     t.value = t.value[1:-1]
@@ -220,7 +218,9 @@ def t_SYMBOL(t):
 
 
 def t_error(t):
-    raise SyntaxError("Illegal character '%s' with lexpos %s in the area of -  %s  -" % (t.value[0], t.lexpos, t.value[0:100]))
+    raise SyntaxError(
+        "Illegal character '%s' with lexpos %s in the area of -  %s  -" %
+        (t.value[0], t.lexpos, t.value[0:100]))
 
 
 def lex(text=None):
