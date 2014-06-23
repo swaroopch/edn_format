@@ -1,4 +1,5 @@
 import datetime
+import fractions
 import pytz
 import unittest
 from edn_format import edn_lex, edn_parse, \
@@ -48,7 +49,7 @@ class EdnTest(unittest.TestCase):
                        "abc")
         self.check_lex("[LexToken(SYMBOL,Symbol(?abc),1,0)]",
                        "?abc")
-        self.check_lex("[LexToken(SYMBOL,Symbol(/),1,0)]",
+        self.check_lex("[LexToken(DIVIDE,'/',1,0)]",
                        "/")
         self.check_lex("[LexToken(SYMBOL,Symbol(prefix/name),1,0)]",
                        "prefix/name")
@@ -56,6 +57,10 @@ class EdnTest(unittest.TestCase):
                        "true.")
         self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
                        "$:ABC?")
+        self.check_lex(("[LexToken(INTEGER,2,1,0), "
+                        "LexToken(DIVIDE,'/',1,1), "
+                        "LexToken(INTEGER,3,1,2)]"),
+                       "2/3")
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
@@ -106,6 +111,7 @@ class EdnTest(unittest.TestCase):
         self.check_parse("blah\n", '"blah\n"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
+        self.check_parse(fractions.Fraction(2, 3), "2/3")
 
     def check_roundtrip(self, data_input):
         self.assertEqual(data_input, loads(dumps(data_input)))

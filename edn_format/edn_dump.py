@@ -3,6 +3,7 @@ import itertools
 import decimal
 import datetime
 import uuid
+import fractions
 import pyrfc3339
 from .immutable_dict import ImmutableDict
 
@@ -43,6 +44,8 @@ def dump(obj):
         return "#{{{}}}".format(seq(obj))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
+    elif isinstance(obj, fractions.Fraction):
+        return str(obj)
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj))
     elif isinstance(obj, datetime.date):
