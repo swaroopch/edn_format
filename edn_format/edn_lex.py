@@ -58,6 +58,7 @@ tokens = ('WHITESPACE',
           'BOOLEAN',
           'INTEGER',
           'FLOAT',
+          'DIVIDE',
           'SYMBOL',
           'KEYWORD',
           'VECTOR_START',
@@ -89,8 +90,6 @@ SYMBOL = (r"("
           r"\/"
           r"[{all}]+"
           r"|"
-          r"\/"
-          r"|"
           r"{start}"
           r"[{all}]*"
           r")").format(**PARTS)
@@ -112,6 +111,7 @@ TAG = (r"\#"
        r"[{all}]*"
        r")").format(**PARTS)
 
+t_DIVIDE = r'\/'
 t_VECTOR_START = r'\['
 t_VECTOR_END = r'\]'
 t_LIST_START = r'\('

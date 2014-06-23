@@ -3,6 +3,7 @@ from __future__ import print_function
 import sys
 import uuid
 import datetime
+import fractions
 import pyrfc3339
 
 import ply.yacc
@@ -50,7 +51,8 @@ def p_term_leaf(p):
             | NIL
             | KEYWORD
             | SYMBOL
-            | WHITESPACE"""
+            | WHITESPACE
+            | DIVIDE"""
     p[0] = p[1]
 
 
@@ -89,6 +91,11 @@ def p_empty_map(p):
     p[0] = ImmutableDict({})
 
 
+def p_fraction(p):
+    """fraction : INTEGER DIVIDE INTEGER"""
+    p[0] = fractions.Fraction(p[1], p[3])
+
+
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
@@ -113,6 +120,7 @@ def p_expression(p):
                   | list
                   | set
                   | map
+                  | fraction
                   | term"""
     p[0] = p[1]
 
