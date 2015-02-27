@@ -35,3 +35,13 @@ usable:
 - [@marianoguerra](https://github.com/marianoguerra)
 - [@bitemyapp](https://github.com/bitemyapp)
 - [@jashugan](https://github.com/jashugan)
+
+## Contributor Notes ##
+
+To release a new version:
+
+1. Bump up the version number in `setup.py`, e.g. `0.5.4`
+2. Create a git tag: `git tag -a v0.5.4 -m 'Version 0.5.4'`
+3. Push git tag: `git push origin master --tags`
+4. Make sure you have a [~/.pypirc file](http://docs.python.org/2/distutils/packageindex.html#pypirc) with your PyPI credentials.
+5. Run `python setup.py sdist upload`
