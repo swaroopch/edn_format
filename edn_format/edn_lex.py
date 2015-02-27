@@ -158,7 +158,7 @@ def t_NIL(t):
 
 
 def t_BOOLEAN(t):
-    r"""(true|false)(?=([\s\])}]|$))"""
+    r"""(true|false)(?=([,\s\])}]|$))"""
     if t.value == "false":
         t.value = False
     elif t.value == "true":

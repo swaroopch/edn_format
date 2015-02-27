@@ -56,6 +56,8 @@ class EdnTest(unittest.TestCase):
                        "true.")
         self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
                        "$:ABC?")
+        self.check_lex("[LexToken(MAP_START,'{',1,0), LexToken(KEYWORD,Keyword(a),1,2), LexToken(BOOLEAN,False,1,5), LexToken(KEYWORD,Keyword(b),1,12), LexToken(BOOLEAN,False,1,15), LexToken(MAP_OR_SET_END,'}',1,21)]",
+                       "{ :a false, :b false }")
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
