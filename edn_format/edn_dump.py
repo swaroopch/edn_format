@@ -30,27 +30,27 @@ def dump(obj):
     elif isinstance(obj, (int, long, float)):
         return str(obj)
     elif isinstance(obj, decimal.Decimal):
-        return "{}M".format(obj)
+        return u"{}M".format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
-        return str(obj)
+        return unicode(obj)
     elif isinstance(obj, basestring):
-        return '"{}"'.format(obj)
+        return u'"{}"'.format(obj)
     elif isinstance(obj, tuple):
-        return "({})".format(seq(obj))
+        return u"({})".format(seq(obj))
     elif isinstance(obj, list):
-        return "[{}]".format(seq(obj))
+        return u"[{}]".format(seq(obj))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
-        return "#{{{}}}".format(seq(obj))
+        return u"#{{{}}}".format(seq(obj))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
-        return "{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
+        return u"{{{}}}".format(seq(itertools.chain.from_iterable(obj.items())))
     elif isinstance(obj, datetime.datetime):
-        return '#inst "{}"'.format(pyrfc3339.generate(obj))
+        return u'#inst "{}"'.format(pyrfc3339.generate(obj))
     elif isinstance(obj, datetime.date):
-        return '#inst "{}"'.format(obj.isoformat())
+        return u'#inst "{}"'.format(obj.isoformat())
     elif isinstance(obj, uuid.UUID):
-        return '#uuid "{}"'.format(obj)
+        return u'#uuid "{}"'.format(obj)
     elif isinstance(obj, TaggedElement):
-        return str(obj)
+        return unicode(obj)
     else:
         raise NotImplementedError(
             "Don't know how to handle {} : {}", type(obj), obj)

@@ -119,6 +119,13 @@ class EdnTest(unittest.TestCase):
              "foo": Keyword("gone"),
              Keyword("bar"): [1, 2, 3]})
 
+    def test_dump_unicode(self):
+        self.check_roundtrip({"foo": u"test-\u2660\u1e61\u04bb\u0467\u0500\u020f\u1e87\u1ff3\u25ca\uff9a\u0492\u2660"})
+        self.check_roundtrip(u"test-\u2660\u1e61\u04bb\u0467\u0500\u020f\u1e87\u1ff3\u25ca\uff9a\u0492\u2660")
+        self.check_roundtrip([123124,123124,{"foo": u"test-\u2660\u1e61\u04bb\u0467\u0500\u020f\u1e87\u1ff3\u25ca\uff9a\u0492\u2660"}])
+        self.check_roundtrip((u"test-\u2660\u1e61\u04bb\u0467\u0500\u020f\u1e87\u1ff3\u25ca\uff9a\u0492\u2660","foo"))
+
+
     def test_round_trip_conversion(self):
         EDN_LITERALS = [
             [r"\c", '"c"'],
