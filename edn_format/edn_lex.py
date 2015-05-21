@@ -12,6 +12,25 @@ if sys.version_info[0] == 3:
     basestring = str
     unicode = str
 
+# proper unicode escaping
+# see http://stackoverflow.com/a/24519338
+import re
+import codecs
+
+ESCAPE_SEQUENCE_RE = re.compile(r'''
+    ( \\U........      # 8-digit hex escapes
+    | \\u....          # 4-digit hex escapes
+    | \\x..            # 2-digit hex escapes
+    | \\[0-7]{1,3}     # Octal escapes
+    | \\N\{[^}]+\}     # Unicode characters by name
+    | \\[\\'"abfnrtv]  # Single-character escapes
+    )''', re.UNICODE | re.VERBOSE)
+
+def decode_escapes(s):
+    def decode_match(match):
+        return codecs.decode(match.group(0), 'unicode-escape')
+
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
 
 class BaseEdnType(object):
     def __init__(self, name):
@@ -26,7 +45,7 @@ class BaseEdnType(object):
         return not self.__eq__(other)
 
     def __repr__(self):
-        return "{}({})".format(self.__class__.__name__, self._name)
+        return u'{}({})'.format(self.__class__.__name__, self._name)
 
     def __hash__(self):
         return ImmutableDict(self.__dict__).__hash__()
@@ -37,8 +56,12 @@ class Keyword(BaseEdnType):
         self._name = unicode(name)
         self._type = Keyword
 
+    @property
+    def name(self):
+        return self._name
+
     def __str__(self):
-        return ":{}".format(self._name)
+        return u':{}'.format(self._name)
 
 
 class Symbol(BaseEdnType):
@@ -70,86 +93,81 @@ tokens = ('WHITESPACE',
           'TAG')
 
 PARTS = {}
-PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
-PARTS["all"] = PARTS["non_nums"] + r"\d"
-PARTS["first"] = r"\w*!_?$%&=<>@"
-PARTS["special"] = r"\-+."
+PARTS["non_nums"] = ur"\w.*+!\-_?$%&=:#<>@"
+PARTS["all"] = PARTS["non_nums"] + ur"\d"
+PARTS["first"] = ur"\w*!_?$%&=<>@"
+PARTS["special"] = ur"\-+."
 PARTS["start"] = \
-    (r"("
-     r"[{first}]"
-     r"|"
-     r"[{special}]"
-     r"[{non_nums}]"
-     r"|"
-     r"[{special}]"
-     r")").format(**PARTS)
-SYMBOL = (r"("
-          r"{start}"
-          r"[{all}]*"
-          r"\/"
-          r"[{all}]+"
-          r"|"
-          r"\/"
-          r"|"
-          r"{start}"
-          r"[{all}]*"
-          r")").format(**PARTS)
-KEYWORD = (r":"
-           r"("
-           r"[{all}]+"
-           r"\/"
-           r"[{all}]+"
-           r"|"
-           r"[{all}]+"
-           r")").format(**PARTS)
-TAG = (r"\#"
-       r"\w"
-       r"("
-       r"[{all}]*"
-       r"\/"
-       r"[{all}]+"
-       r"|"
-       r"[{all}]*"
-       r")").format(**PARTS)
+    (u"("
+     u"[{first}]"
+     u"|"
+     u"[{special}]"
+     u"[{non_nums}]"
+     u"|"
+     u"[{special}]"
+     u")").format(**PARTS)
+SYMBOL = (u"("
+          u"{start}"
+          u"[{all}]*"
+          ur"\/"
+          u"[{all}]+"
+          u"|"
+          ur"\/"
+          u"|"
+          u"{start}"
+          u"[{all}]*"
+          u")").format(**PARTS)
+KEYWORD = (u":"
+           u"("
+           u"[{all}]+"
+           ur"\/"
+           u"[{all}]+"
+           u"|"
+           u"[{all}]+"
+           u")").format(**PARTS)
+TAG = (ur"\#"
+       ur"\w"
+       u"("
+       u"[{all}]*"
+       ur"\/"
+       u"[{all}]+"
+       u"|"
+       u"[{all}]*"
+       u")").format(**PARTS)
 
-t_VECTOR_START = r'\['
-t_VECTOR_END = r'\]'
-t_LIST_START = r'\('
-t_LIST_END = r'\)'
-t_MAP_START = r'\{'
-t_SET_START = r'\#\{'
-t_MAP_OR_SET_END = r'\}'
-t_ignore = r"".join([" ", "\t", "\n", ","])
+t_VECTOR_START = ur'\['
+t_VECTOR_END = ur'\]'
+t_LIST_START = ur'\('
+t_LIST_END = ur'\)'
+t_MAP_START = ur'\{'
+t_SET_START = ur'\#\{'
+t_MAP_OR_SET_END = ur'\}'
+t_ignore = u''.join([u" ", u"\t", u"\n", u","])
 
 
 def t_WHITESPACE(t):
-    r"(\\newline)|(\\return)|(\\space)|(\\tab)"
-    if t.value == r"\newline":
-        t.value = "\n"
-    elif t.value == r"\return":
-        t.value = "\r"
-    elif t.value == r"\space":
-        t.value = " "
-    elif t.value == r"\tab":
-        t.value = "\t"
+    ur"(\\newline)|(\\return)|(\\space)|(\\tab)"
+    if t.value == ur"\newline":
+        t.value = u"\n"
+    elif t.value == ur"\return":
+        t.value = u"\r"
+    elif t.value == ur"\space":
+        t.value = u" "
+    elif t.value == ur"\tab":
+        t.value = u"\t"
     return t
 
 
 def t_CHAR(t):
-    r"(\\\w)"
+    ur"(\\\w)"
     t.value = t.value[1]
     return t
 
-
 def t_STRING(t):
-    r"\"(\\.|[^\"])*\""
+    ur'"([^"\\]*(\\.[^"\\]*)*)"'
     t.value = t.value[1:-1]
-    t.value = t.value.replace(r"\newline", "\n") \
-                     .replace(r"\return", "\r") \
-                     .replace(r"\space", " ") \
-                     .replace(r"\tab", "\t")
+    t.value = decode_escapes(t.value)
     return t
-
 
 def t_NIL(t):
     """nil"""
@@ -158,23 +176,23 @@ def t_NIL(t):
 
 
 def t_BOOLEAN(t):
-    r"""(true|false)(?=([,\s\])}]|$))"""
-    if t.value == "false":
+    ur"""(true|false)(?=([,\s\])}]|$))"""
+    if t.value == u"false":
         t.value = False
-    elif t.value == "true":
+    elif t.value == u"true":
         t.value = True
     return t
 
 
 def t_FLOAT(t):
-    r"""[+-]?\d+\.\d+[M]?([eE][+-]?\d+)?"""
+    ur"""[+-]?\d+\.\d+[M]?([eE][+-]?\d+)?"""
     e_value = 0
-    if 'e' in t.value or 'E' in t.value:
-        matches = re.search("[eE]([+-]?\d+)$", t.value)
+    if u'e' in t.value or u'E' in t.value:
+        matches = re.search(u"[eE]([+-]?\d+)$", t.value)
         if matches is None:
-            raise SyntaxError("Invalid float : {}".format(t.value))
+            raise SyntaxError(u"Invalid float : {}".format(t.value))
         e_value = int(matches.group()[1:])
-    if t.value.endswith("M"):
+    if t.value.endswith(u"M"):
         t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
     else:
         t.value = float(t.value) * pow(1, e_value)
@@ -182,20 +200,20 @@ def t_FLOAT(t):
 
 
 def t_INTEGER(t):
-    r"""[+-]?\d+N?"""
-    if t.value.endswith("N"):
+    ur"""[+-]?\d+N?"""
+    if t.value.endswith(u"N"):
         t.value = t.value[:-1]
     t.value = int(t.value)
     return t
 
 
 def t_COMMENT(t):
-    r'[;][^\n]*'
+    ur'[;][^\n]*'
     pass  # ignore
 
 
 def t_DISCARD(t):
-    r'\#_\S+\b'
+    ur'\#_\S+\b'
     pass  # ignore
 
 
@@ -219,8 +237,8 @@ def t_SYMBOL(t):
 
 def t_error(t):
     raise SyntaxError(
-        "Illegal character '%s' with lexpos %s in the area of -  %s  -" %
-        (t.value[0], t.lexpos, t.value[0:100]))
+        u"Illegal character '{c}' with lexpos {p} in the area of ...{a}...".format(
+            c=t.value[0], p=t.lexpos, a=t.value[0:100]))
 
 
 def lex(text=None):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import pytz
 import unittest
@@ -69,12 +70,10 @@ class EdnTest(unittest.TestCase):
                          'a*b')
         self.check_parse("ab",
                          '"ab"')
-        self.check_parse("a\\\"b",
-                         '"a\\"b"')
+        self.check_parse('a"b',
+                         r'"a\"b"')
         self.check_parse("blah\n",
                          '"blah\n"')
-        self.check_parse("blah blah",
-                         '"blah\spaceblah"')
         self.check_parse([1, 2, 3],
                          "[1 2 3]")
         self.check_parse({1, 2, 3},
@@ -104,8 +103,10 @@ class EdnTest(unittest.TestCase):
                          '#inst "2011-10-09"')
         self.check_parse("|", "\"|\"")
         self.check_parse("%", "\"%\"")
-        self.check_parse(['bl\\"ah'], """["bl\\"ah"]""")
+        self.check_parse(['bl"ah'], r"""["bl\"ah"]""")
         self.check_parse("blah\n", '"blah\n"')
+        self.check_parse('"', r'"\""')
+        self.check_parse('\\', r'"\\"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
 
