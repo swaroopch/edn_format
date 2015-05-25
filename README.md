@@ -35,6 +35,7 @@ usable:
 - [@marianoguerra](https://github.com/marianoguerra)
 - [@bitemyapp](https://github.com/bitemyapp)
 - [@jashugan](https://github.com/jashugan)
+- [@exilef](https://github.com/exilef)
 
 ## Contributor Notes ##
 
