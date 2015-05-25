@@ -203,6 +203,7 @@ class EdnTest(unittest.TestCase):
 
         class TagDate(TaggedElement):
             def __init__(self, value):
+                super(TagDate, self).__init__()
                 self.name = 'date'
                 self.value = datetime.datetime.strptime(
                     value,

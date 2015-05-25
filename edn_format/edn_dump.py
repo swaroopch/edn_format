@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import sys
 import itertools
 import decimal
@@ -18,19 +19,19 @@ if sys.version_info[0] == 3:
 
 # proper unicode escaping
 # see http://stackoverflow.com/a/24519338
-ESCAPE = re.compile(ur'[\x00-\x1f\\"\b\f\n\r\t]', re.UNICODE)
+ESCAPE = re.compile(r'[\x00-\x1f\\"\b\f\n\r\t]', re.UNICODE)
 ESCAPE_DCT = {
-    u'\\': u'\\\\',
-    u'"': u'\\"',
-    u'\b': u'\\b',
-    u'\f': u'\\f',
-    u'\n': u'\\n',
-    u'\r': u'\\r',
-    u'\t': u'\\t',
+    '\\': '\\\\',
+    '"': '\\"',
+    '\b': '\\b',
+    '\f': '\\f',
+    '\n': '\\n',
+    '\r': '\\r',
+    '\t': '\\t',
 }
 
 for i in range(0x20):
-    ESCAPE_DCT.setdefault(unichr(i), u'\\u{0:04x}'.format(i))
+    ESCAPE_DCT.setdefault(unichr(i), '\\u{0:04x}'.format(i))
 
 
 def unicode_escape(string):
@@ -38,46 +39,46 @@ def unicode_escape(string):
     def replace(match):
         return ESCAPE_DCT[match.group(0)]
 
-    return u'"' + ESCAPE.sub(replace, string) + u'"'
+    return '"' + ESCAPE.sub(replace, string) + '"'
 
 
 def udump(obj, string_encoding = 'utf-8'):
     def seq(obj):
-        return u' '.join([udump(i, string_encoding = string_encoding) for i in obj])
+        return ' '.join([udump(i, string_encoding = string_encoding) for i in obj])
 
     if obj is None:
-        return u'nil'
+        return 'nil'
     elif isinstance(obj, bool):
         if obj:
-            return u'true'
+            return 'true'
         else:
-            return u'false'
+            return 'false'
     elif isinstance(obj, (int, long, float)):
         return unicode(obj)
     elif isinstance(obj, decimal.Decimal):
-        return u'{}M'.format(obj)
+        return '{}M'.format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
         return unicode(obj)
     elif isinstance(obj, basestring):
         if isinstance(obj, unicode):
             uobj = obj
         else:
-			uobj = obj.decode(string_encoding)
+            uobj = obj.decode(string_encoding)
         return unicode_escape(uobj)
     elif isinstance(obj, tuple):
-        return u'({})'.format(seq(obj))
+        return '({})'.format(seq(obj))
     elif isinstance(obj, list):
-        return u'[{}]'.format(seq(obj))
+        return '[{}]'.format(seq(obj))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
-        return u'#{{{}}}'.format(seq(obj))
+        return '#{{{}}}'.format(seq(obj))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
-        return u'{{{}}}'.format(seq(itertools.chain.from_iterable(obj.items())))
+        return '{{{}}}'.format(seq(itertools.chain.from_iterable(obj.items())))
     elif isinstance(obj, datetime.datetime):
-        return u'#inst "{}"'.format(pyrfc3339.generate(obj))
+        return '#inst "{}"'.format(pyrfc3339.generate(obj))
     elif isinstance(obj, datetime.date):
-        return u'#inst "{}"'.format(obj.isoformat())
+        return '#inst "{}"'.format(obj.isoformat())
     elif isinstance(obj, uuid.UUID):
-        return u'#uuid "{}"'.format(obj)
+        return '#uuid "{}"'.format(obj)
     elif isinstance(obj, TaggedElement):
         return unicode(obj)
     else:

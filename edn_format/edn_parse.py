@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from __future__ import print_function
 import sys
 import uuid
@@ -24,9 +25,6 @@ _serializers = dict({})
 
 
 class TaggedElement(object):
-    def __init__(self, name, value):
-        raise NotImplementedError("To be implemented by derived classes")
-
     def __str__(self):
         raise NotImplementedError("To be implemented by derived classes")
 
@@ -95,7 +93,7 @@ def p_map(p):
     if len(terms) % 2 != 0:
         raise SyntaxError('Even number of terms required for map')
     # partition terms in pairs
-    p[0] = ImmutableDict(dict([terms[i:i+2] for i in range(0, len(terms), 2)]))
+    p[0] = ImmutableDict(dict([terms[i:i + 2] for i in range(0, len(terms), 2)]))
 
 
 def p_expressions_expressions_expression(p):
@@ -122,16 +120,16 @@ def p_expression_tagged_element(p):
     tag = p[1]
     element = p[2]
 
-    if tag == u'inst':
-        if len(element) == 10 and element.count(u'-') == 2:
-            output = datetime.datetime.strptime(element, u'%Y-%m-%d').date()
-        elif len(element) == 7 and element.count(u'-') == 1:
-            output = datetime.datetime.strptime(element, u'%Y-%m').date()
-        elif len(element) == 4 and element.count(u'-') == 0:
-            output = datetime.datetime.strptime(element, u'%Y').date()
+    if tag == 'inst':
+        if len(element) == 10 and element.count('-') == 2:
+            output = datetime.datetime.strptime(element, '%Y-%m-%d').date()
+        elif len(element) == 7 and element.count('-') == 1:
+            output = datetime.datetime.strptime(element, '%Y-%m').date()
+        elif len(element) == 4 and element.count('-') == 0:
+            output = datetime.datetime.strptime(element, '%Y').date()
         else:
             output = pyrfc3339.parse(element)
-    elif tag == u'uuid':
+    elif tag == 'uuid':
         output = uuid.UUID(element)
     elif tag in _serializers:
         output = _serializers[tag](element)
