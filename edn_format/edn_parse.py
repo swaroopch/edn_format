@@ -147,17 +147,12 @@ def p_error(p):
         raise SyntaxError(p)
 
 
-def uparse(text):
+def parse(text, input_encoding='utf-8'):
+    if not isinstance(text, unicode):
+        text = text.decode(input_encoding)
+
     kwargs = ImmutableDict({})
     if __debug__:
         kwargs = dict({'debug': True})
     p = ply.yacc.yacc(**kwargs)
     return p.parse(text, lexer=lex())
-
-
-def parse(text, input_encoding = 'utf-8'):
-    if isinstance(text, unicode):
-        utext = text
-    else:
-        utext = text.decode(input_encoding)
-    return uparse(utext)

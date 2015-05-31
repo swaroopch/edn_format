@@ -42,9 +42,9 @@ def unicode_escape(string):
     return '"' + ESCAPE.sub(replace, string) + '"'
 
 
-def udump(obj, string_encoding = 'utf-8'):
+def udump(obj, string_encoding='utf-8'):
     def seq(obj):
-        return ' '.join([udump(i, string_encoding = string_encoding) for i in obj])
+        return ' '.join([udump(i, string_encoding=string_encoding) for i in obj])
 
     if obj is None:
         return 'nil'
@@ -59,6 +59,7 @@ def udump(obj, string_encoding = 'utf-8'):
         return '{}M'.format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
         return unicode(obj)
+    # TODO This is not compatible with Python 3
     elif isinstance(obj, basestring):
         if isinstance(obj, unicode):
             uobj = obj
@@ -86,5 +87,5 @@ def udump(obj, string_encoding = 'utf-8'):
             u"Don't know how to handle {} : {}", type(obj), obj)
 
 
-def dump(obj, string_encoding = 'utf-8', output_encoding = 'utf-8'):
-    return udump(obj, string_encoding = string_encoding).encode(output_encoding)
+def dump(obj, string_encoding='utf-8', output_encoding='utf-8'):
+    return udump(obj, string_encoding=string_encoding).encode(output_encoding)
