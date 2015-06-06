@@ -12,10 +12,11 @@ from .immutable_dict import ImmutableDict
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
-if sys.version_info[0] == 3:
+if sys.version_info[0] >= 3:
     long = int
     basestring = str
     unicode = str
+    unichr = chr
 
 # proper unicode escaping
 # see http://stackoverflow.com/a/24519338
