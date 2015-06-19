@@ -2,6 +2,7 @@
 import datetime
 import pytz
 import unittest
+from uuid import uuid4
 from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, TaggedElement, add_tag
 
@@ -119,6 +120,17 @@ class EdnTest(unittest.TestCase):
             {Keyword("a"): 1,
              "foo": Keyword("gone"),
              Keyword("bar"): [1, 2, 3]})
+        self.check_roundtrip(uuid4())
+        self.check_roundtrip(datetime.date(1354, 6, 7))
+        self.check_roundtrip(datetime.datetime(1900, 6, 7, 23, 59, 59,
+            tzinfo = pytz.utc))
+
+    def test_proper_unicode_escape(self):
+        self.check_roundtrip(u"\"")
+        self.check_roundtrip(u'"')
+        self.check_roundtrip(u"\\\"")
+        self.check_roundtrip(u'\\"')
+        self.check_roundtrip(u'\b\f\n\r\t"\\')
 
     def test_round_trip_conversion(self):
         EDN_LITERALS = [
