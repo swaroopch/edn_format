@@ -204,7 +204,7 @@ class EdnTest(unittest.TestCase):
             '[1 "abc" true :ghi]',
             '(1 "abc" true :ghi)',
             '{"a" 2}',
-            '#inst "1985-04-12T23:20:50Z"',
+            '#inst "1985-04-12T23:20:50.000000Z"',
             '#inst "2011-10-09"',
             '#uuid "f81d4fae-7dec-11d0-a765-00a0c91e6bf6"',
             '#date "19/07/1984"',
