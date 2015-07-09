@@ -5,7 +5,7 @@ except ImportError:
     from distutils.core import setup
 
 setup(name="edn_format",
-      version="0.5.8",
+      version="0.5.9",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",

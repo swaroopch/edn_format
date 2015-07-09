@@ -73,7 +73,7 @@ def udump(obj, string_encoding = DEFAULT_INPUT_ENCODING):
         return '{{{}}}'.format(seq(itertools.chain.from_iterable(obj.items()),
             string_encoding))
     elif isinstance(obj, datetime.datetime):
-        return '#inst "{}"'.format(pyrfc3339.generate(obj))
+        return '#inst "{}"'.format(pyrfc3339.generate(obj, microseconds=True))
     elif isinstance(obj, datetime.date):
         return '#inst "{}"'.format(obj.isoformat())
     elif isinstance(obj, uuid.UUID):
