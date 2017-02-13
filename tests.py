@@ -4,7 +4,7 @@ import pytz
 import unittest
 from uuid import uuid4
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, add_tag
+    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag
 
 
 class ConsoleTest(unittest.TestCase):
@@ -111,8 +111,8 @@ class EdnTest(unittest.TestCase):
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
 
-    def check_roundtrip(self, data_input):
-        self.assertEqual(data_input, loads(dumps(data_input)))
+    def check_roundtrip(self, data_input, **kw):
+        self.assertEqual(data_input, loads(dumps(data_input, **kw)))
 
     def test_dump(self):
         self.check_roundtrip({1, 2, 3})
@@ -233,6 +233,43 @@ class EdnTest(unittest.TestCase):
             step2 = loads(step1)
             step3 = dumps(step2)
             self.assertEqual(step1, step3)
+
+    def test_keyword_keys(self):
+        unchanged = (
+            None,
+            True,
+            1,
+            "foo",
+            {},
+            {True: 42},
+            {25: 42},
+            {3.14: "test"},
+            {Keyword("foo"): "something"},
+            {Symbol("foo"): "something"},
+            ["foo", "bar"],
+            ("foo", "bar"),
+            {1: {2: 3}},
+            ImmutableDict({1: 2}),
+        )
+
+        for case in unchanged:
+            self.check_roundtrip(case, keyword_keys=True)
+
+        keyworded_keys = (
+            ("{:foo 42}", {"foo": 42}),
+            ("{:a {:b {:c 42} :d 1}}", {"a": {"b": {"c": 42}, "d": 1}}),
+            ("[{:a 42} {:b 25}]", [{"a": 42}, {"b": 25}]),
+            ("({:a 42} {:b 25})", ({"a": 42}, {"b": 25})),
+            ("{1 [{:a 42}]}", {1: [{"a": 42}]}),
+            ("{:foo 1}", ImmutableDict({"foo": 1})),
+        )
+
+        for expected, data in keyworded_keys:
+            self.assertEqual(expected, dumps(data, keyword_keys=True))
+
+        self.assertEqual(
+                {Keyword("a"): {Keyword("b"): 2}, 3: 4},
+                loads(dumps({Keyword("a"): {"b": 2}, 3: 4}, keyword_keys=True)))
 
 
 class EdnInstanceTest(unittest.TestCase):
