@@ -8,11 +8,13 @@ Implements the [EDN format](https://github.com/edn-format/edn) in Python.
 
 ## Usage ##
 
-    >>> import edn_format
-    >>> edn_format.dumps({1, 2, 3})
-    '#{1 2 3}'
-    >>> edn_format.loads("[1 true nil]")
-    [1, True, None]
+```pycon
+>>> import edn_format
+>>> edn_format.dumps({1, 2, 3})
+'#{1 2 3}'
+>>> edn_format.loads("[1 true nil]")
+[1, True, None]
+```
 
 
 In general, `edn_format.loads(edn_format.dumps(obj)) == obj`. If this is
