@@ -3,6 +3,7 @@ import datetime
 import pytz
 import unittest
 from uuid import uuid4
+from collections import OrderedDict
 from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag
 
@@ -63,6 +64,9 @@ class EdnTest(unittest.TestCase):
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
+
+    def check_dumps(self, expected_output, actual_input, **kw):
+        self.assertEqual(expected_output, dumps(actual_input, **kw))
 
     def test_parser(self):
         self.check_parse(1,
@@ -270,6 +274,20 @@ class EdnTest(unittest.TestCase):
         self.assertEqual(
                 {Keyword("a"): {Keyword("b"): 2}, 3: 4},
                 loads(dumps({Keyword("a"): {"b": 2}, 3: 4}, keyword_keys=True)))
+
+    def test_sort_keys(self):
+            cases = (
+                ('{"a" 4 "b" 5 "c" 3}', OrderedDict([("c", 3), ("b", 5), ("a", 4)])),
+                ('{1 0 2 0 "a" 0}', {"a": 0, 1: 0, 2: 0}),
+                ('[{"a" 1 "b" 1}]', [OrderedDict([("b", 1), ("a", 1)])]),
+            )
+
+            for expected, data in cases:
+                self.check_dumps(expected, data, sort_keys=True)
+
+            self.check_dumps('{:a 1 :b 1 :c 1 :d 1}',
+                             {"a": 1, "d": 1, "b": 1, "c": 1},
+                             sort_keys=True, keyword_keys=True)
 
 
 class EdnInstanceTest(unittest.TestCase):
