@@ -193,13 +193,13 @@ def t_BOOLEAN(t):
 
 
 def t_FLOAT(t):
-    r"""[+-]?\d+\.\d+[M]?([eE][+-]?\d+)?"""
+    r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?"""
     e_value = 0
     if 'e' in t.value or 'E' in t.value:
-        matches = re.search('[eE]([+-]?\d+)$', t.value)
+        matches = re.search('[eE]([+-]?\d+)M?$', t.value)
         if matches is None:
             raise SyntaxError('Invalid float : {}'.format(t.value))
-        e_value = int(matches.group()[1:])
+        e_value = int(matches.group(1))
     if t.value.endswith('M'):
         t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
     else:
