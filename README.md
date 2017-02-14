@@ -2,6 +2,8 @@
 
 Implements the [EDN format](https://github.com/edn-format/edn) in Python.
 
+[![Build Status](https://travis-ci.org/swaroopch/edn_format.svg?branch=master)](https://travis-ci.org/swaroopch/edn_format)
+
 ## Installation ##
 
     pip install edn_format
