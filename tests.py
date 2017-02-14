@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO: Tests pass on Python 3.6, Disabled to not break tests on 2.7 :-(
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from collections import OrderedDict
