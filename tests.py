@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-import datetime
-import pytz
-import unittest
-from uuid import uuid4
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 from collections import OrderedDict
+from uuid import uuid4
+import datetime
+import unittest
+
+import pytz
+
 from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag
 
@@ -59,7 +63,12 @@ class EdnTest(unittest.TestCase):
                        "true.")
         self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
                        "$:ABC?")
-        self.check_lex("[LexToken(MAP_START,'{',1,0), LexToken(KEYWORD,Keyword(a),1,2), LexToken(BOOLEAN,False,1,5), LexToken(KEYWORD,Keyword(b),1,12), LexToken(BOOLEAN,False,1,15), LexToken(MAP_OR_SET_END,'}',1,21)]",
+        self.check_lex("[LexToken(MAP_START,'{',1,0), "
+                       "LexToken(KEYWORD,Keyword(a),1,2), "
+                       "LexToken(BOOLEAN,False,1,5), "
+                       "LexToken(KEYWORD,Keyword(b),1,12), "
+                       "LexToken(BOOLEAN,False,1,15), "
+                       "LexToken(MAP_OR_SET_END,'}',1,21)]",
                        "{ :a false, :b false }")
 
     def check_parse(self, expected_output, actual_input):
@@ -127,7 +136,7 @@ class EdnTest(unittest.TestCase):
         self.check_roundtrip(uuid4())
         self.check_roundtrip(datetime.date(1354, 6, 7))
         self.check_roundtrip(datetime.datetime(1900, 6, 7, 23, 59, 59,
-            tzinfo = pytz.utc))
+                                               tzinfo=pytz.utc))
 
     def test_proper_unicode_escape(self):
         self.check_roundtrip(u"\"")
@@ -308,6 +317,7 @@ class EdnInstanceTest(unittest.TestCase):
         self.assertTrue("db/id" == "db/id")
         self.assertTrue(Keyword("db/id") == Keyword("db/id"))
         self.assertTrue(Symbol("db/id") == Symbol("db/id"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import datetime
 import sys
 import uuid
-import datetime
-import pyrfc3339
 
 import ply.yacc
+import pyrfc3339
+
 from .edn_lex import tokens, lex
 from .immutable_dict import ImmutableDict
+
 
 if sys.version_info[0] == 3:
     long = int
