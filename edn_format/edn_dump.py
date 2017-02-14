@@ -42,13 +42,19 @@ def unicode_escape(string):
         return ESCAPE_DCT[match.group(0)]
     return '"' + ESCAPE.sub(replace, string) + '"'
 
-def seq(obj, string_encoding = DEFAULT_INPUT_ENCODING,
-             keyword_keys = False):
-    return ' '.join([udump(i, string_encoding=string_encoding,
-                              keyword_keys=keyword_keys) for i in obj])
+def seq(obj, **kwargs):
+    return ' '.join([udump(i, **kwargs) for i in obj])
 
 def udump(obj, string_encoding = DEFAULT_INPUT_ENCODING,
-               keyword_keys = False):
+               keyword_keys = False,
+               sort_keys = False):
+
+    kwargs = {
+        "string_encoding": string_encoding,
+        "keyword_keys": keyword_keys,
+        "sort_keys": sort_keys,
+    }
+
     if obj is None:
         return 'nil'
     elif isinstance(obj, bool):
@@ -67,19 +73,19 @@ def udump(obj, string_encoding = DEFAULT_INPUT_ENCODING,
     elif isinstance(obj, basestring):
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
-        return '({})'.format(seq(obj, string_encoding, keyword_keys))
+        return '({})'.format(seq(obj, **kwargs))
     elif isinstance(obj, list):
-        return '[{}]'.format(seq(obj, string_encoding, keyword_keys))
+        return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
-        return '#{{{}}}'.format(seq(obj, string_encoding, keyword_keys))
+        return '#{{{}}}'.format(seq(obj, **kwargs))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         pairs = obj.items()
+        if sort_keys:
+            pairs = sorted(pairs, key=lambda p: str(p[0]))
         if keyword_keys:
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
-        return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs),
-                                   string_encoding,
-                                   keyword_keys))
+        return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj, microseconds=True))
     elif isinstance(obj, datetime.date):
@@ -94,9 +100,11 @@ def udump(obj, string_encoding = DEFAULT_INPUT_ENCODING,
 
 def dump(obj, string_encoding = DEFAULT_INPUT_ENCODING,
               output_encoding = DEFAULT_OUTPUT_ENCODING,
-              keyword_keys = False):
+              keyword_keys = False,
+              sort_keys = False):
     outcome = udump(obj, string_encoding=string_encoding,
-                         keyword_keys=keyword_keys)
+                         keyword_keys=keyword_keys,
+                         sort_keys=sort_keys)
     if __PY3:
         return outcome
     return outcome.encode(output_encoding)
