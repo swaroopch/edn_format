@@ -79,7 +79,7 @@ def udump(obj,
         return '{}M'.format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
         return unicode(obj)
-    # CAVEAT EMPTOR! In Python 3 'basestring' is alised to 'str' above.
+    # CAVEAT LECTOR! In Python 3 'basestring' is alised to 'str' above.
     # Furthermore, in Python 2 bytes is an instance of 'str'/'basestring' while
     # in Python 3 it is not.
     elif isinstance(obj, bytes):
