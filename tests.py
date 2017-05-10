@@ -11,7 +11,7 @@ import unittest
 import pytz
 
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag
+    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, ImmutableList, add_tag
 
 
 class ConsoleTest(unittest.TestCase):
@@ -125,6 +125,7 @@ class EdnTest(unittest.TestCase):
         self.check_parse('\\', r'"\\"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
+        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]), ImmutableList([u"ef"])}), '#{["ab", "cd"], ["ef"]}')
 
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
