@@ -11,6 +11,7 @@ import uuid
 import pyrfc3339
 
 from .immutable_dict import ImmutableDict
+from .immutable_list import ImmutableList
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
@@ -91,6 +92,8 @@ def udump(obj,
     elif isinstance(obj, tuple):
         return '({})'.format(seq(obj, **kwargs))
     elif isinstance(obj, list):
+        return '[{}]'.format(seq(obj, **kwargs))
+    elif isinstance(obj, ImmutableList):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
         if sort_sets:
