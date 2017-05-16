@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import collections
 
+
 class ImmutableList(collections.MutableSequence, collections.Hashable):
     def __init__(self, wrapped_list, copy=True):
         self._list = list(wrapped_list) if copy else wrapped_list
@@ -22,7 +23,8 @@ class ImmutableList(collections.MutableSequence, collections.Hashable):
         getattr(new_list, method)(*args)
         return ImmutableList(new_list, copy=False)
 
-    # collection.MutableSequence methods https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
+    # collection.MutableSequence methods
+    # https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
 
     def __getitem__(self, index):
         return self._list[index]
@@ -36,7 +38,8 @@ class ImmutableList(collections.MutableSequence, collections.Hashable):
     def __len__(self):
         return len(self._list)
 
-    # collection.Hashable methods  https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
+    # collection.Hashable methods
+    # https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
 
     def __hash__(self):
         if self._hash is None:
