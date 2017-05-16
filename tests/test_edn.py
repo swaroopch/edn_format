@@ -124,7 +124,9 @@ class EdnTest(unittest.TestCase):
         self.check_parse('\\', r'"\\"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
-        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]), ImmutableList([u"ef"])}), '#{["ab", "cd"], ["ef"]}')
+        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]),
+                                    ImmutableList([u"ef"])}),
+                         '#{["ab", "cd"], ["ef"]}')
 
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
