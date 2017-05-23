@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
-import datetime
-import pytz
-import unittest
+# TODO: Tests pass on Python 3.6, Disabled to not break tests on 2.7 :-(
+# from __future__ import absolute_import, division, print_function, unicode_literals
+
+from collections import OrderedDict
 from uuid import uuid4
+import datetime
+import unittest
+
+import pytz
+
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, add_tag
+    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, ImmutableList, add_tag
 
 
 class ConsoleTest(unittest.TestCase):
@@ -58,11 +64,19 @@ class EdnTest(unittest.TestCase):
                        "true.")
         self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
                        "$:ABC?")
-        self.check_lex("[LexToken(MAP_START,'{',1,0), LexToken(KEYWORD,Keyword(a),1,2), LexToken(BOOLEAN,False,1,5), LexToken(KEYWORD,Keyword(b),1,12), LexToken(BOOLEAN,False,1,15), LexToken(MAP_OR_SET_END,'}',1,21)]",
+        self.check_lex("[LexToken(MAP_START,'{',1,0), "
+                       "LexToken(KEYWORD,Keyword(a),1,2), "
+                       "LexToken(BOOLEAN,False,1,5), "
+                       "LexToken(KEYWORD,Keyword(b),1,12), "
+                       "LexToken(BOOLEAN,False,1,15), "
+                       "LexToken(MAP_OR_SET_END,'}',1,21)]",
                        "{ :a false, :b false }")
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
+
+    def check_dumps(self, expected_output, actual_input, **kw):
+        self.assertEqual(expected_output, dumps(actual_input, **kw))
 
     def test_parser(self):
         self.check_parse(1,
@@ -110,9 +124,12 @@ class EdnTest(unittest.TestCase):
         self.check_parse('\\', r'"\\"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
+        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]),
+                                    ImmutableList([u"ef"])}),
+                         '#{["ab", "cd"], ["ef"]}')
 
-    def check_roundtrip(self, data_input):
-        self.assertEqual(data_input, loads(dumps(data_input)))
+    def check_roundtrip(self, data_input, **kw):
+        self.assertEqual(data_input, loads(dumps(data_input, **kw)))
 
     def test_dump(self):
         self.check_roundtrip({1, 2, 3})
@@ -123,7 +140,7 @@ class EdnTest(unittest.TestCase):
         self.check_roundtrip(uuid4())
         self.check_roundtrip(datetime.date(1354, 6, 7))
         self.check_roundtrip(datetime.datetime(1900, 6, 7, 23, 59, 59,
-            tzinfo = pytz.utc))
+                                               tzinfo=pytz.utc))
 
     def test_proper_unicode_escape(self):
         self.check_roundtrip(u"\"")
@@ -143,7 +160,8 @@ class EdnTest(unittest.TestCase):
             ["+123N", "123"],
             ["123.2", "123.2"],
             ["+32.23M", "32.23M"],
-            ["3.23e10", "32300000000.0"]
+            ["3.23e10", "32300000000.0"],
+            ["3e10", "30000000000.0"],
         ]
 
         for literal in EDN_LITERALS:
@@ -195,6 +213,8 @@ class EdnTest(unittest.TestCase):
             "32.23M",
             "-32.23M",
             "3.23e-10",
+            "3e+20",
+            "3E+20M",
             '["abc"]',
             '[1]',
             '[1 "abc"]',
@@ -234,6 +254,57 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
             self.assertEqual(step1, step3)
 
+    def test_keyword_keys(self):
+        unchanged = (
+            None,
+            True,
+            1,
+            "foo",
+            {},
+            {True: 42},
+            {25: 42},
+            {3.14: "test"},
+            {Keyword("foo"): "something"},
+            {Symbol("foo"): "something"},
+            ["foo", "bar"],
+            ("foo", "bar"),
+            {1: {2: 3}},
+            ImmutableDict({1: 2}),
+        )
+
+        for case in unchanged:
+            self.check_roundtrip(case, keyword_keys=True)
+
+        keyworded_keys = (
+            ("{:foo 42}", {"foo": 42}),
+            ("{:a {:b {:c 42} :d 1}}", {"a": {"b": {"c": 42}, "d": 1}}),
+            ("[{:a 42} {:b 25}]", [{"a": 42}, {"b": 25}]),
+            ("({:a 42} {:b 25})", ({"a": 42}, {"b": 25})),
+            ("{1 [{:a 42}]}", {1: [{"a": 42}]}),
+            ("{:foo 1}", ImmutableDict({"foo": 1})),
+        )
+
+        for expected, data in keyworded_keys:
+            self.assertEqual(expected, dumps(data, keyword_keys=True))
+
+        self.assertEqual(
+                {Keyword("a"): {Keyword("b"): 2}, 3: 4},
+                loads(dumps({Keyword("a"): {"b": 2}, 3: 4}, keyword_keys=True)))
+
+    def test_sort_keys(self):
+            cases = (
+                ('{"a" 4 "b" 5 "c" 3}', OrderedDict([("c", 3), ("b", 5), ("a", 4)])),
+                ('{1 0 2 0 "a" 0}', {"a": 0, 1: 0, 2: 0}),
+                ('[{"a" 1 "b" 1}]', [OrderedDict([("b", 1), ("a", 1)])]),
+            )
+
+            for expected, data in cases:
+                self.check_dumps(expected, data, sort_keys=True)
+
+            self.check_dumps('{:a 1 :b 1 :c 1 :d 1}',
+                             {"a": 1, "d": 1, "b": 1, "c": 1},
+                             sort_keys=True, keyword_keys=True)
+
 
 class EdnInstanceTest(unittest.TestCase):
     def test_hashing(self):
@@ -250,6 +321,26 @@ class EdnInstanceTest(unittest.TestCase):
         self.assertTrue("db/id" == "db/id")
         self.assertTrue(Keyword("db/id") == Keyword("db/id"))
         self.assertTrue(Symbol("db/id") == Symbol("db/id"))
+
+
+class ImmutableListTest(unittest.TestCase):
+    def test_list(self):
+        x = ImmutableList([1,2,3])
+        self.assertTrue(x == [1, 2, 3])
+
+        self.assertTrue(x.append(4) == None)
+        self.assertTrue(x.extend(x) == None)
+        self.assertTrue(x.reverse() == None)
+        self.assertTrue(x.remove(1) == None)
+
+        self.assertTrue(x.pop(0) == 1)
+        self.assertTrue(x.index(1) == 0)
+        self.assertTrue(x.count(3) == 1)
+        self.assertTrue(x == [1, 2, 3])
+        self.assertTrue(x.insert(0, 0) == [0, 1, 2, 3])
+
+        y = ImmutableList([3, 1, 4])
+        self.assertTrue(y.sort() == [1, 3, 4])
 
 if __name__ == "__main__":
     unittest.main()

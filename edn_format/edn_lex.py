@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
-import sys
-import ply.lex
-import logging
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+# proper unicode escaping
+# see http://stackoverflow.com/a/24519338
+import codecs
 import decimal
+import logging
+import re
+import sys
+
+
+import ply.lex
+
 from .immutable_dict import ImmutableDict
 
 
@@ -13,10 +20,6 @@ if sys.version_info[0] == 3:
     basestring = str
     unicode = str
 
-# proper unicode escaping
-# see http://stackoverflow.com/a/24519338
-import re
-import codecs
 
 ESCAPE_SEQUENCE_RE = re.compile(r'''
     ( \\U........      # 8-digit hex escapes
@@ -171,11 +174,13 @@ def t_CHAR(t):
     t.value = t.value[1]
     return t
 
+
 def t_STRING(t):
     r'"([^"\\]*(\\.[^"\\]*)*)"'
     t.value = t.value[1:-1]
     t.value = decode_escapes(t.value)
     return t
+
 
 def t_NIL(t):
     """nil"""
@@ -193,13 +198,13 @@ def t_BOOLEAN(t):
 
 
 def t_FLOAT(t):
-    r"""[+-]?\d+\.\d+[M]?([eE][+-]?\d+)?"""
+    r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?"""
     e_value = 0
     if 'e' in t.value or 'E' in t.value:
-        matches = re.search('[eE]([+-]?\d+)$', t.value)
+        matches = re.search('[eE]([+-]?\d+)M?$', t.value)
         if matches is None:
             raise SyntaxError('Invalid float : {}'.format(t.value))
-        e_value = int(matches.group()[1:])
+        e_value = int(matches.group(1))
     if t.value.endswith('M'):
         t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
     else:

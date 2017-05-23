@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import datetime
 import sys
 import uuid
-import datetime
-import pyrfc3339
 
 import ply.yacc
+import pyrfc3339
+
 from .edn_lex import tokens, lex
 from .immutable_dict import ImmutableDict
+from .immutable_list import ImmutableList
+
 
 if sys.version_info[0] == 3:
     long = int
@@ -54,12 +57,12 @@ def p_term_leaf(p):
 
 def p_empty_vector(p):
     """vector : VECTOR_START VECTOR_END"""
-    p[0] = []
+    p[0] = ImmutableList([])
 
 
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
-    p[0] = p[2]
+    p[0] = ImmutableList(p[2])
 
 
 def p_empty_list(p):
