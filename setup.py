@@ -1,18 +1,17 @@
-
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 setup(name="edn_format",
-      version="0.5.14-nu",
+      version="0.5.15-nu",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",
       long_description=open('README.md').read(),
       url="https://github.com/swaroopch/edn_format",
       install_requires=[
-          "pytz==2017.2",
+          "pytz",
           "pyRFC3339==1.0",
           "ply==3.6",
           "pytest",
