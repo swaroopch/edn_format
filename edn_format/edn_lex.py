@@ -170,7 +170,8 @@ def t_WHITESPACE(t):
 
 
 def t_CHAR(t):
-    r"(\\\w)"
+    # from "!" to "~" = all printable ASCII chars except the space
+    r"(\\[!-~])"
     t.value = t.value[1]
     return t
 

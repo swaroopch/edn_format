@@ -251,6 +251,13 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
             self.assertEqual(step1, step3)
 
+    def test_chars(self):
+        # 33-126 = printable ASCII range, except space (code 32)
+        for i in range(33, 127):
+            ch = chr(i)
+            edn_data = "\\{}".format(ch)
+            self.assertEqual(ch, loads(edn_data), edn_data)
+
     def test_keyword_keys(self):
         unchanged = (
             None,
