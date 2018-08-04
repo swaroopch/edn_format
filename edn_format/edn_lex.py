@@ -258,7 +258,7 @@ def lex(text=None):
     kwargs = {}
     if __debug__:
         kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
-    l = ply.lex.lex(reflags=re.UNICODE, **kwargs)
+    lex = ply.lex.lex(reflags=re.UNICODE, **kwargs)
     if text is not None:
-        l.input(text)
-    return l
+        lex.input(text)
+    return lex
