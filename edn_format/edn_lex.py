@@ -12,6 +12,7 @@ import sys
 
 import ply.lex
 
+from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 
 
@@ -204,7 +205,7 @@ def t_FLOAT(t):
     if 'e' in t.value or 'E' in t.value:
         matches = re.search('[eE]([+-]?\d+)M?$', t.value)
         if matches is None:
-            raise SyntaxError('Invalid float : {}'.format(t.value))
+            raise EDNDecodeError('Invalid float : {}'.format(t.value))
         e_value = int(matches.group(1))
     if t.value.endswith('M'):
         ctx = decimal.getcontext()
@@ -251,7 +252,7 @@ def t_SYMBOL(t):
 
 
 def t_error(t):
-    raise SyntaxError(
+    raise EDNDecodeError(
         "Illegal character '{c}' with lexpos {p} in the area of ...{a}...".format(
             c=t.value[0], p=t.lexpos, a=t.value[0:100]))
 

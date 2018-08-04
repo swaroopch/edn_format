@@ -10,7 +10,8 @@ import unittest
 import pytz
 
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag
+    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag, \
+    EDNDecodeError
 
 
 class ConsoleTest(unittest.TestCase):
@@ -258,6 +259,10 @@ class EdnTest(unittest.TestCase):
             ch = chr(i)
             edn_data = "\\{}".format(ch)
             self.assertEqual(ch, loads(edn_data), edn_data)
+
+    def test_exceptions(self):
+        with self.assertRaises(EDNDecodeError):
+            loads("{")
 
     def test_keyword_keys(self):
         unchanged = (
