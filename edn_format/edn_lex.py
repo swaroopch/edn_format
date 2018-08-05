@@ -206,7 +206,8 @@ def t_FLOAT(t):
             raise SyntaxError('Invalid float : {}'.format(t.value))
         e_value = int(matches.group(1))
     if t.value.endswith('M'):
-        t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
+        ctx = decimal.getcontext()
+        t.value = decimal.Decimal(t.value[:-1]) * ctx.power(1, e_value)
     else:
         t.value = float(t.value) * pow(1, e_value)
     return t
