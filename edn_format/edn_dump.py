@@ -61,12 +61,14 @@ def seq(obj, **kwargs):
 def udump(obj,
           string_encoding=DEFAULT_INPUT_ENCODING,
           keyword_keys=False,
-          sort_keys=False):
+          sort_keys=False,
+          sort_sets=False):
 
     kwargs = {
         "string_encoding": string_encoding,
         "keyword_keys": keyword_keys,
         "sort_keys": sort_keys,
+        "sort_sets": sort_sets,
     }
 
     if obj is None:
@@ -91,6 +93,8 @@ def udump(obj,
     elif isinstance(obj, list):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
+        if sort_sets:
+            obj = sorted(obj)
         return '#{{{}}}'.format(seq(obj, **kwargs))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         pairs = obj.items()
@@ -117,11 +121,13 @@ def dump(obj,
          string_encoding=DEFAULT_INPUT_ENCODING,
          output_encoding=DEFAULT_OUTPUT_ENCODING,
          keyword_keys=False,
-         sort_keys=False):
+         sort_keys=False,
+         sort_sets=False):
     outcome = udump(obj,
                     string_encoding=string_encoding,
                     keyword_keys=keyword_keys,
-                    sort_keys=sort_keys)
+                    sort_keys=sort_keys,
+                    sort_sets=sort_sets)
     if __PY3:
         return outcome
     return outcome.encode(output_encoding)

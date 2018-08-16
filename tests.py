@@ -4,6 +4,7 @@
 
 from collections import OrderedDict
 from uuid import uuid4
+import random
 import datetime
 import unittest
 
@@ -130,6 +131,7 @@ class EdnTest(unittest.TestCase):
 
     def test_dump(self):
         self.check_roundtrip({1, 2, 3})
+        self.check_roundtrip({1, 2, 3}, sort_sets=True)
         self.check_roundtrip(
             {Keyword("a"): 1,
              "foo": Keyword("gone"),
@@ -309,6 +311,25 @@ class EdnTest(unittest.TestCase):
             self.check_dumps('{:a 1 :b 1 :c 1 :d 1}',
                              {"a": 1, "d": 1, "b": 1, "c": 1},
                              sort_keys=True, keyword_keys=True)
+
+    def test_sort_sets(self):
+        def misordered_set_sequence():
+            """"
+            Return a tuple that, if put in a set then iterated over, doesn't
+            yield elements in the original order
+            """
+            while True:
+                seq = tuple(random.sample(range(10000), random.randint(2, 8)))
+                s = set(seq)
+                if tuple(s) != seq:
+                    return seq
+
+        for _ in range(10):
+            seq = misordered_set_sequence()
+            self.check_roundtrip(set(seq))
+            self.check_dumps("#{{{}}}".format(" ".join(str(i) for i in sorted(seq))),
+                             set(seq),
+                             sort_sets=True)
 
 
 class EdnInstanceTest(unittest.TestCase):
