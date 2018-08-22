@@ -11,6 +11,7 @@ import uuid
 import pyrfc3339
 
 from .immutable_dict import ImmutableDict
+from .immutable_list import ImmutableList
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
@@ -81,7 +82,7 @@ def udump(obj,
         return '{}M'.format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
         return unicode(obj)
-    # CAVEAT EMPTOR! In Python 3 'basestring' is alised to 'str' above.
+    # CAVEAT LECTOR! In Python 3 'basestring' is alised to 'str' above.
     # Furthermore, in Python 2 bytes is an instance of 'str'/'basestring' while
     # in Python 3 it is not.
     elif isinstance(obj, bytes):
@@ -91,6 +92,8 @@ def udump(obj,
     elif isinstance(obj, tuple):
         return '({})'.format(seq(obj, **kwargs))
     elif isinstance(obj, list):
+        return '[{}]'.format(seq(obj, **kwargs))
+    elif isinstance(obj, ImmutableList):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
         if sort_sets:
