@@ -2,12 +2,13 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import collections
+import copy as _copy
 
 
 class ImmutableList(collections.Sequence, collections.Hashable):
     def __init__(self, wrapped_list, copy=True):
         """Returns an immutable version of the given list. Optionally creates a shallow copy."""
-        self._list = wrapped_list.copy() if copy else wrapped_list
+        self._list = _copy.copy(wrapped_list) if copy else wrapped_list
         self._hash = None
 
     def __repr__(self):
@@ -20,7 +21,7 @@ class ImmutableList(collections.Sequence, collections.Hashable):
             return self._list == other
 
     def _call_wrapped_list_method(self, method, *args):
-        new_list = self._list.copy()
+        new_list = _copy.copy(self._list)
         getattr(new_list, method)(*args)
         return ImmutableList(new_list, copy=False)
 
