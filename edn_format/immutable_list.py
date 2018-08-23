@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import collections
 
 
-class ImmutableList(collections.MutableSequence, collections.Hashable):
+class ImmutableList(collections.Sequence, collections.Hashable):
     def __init__(self, wrapped_list, copy=True):
         """Returns an immutable version of the given list. Optionally creates a shallow copy."""
         self._list = list(wrapped_list) if copy else wrapped_list
@@ -24,17 +24,11 @@ class ImmutableList(collections.MutableSequence, collections.Hashable):
         getattr(new_list, method)(*args)
         return ImmutableList(new_list, copy=False)
 
-    # collection.MutableSequence methods
+    # collection.Sequence methods
     # https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
 
     def __getitem__(self, index):
         return self._list[index]
-
-    def __delitem__(self, *args):
-        return self._call_wrapped_list_method("__delitem__", *args)
-
-    def __setitem__(self, *args):
-        return self._call_wrapped_list_method("__setitem__", *args)
 
     def __len__(self):
         return len(self._list)
