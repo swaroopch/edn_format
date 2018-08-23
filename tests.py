@@ -357,12 +357,6 @@ class ImmutableListTest(unittest.TestCase):
         x = ImmutableList([1,2,3])
         self.assertTrue(x == [1, 2, 3])
 
-        self.assertTrue(x.append(4) == None)
-        self.assertTrue(x.extend(x) == None)
-        self.assertTrue(x.reverse() == None)
-        self.assertTrue(x.remove(1) == None)
-
-        self.assertTrue(x.pop(0) == 1)
         self.assertTrue(x.index(1) == 0)
         self.assertTrue(x.count(3) == 1)
         self.assertTrue(x == [1, 2, 3])
