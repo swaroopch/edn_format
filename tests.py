@@ -354,7 +354,7 @@ class EdnInstanceTest(unittest.TestCase):
 
 class ImmutableListTest(unittest.TestCase):
     def test_list(self):
-        x = ImmutableList([1,2,3])
+        x = ImmutableList([1, 2, 3])
         self.assertTrue(x == [1, 2, 3])
 
         self.assertTrue(x.index(1) == 0)
@@ -364,6 +364,7 @@ class ImmutableListTest(unittest.TestCase):
 
         y = ImmutableList([3, 1, 4])
         self.assertTrue(y.sort() == [1, 3, 4])
+
 
 if __name__ == "__main__":
     unittest.main()
