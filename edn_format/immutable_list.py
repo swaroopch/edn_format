@@ -6,6 +6,7 @@ import collections
 
 class ImmutableList(collections.MutableSequence, collections.Hashable):
     def __init__(self, wrapped_list, copy=True):
+        """Returns an immutable version of the given list. Optionally creates a shallow copy."""
         self._list = list(wrapped_list) if copy else wrapped_list
         self._hash = None
 
