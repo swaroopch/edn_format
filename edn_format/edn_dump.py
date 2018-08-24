@@ -91,9 +91,7 @@ def udump(obj,
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
         return '({})'.format(seq(obj, **kwargs))
-    elif isinstance(obj, list):
-        return '[{}]'.format(seq(obj, **kwargs))
-    elif isinstance(obj, ImmutableList):
+    elif isinstance(obj, (list, ImmutableList)):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
         if sort_sets:
