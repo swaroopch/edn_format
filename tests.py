@@ -11,7 +11,7 @@ import unittest
 import pytz
 
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, add_tag, \
+    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, ImmutableList, add_tag, \
     EDNDecodeError
 
 
@@ -126,6 +126,9 @@ class EdnTest(unittest.TestCase):
         self.check_parse('\\', r'"\\"')
         self.check_parse(["abc", "123"], '["abc", "123"]')
         self.check_parse({"key": "value"}, '{"key" "value"}')
+        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]),
+                                    ImmutableList([u"ef"])}),
+                         '#{["ab", "cd"], ["ef"]}')
 
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
@@ -352,6 +355,19 @@ class EdnInstanceTest(unittest.TestCase):
         self.assertTrue("db/id" == "db/id")
         self.assertTrue(Keyword("db/id") == Keyword("db/id"))
         self.assertTrue(Symbol("db/id") == Symbol("db/id"))
+
+
+class ImmutableListTest(unittest.TestCase):
+    def test_list(self):
+        x = ImmutableList([1, 2, 3])
+        self.assertTrue(x == [1, 2, 3])
+
+        self.assertTrue(x.index(1) == 0)
+        self.assertTrue(x.count(3) == 1)
+        self.assertTrue(x.insert(0, 0) == [0, 1, 2, 3])
+
+        y = ImmutableList([3, 1, 4])
+        self.assertTrue(y.sort() == [1, 3, 4])
 
 
 if __name__ == "__main__":

@@ -1,5 +1,9 @@
 # `edn_format` Changelog
 
+## v0.5.14 (2018/08/22)
+
+* Fix vector parser to use ImmutableList
+
 ## v0.5.13 (2017/10/08)
 
 * Convert requirements from exact to minimum
