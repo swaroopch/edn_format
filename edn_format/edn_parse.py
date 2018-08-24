@@ -9,6 +9,7 @@ import ply.yacc
 import pyrfc3339
 
 from .edn_lex import tokens, lex
+from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 
 
@@ -93,7 +94,7 @@ def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
     if len(terms) % 2 != 0:
-        raise SyntaxError('Even number of terms required for map')
+        raise EDNDecodeError('Even number of terms required for map')
     # partition terms in pairs
     p[0] = ImmutableDict(dict([terms[i:i + 2] for i in range(0, len(terms), 2)]))
 
@@ -144,9 +145,9 @@ def p_expression_tagged_element(p):
 
 def p_error(p):
     if p is None:
-        raise SyntaxError('EOF Reached')
+        raise EDNDecodeError('EOF Reached')
     else:
-        raise SyntaxError(p)
+        raise EDNDecodeError(p)
 
 
 def parse(text, input_encoding='utf-8'):
