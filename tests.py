@@ -133,6 +133,12 @@ class EdnTest(unittest.TestCase):
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
 
+    def check_eof(self, data_input, **kw):
+        with self.assertRaises(EDNDecodeError) as ctx:
+            loads(data_input, **kw)
+
+        self.assertEqual('EOF Reached', str(ctx.exception))
+
     def test_dump(self):
         self.check_roundtrip({1, 2, 3})
         self.check_roundtrip({1, 2, 3}, sort_sets=True)
@@ -338,6 +344,57 @@ class EdnTest(unittest.TestCase):
             self.check_dumps("#{{{}}}".format(" ".join(str(i) for i in sorted(seq))),
                              set(seq),
                              sort_sets=True)
+
+    def test_discard(self):
+        for expected, edn_data in (
+            ('[x]', '[x #_ z]'),
+            ('[z]', '[#_ x z]'),
+            ('[x z]', '[x #_ y z]'),
+            ('{1 4}', '{1 #_ 2 #_ 3 4}'),
+            ('[1 2]', '[1 #_ [ #_ [ #_ [ #_ [ #_ 42 ] ] ] ] 2 ]'),
+            ('[1 2 11]', '[1 2 #_ #_ #_ #_ 4 5 6 #_ 7 #_ #_ 8 9 10 11]'),
+            ('()', '(#_(((((((1))))))))'),
+            ('[6]', '[#_ #_ #_ #_ #_ 1 2 3 4 5 6]'),
+            ('[4]', '[#_ #_ 1 #_ 2 3 4]'),
+            ('{:a 1}', '{:a #_:b 1}'),
+            ('[42]', '[42 #_ {:a [1 2 3 4] true false 1 #inst "2017"}]'),
+            ('#{1}', '#{1 #_foo}'),
+            ('"#_ foo"', '"#_ foo"'),
+            ('["#" _]', '[\#_]'),
+            ('[_]', '[#_\#_]'),
+            ('[1]', '[1 #_\n\n42]'),
+            ('{}', '{#_ 1}'),
+        ):
+            self.assertEqual(expected, dumps(loads(edn_data)), edn_data)
+
+    def test_discard_syntax_errors(self):
+        for edn_data in ('#_', '#_ #_ 1', '#inst #_ 2017', '[#_]'):
+            with self.assertRaises(EDNDecodeError):
+                loads(edn_data)
+
+    def test_discard_all(self):
+        for edn_data in (
+            '42', '-1', 'nil', 'true', 'false', '"foo"', '\\space', '\\a',
+            ':foo', ':foo/bar', '[]', '{}', '#{}', '()', '(a)', '(a b)',
+            '[a [[[b] c]] 2]', '#inst "2017"',
+        ):
+            self.assertEqual([1], loads('[1 #_ {}]'.format(edn_data)), edn_data)
+            self.assertEqual([1], loads('[#_ {} 1]'.format(edn_data)), edn_data)
+
+            self.check_eof('#_ {}'.format(edn_data))
+
+            for coll in ('[%s]', '(%s)', '{%s}', '#{%s}'):
+                expected = coll % ""
+                edn_data = coll % '#_ {}'.format(edn_data)
+                self.assertEqual(expected, dumps(loads(edn_data)), edn_data)
+
+    def test_chained_discards(self):
+        for expected, edn_data in (
+            ('[]', '[#_ 1 #_ 2 #_ 3]'),
+            ('[]', '[#_ #_ 1 2 #_ 3]'),
+            ('[]', '[#_ #_ #_ 1 2 3]'),
+        ):
+            self.assertEqual(expected, dumps(loads(edn_data)), edn_data)
 
 
 class EdnInstanceTest(unittest.TestCase):
