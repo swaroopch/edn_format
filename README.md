@@ -46,8 +46,8 @@ usable:
 
 To release a new version:
 
-1. Bump up the version number in `setup.py`, e.g. `0.5.13`
-2. Create a git tag: `git tag -a v0.5.13 -m 'Version 0.5.13'`
+1. Bump up the version number in `setup.py`, e.g. `0.6.0`
+2. Create a git tag: `git tag -a v0.6.0 -m 'Version 0.6.0'`
 3. Push git tag: `git push origin master --tags`
 4. Make sure you have a [~/.pypirc file](http://docs.python.org/2/distutils/packageindex.html#pypirc) with your PyPI credentials.
 5. Run `python setup.py sdist upload`
