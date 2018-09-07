@@ -29,13 +29,14 @@ See `tests.py` for full details.
 Almost all features of EDN have been implemented, including custom
 tagged elements.
 
-But expect bugs since this has not yet been used in production.
+However, I personally don't use this in production, even though many users do, esp. the active contributors below.
 
 ## Contributors ##
 
 Special thanks to the following contributors for making this library
 usable:
 
+- [@bfontaine](https://github.com/bfontaine)
 - [@marianoguerra](https://github.com/marianoguerra)
 - [@bitemyapp](https://github.com/bitemyapp)
 - [@jashugan](https://github.com/jashugan)
