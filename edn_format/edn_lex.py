@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # see http://stackoverflow.com/a/24519338
 import codecs
 import decimal
+import fractions
 import logging
 import re
 import sys
@@ -93,6 +94,7 @@ tokens = ('WHITESPACE',
           'BOOLEAN',
           'INTEGER',
           'FLOAT',
+          'RATIO',
           'SYMBOL',
           'KEYWORD',
           'VECTOR_START',
@@ -215,6 +217,13 @@ def t_FLOAT(t):
         t.value = decimal.Decimal(t.value[:-1]) * ctx.power(1, e_value)
     else:
         t.value = float(t.value) * pow(1, e_value)
+    return t
+
+
+def t_RATIO(t):
+    r"""-?\d+/\d+"""
+    numerator, denominator = t.value.split("/", 1)
+    t.value = fractions.Fraction(int(numerator), int(denominator))
     return t
 
 

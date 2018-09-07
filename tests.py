@@ -6,6 +6,7 @@ from collections import OrderedDict
 from uuid import uuid4
 import random
 import datetime
+import fractions
 import unittest
 
 import pytz
@@ -74,6 +75,9 @@ class EdnTest(unittest.TestCase):
                        "LexToken(MAP_OR_SET_END,'}',1,21)]",
                        "{ :a false, :b false }")
 
+        self.check_lex("[LexToken(RATIO,Fraction(2, 3),1,0)]",
+                       "2/3")
+
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
 
@@ -129,6 +133,8 @@ class EdnTest(unittest.TestCase):
         self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]),
                                     ImmutableList([u"ef"])}),
                          '#{["ab", "cd"], ["ef"]}')
+        self.check_parse(fractions.Fraction(2, 3), "2/3")
+        self.check_parse((2, Symbol('/'), 3), "(2 / 3)")
 
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
@@ -240,7 +246,10 @@ class EdnTest(unittest.TestCase):
             '#date "19/07/1984"',
             '#{{"a" 1}}',
             '#{{"a" #{{:b 2}}}}',
-            '"|"'
+            '"|"',
+            "/",
+            "1/3",
+            '"1/3"',
         )
 
         class TagDate(TaggedElement):
@@ -274,6 +283,17 @@ class EdnTest(unittest.TestCase):
     def test_exceptions(self):
         with self.assertRaises(EDNDecodeError):
             loads("{")
+
+    def test_fractions(self):
+        for edn_data in (
+            '0/1',
+            '1/1',
+            '1/2',
+            '1/3',
+            '-5/3',
+            '99999999999999999999999999999999999/999999999999999999999999991',
+        ):
+            self.assertEqual(edn_data, dumps(loads(edn_data)), edn_data)
 
     def test_keyword_keys(self):
         unchanged = (

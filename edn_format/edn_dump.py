@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import datetime
 import decimal
+import fractions
 import itertools
 import re
 import sys
@@ -105,6 +106,8 @@ def udump(obj,
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
         return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
+    elif isinstance(obj, fractions.Fraction):
+        return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj, microseconds=True))
     elif isinstance(obj, datetime.date):

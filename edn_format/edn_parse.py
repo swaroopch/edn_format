@@ -52,6 +52,7 @@ def p_term_leaf(p):
             | NIL
             | KEYWORD
             | SYMBOL
+            | RATIO
             | WHITESPACE"""
     p[0] = p[1]
 
