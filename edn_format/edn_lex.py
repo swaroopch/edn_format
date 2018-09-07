@@ -102,7 +102,8 @@ tokens = ('WHITESPACE',
           'MAP_START',
           'SET_START',
           'MAP_OR_SET_END',
-          'TAG')
+          'TAG',
+          'DISCARD_TAG')
 
 PARTS = {}
 PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
@@ -138,7 +139,7 @@ KEYWORD = (":"
            "[{all}]+"
            ")").format(**PARTS)
 TAG = (r"\#"
-       r"\w"
+       r"[a-zA-Z]"  # https://github.com/edn-format/edn/issues/30#issuecomment-8540641
        "("
        "[{all}]*"
        r"\/"
@@ -146,6 +147,8 @@ TAG = (r"\#"
        "|"
        "[{all}]*"
        ")").format(**PARTS)
+
+DISCARD_TAG = r"\#\_"
 
 t_VECTOR_START = r'\['
 t_VECTOR_END = r'\]'
@@ -228,9 +231,10 @@ def t_COMMENT(t):
     pass  # ignore
 
 
-def t_DISCARD(t):
-    r'\#_\S+\b'
-    pass  # ignore
+@ply.lex.TOKEN(DISCARD_TAG)
+def t_DISCARD_TAG(t):
+    t.value = t.value[1:]
+    return t
 
 
 @ply.lex.TOKEN(TAG)

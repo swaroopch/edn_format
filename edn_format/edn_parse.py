@@ -56,19 +56,9 @@ def p_term_leaf(p):
     p[0] = p[1]
 
 
-def p_empty_vector(p):
-    """vector : VECTOR_START VECTOR_END"""
-    p[0] = ImmutableList([])
-
-
 def p_vector(p):
     """vector : VECTOR_START expressions VECTOR_END"""
     p[0] = ImmutableList(p[2])
-
-
-def p_empty_list(p):
-    """list : LIST_START LIST_END"""
-    p[0] = tuple()
 
 
 def p_list(p):
@@ -76,19 +66,9 @@ def p_list(p):
     p[0] = tuple(p[2])
 
 
-def p_empty_set(p):
-    """set : SET_START MAP_OR_SET_END"""
-    p[0] = frozenset()
-
-
 def p_set(p):
     """set : SET_START expressions MAP_OR_SET_END"""
     p[0] = frozenset(p[2])
-
-
-def p_empty_map(p):
-    """map : MAP_START MAP_OR_SET_END"""
-    p[0] = ImmutableDict({})
 
 
 def p_map(p):
@@ -100,14 +80,20 @@ def p_map(p):
     p[0] = ImmutableDict(dict([terms[i:i + 2] for i in range(0, len(terms), 2)]))
 
 
-def p_expressions_expressions_expression(p):
-    """expressions : expressions expression"""
-    p[0] = p[1] + [p[2]]
+def p_discarded_expressions(p):
+    """discarded_expressions : DISCARD_TAG expression discarded_expressions
+                             |"""
+    p[0] = []
 
 
-def p_expressions_expression(p):
-    """expressions : expression"""
-    p[0] = [p[1]]
+def p_expressions_expression_expressions(p):
+    """expressions : expression expressions"""
+    p[0] = [p[1]] + p[2]
+
+
+def p_expressions_empty(p):
+    """expressions : discarded_expressions"""
+    p[0] = []
 
 
 def p_expression(p):
@@ -117,6 +103,11 @@ def p_expression(p):
                   | map
                   | term"""
     p[0] = p[1]
+
+
+def p_expression_discard_expression_expression(p):
+    """expression : DISCARD_TAG expression expression"""
+    p[0] = p[3]
 
 
 def p_expression_tagged_element(p):
@@ -144,9 +135,13 @@ def p_expression_tagged_element(p):
     p[0] = output
 
 
+def eof():
+    raise EDNDecodeError('EOF Reached')
+
+
 def p_error(p):
     if p is None:
-        raise EDNDecodeError('EOF Reached')
+        eof()
     else:
         raise EDNDecodeError(p)
 
