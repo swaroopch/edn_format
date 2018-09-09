@@ -26,8 +26,7 @@ See `tests.py` for full details.
 
 ## Caveats ##
 
-Almost all features of EDN have been implemented, including custom
-tagged elements.
+All features of EDN have been implemented, including custom tagged elements.
 
 However, I personally don't use this in production, even though many users do, esp. the active contributors below.
 

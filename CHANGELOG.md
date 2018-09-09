@@ -1,8 +1,14 @@
 # `edn_format` Changelog
 
-## v0.5.14 (2018/08/22)
+## v0.6.0 (2018/09/08)
 
-* Fix vector parser to use ImmutableList
+* Fix vector parser to use `ImmutableList`
+* Fix parsing of exact-precision floats with a negative exposant
+* Support all ASCII characters
+* Add a `sort_sets` optional argument to `dumps`
+* Raise custom exceptions on syntax errors
+* Support fractions
+* Support `#_`
 
 ## v0.5.13 (2017/10/08)
 
