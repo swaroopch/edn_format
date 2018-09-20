@@ -8,7 +8,7 @@ import copy as _copy
 class ImmutableList(collections.Sequence, collections.Hashable):
     def __init__(self, wrapped_list, copy=True):
         """Returns an immutable version of the given list. Optionally creates a shallow copy."""
-        self._list = _copy.copy(wrapped_list) if copy else wrapped_list
+        self._list = list(wrapped_list) if copy else wrapped_list
         self._hash = None
 
     def __repr__(self):
