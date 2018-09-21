@@ -1,5 +1,10 @@
 # `edn_format` Changelog
 
+## v0.6.1 (2018/09/21)
+
+* Use mutable data structures to improve parsing time
+* Run Travis tests on Python 3.7
+
 ## v0.6.0 (2018/09/08)
 
 * Fix vector parser to use `ImmutableList`
