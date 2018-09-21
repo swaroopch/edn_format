@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import datetime
 import sys
 import uuid
+from collections import deque
 
 import ply.yacc
 import pyrfc3339
@@ -78,23 +79,24 @@ def p_map(p):
     if len(terms) % 2 != 0:
         raise EDNDecodeError('Even number of terms required for map')
     # partition terms in pairs
-    p[0] = ImmutableDict(dict([terms[i:i + 2] for i in range(0, len(terms), 2)]))
+    p[0] = ImmutableDict((terms[i], terms[i+1]) for i in range(0, len(terms), 2))
 
 
 def p_discarded_expressions(p):
     """discarded_expressions : DISCARD_TAG expression discarded_expressions
                              |"""
-    p[0] = []
+    p[0] = deque([])
 
 
 def p_expressions_expression_expressions(p):
     """expressions : expression expressions"""
-    p[0] = [p[1]] + p[2]
+    p[2].appendleft(p[1])
+    p[0] = p[2]
 
 
 def p_expressions_empty(p):
     """expressions : discarded_expressions"""
-    p[0] = []
+    p[0] = deque([])
 
 
 def p_expression(p):
