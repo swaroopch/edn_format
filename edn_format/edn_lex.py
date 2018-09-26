@@ -90,8 +90,6 @@ class Symbol(BaseEdnType):
 tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
-          'NIL',
-          'BOOLEAN',
           'INTEGER',
           'FLOAT',
           'RATIO',
@@ -189,21 +187,6 @@ def t_STRING(t):
     return t
 
 
-def t_NIL(t):
-    """nil"""
-    t.value = None
-    return t
-
-
-def t_BOOLEAN(t):
-    r"""(true|false)(?=([,\s\])}]|$))"""
-    if t.value == "false":
-        t.value = False
-    elif t.value == "true":
-        t.value = True
-    return t
-
-
 def t_FLOAT(t):
     r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?"""
     e_value = 0
@@ -260,7 +243,14 @@ def t_KEYWORD(t):
 
 @ply.lex.TOKEN(SYMBOL)
 def t_SYMBOL(t):
-    t.value = Symbol(t.value)
+    if t.value == "nil":
+        t.value = None
+    elif t.value == "true":
+        t.value = True
+    elif t.value == "false":
+        t.value = False
+    else:
+        t.value = Symbol(t.value)
     return t
 
 
