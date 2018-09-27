@@ -273,7 +273,8 @@ def t_error(t):
 def lex(text=None):
     kwargs = {}
     if __debug__:
-        kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
+        kwargs["debug"] = True
+        kwargs["debuglog"] = logging.getLogger(__name__)
     lex = ply.lex.lex(reflags=re.UNICODE, **kwargs)
     if text is not None:
         lex.input(text)

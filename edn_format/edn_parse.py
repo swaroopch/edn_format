@@ -26,7 +26,7 @@ if tokens:
 
 start = 'expression'
 
-_serializers = dict({})
+_serializers = {}
 
 
 class TaggedElement(object):
@@ -85,7 +85,7 @@ def p_map(p):
 def p_discarded_expressions(p):
     """discarded_expressions : DISCARD_TAG expression discarded_expressions
                              |"""
-    p[0] = deque([])
+    p[0] = deque()
 
 
 def p_expressions_expression_expressions(p):
@@ -96,7 +96,7 @@ def p_expressions_expression_expressions(p):
 
 def p_expressions_empty(p):
     """expressions : discarded_expressions"""
-    p[0] = deque([])
+    p[0] = deque()
 
 
 def p_expression(p):
@@ -119,11 +119,14 @@ def p_expression_tagged_element(p):
     element = p[2]
 
     if tag == 'inst':
-        if len(element) == 10 and element.count('-') == 2:
+        length = len(element)
+        hyphens_count = element.count('-')
+
+        if length == 10 and hyphens_count == 2:
             output = datetime.datetime.strptime(element, '%Y-%m-%d').date()
-        elif len(element) == 7 and element.count('-') == 1:
+        elif length == 7 and hyphens_count == 1:
             output = datetime.datetime.strptime(element, '%Y-%m').date()
-        elif len(element) == 4 and element.count('-') == 0:
+        elif length == 4 and hyphens_count == 0:
             output = datetime.datetime.strptime(element, '%Y').date()
         else:
             output = pyrfc3339.parse(element)
@@ -155,6 +158,6 @@ def parse(text, input_encoding='utf-8'):
 
     kwargs = ImmutableDict({})
     if __debug__:
-        kwargs = dict({'debug': True})
+        kwargs = dict(debug=True)
     p = ply.yacc.yacc(**kwargs)
     return p.parse(text, lexer=lex())
