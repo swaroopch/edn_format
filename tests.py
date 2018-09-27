@@ -31,16 +31,16 @@ class EdnTest(unittest.TestCase):
         self.assertEqual(expected_output, str(list(edn_lex.lex(actual_input))))
 
     def test_lexer(self):
-        self.check_lex("[LexToken(NIL,None,1,0)]",
+        self.check_lex("[LexToken(SYMBOL,None,1,0)]",
                        "nil")
-        self.check_lex("[LexToken(BOOLEAN,True,1,0)]",
+        self.check_lex("[LexToken(SYMBOL,True,1,0)]",
                        "true")
         self.check_lex("[LexToken(INTEGER,123,1,0)]",
                        "123")
         self.check_lex(
             "[LexToken(INTEGER,456,1,0), " +
-            "LexToken(NIL,None,1,4), " +
-            "LexToken(BOOLEAN,False,1,8)]",
+            "LexToken(SYMBOL,None,1,4), " +
+            "LexToken(SYMBOL,False,1,8)]",
             "456 nil false")
         self.check_lex("[LexToken(CHAR,'c',1,0)]",
                        r"\c")
@@ -65,13 +65,15 @@ class EdnTest(unittest.TestCase):
                        "prefix/name")
         self.check_lex("[LexToken(SYMBOL,Symbol(true.),1,0)]",
                        "true.")
+        self.check_lex("[LexToken(SYMBOL,Symbol(nil.),1,0)]",
+                       "nil.")
         self.check_lex("[LexToken(SYMBOL,Symbol($:ABC?),1,0)]",
                        "$:ABC?")
         self.check_lex("[LexToken(MAP_START,'{',1,0), "
                        "LexToken(KEYWORD,Keyword(a),1,2), "
-                       "LexToken(BOOLEAN,False,1,5), "
+                       "LexToken(SYMBOL,False,1,5), "
                        "LexToken(KEYWORD,Keyword(b),1,12), "
-                       "LexToken(BOOLEAN,False,1,15), "
+                       "LexToken(SYMBOL,False,1,15), "
                        "LexToken(MAP_OR_SET_END,'}',1,21)]",
                        "{ :a false, :b false }")
 

@@ -49,8 +49,6 @@ def p_term_leaf(p):
             | STRING
             | INTEGER
             | FLOAT
-            | BOOLEAN
-            | NIL
             | KEYWORD
             | SYMBOL
             | RATIO
