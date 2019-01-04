@@ -62,7 +62,10 @@ vagrant up
 # 4. To access the dev environment via ssh
 vagrant ssh
 cd /vagrant
+# To run tests
 python tests.py
+# To check Python warnings
+python -Wall -c 'import edn_format'
 ```
 
 ## Contributor Notes ##
