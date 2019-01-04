@@ -41,6 +41,30 @@ usable:
 - [@jashugan](https://github.com/jashugan)
 - [@exilef](https://github.com/exilef)
 
+## Local Dev ##
+
+```bash
+# 1. One-time: Install Vagrant
+#
+# macOS
+# Install Homebrew from https://brew.sh
+# brew cask install virtualbox vagrant
+#
+# All OSes
+# Install from https://www.vagrantup.com/downloads.html
+
+# 2. One-time: Install Vagrant plugin
+vagrant plugin install vagrant-vbguest
+
+# 3. This is all you need
+vagrant up
+
+# 4. To access the dev environment via ssh
+vagrant ssh
+cd /vagrant
+python tests.py
+```
+
 ## Contributor Notes ##
 
 To release a new version:

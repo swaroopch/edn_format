@@ -8,3 +8,4 @@ edn_format.egg-info/
 *_flymake.py
 venv
 build
+.vagrant
