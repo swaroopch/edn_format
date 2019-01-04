@@ -191,7 +191,7 @@ def t_FLOAT(t):
     r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?"""
     e_value = 0
     if 'e' in t.value or 'E' in t.value:
-        matches = re.search('[eE]([+-]?\d+)M?$', t.value)
+        matches = re.search(r'[eE]([+-]?\d+)M?$', t.value)
         if matches is None:
             raise EDNDecodeError('Invalid float : {}'.format(t.value))
         e_value = int(matches.group(1))

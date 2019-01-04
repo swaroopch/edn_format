@@ -32,6 +32,7 @@ pip install -U pip  # always ensure latest version
 
 # Install dependencies - Python libraries
 pip install -r requirements.txt
+pip install flake8
 
 # Run tests
 python tests.py

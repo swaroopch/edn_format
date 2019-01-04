@@ -66,6 +66,8 @@ cd /vagrant
 python tests.py
 # To check Python warnings
 python -Wall -c 'import edn_format'
+# Code style
+flake8 --max-line-length=100 --exclude=parsetab.py .
 ```
 
 ## Contributor Notes ##
