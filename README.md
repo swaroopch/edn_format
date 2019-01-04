@@ -74,8 +74,8 @@ flake8 --max-line-length=100 --exclude=parsetab.py .
 
 To release a new version:
 
-1. Bump up the version number in `setup.py`, e.g. `0.6.1`
-2. Create a git tag: `git tag -a v0.6.1 -m 'Version 0.6.1'`
+1. Bump up the version number in `setup.py`, e.g. `0.6.2`
+2. Create a git tag: `git tag -a v0.6.2 -m 'Version 0.6.2'`
 3. Push git tag: `git push origin master --tags`
 4. Make sure you have a [~/.pypirc file](http://docs.python.org/2/distutils/packageindex.html#pypirc) with your PyPI credentials.
 5. Run `python setup.py sdist upload`
