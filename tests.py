@@ -107,6 +107,10 @@ class EdnTest(unittest.TestCase):
                          r"\c")
         self.check_parse("\n",
                          r"\newline")
+        self.check_parse(u"Σ",
+                         u"\\Σ")
+        self.check_parse(u"λ",
+                         r"\u03bB")
         self.check_parse(Keyword("abc"),
                          ":abc")
         self.check_parse([Keyword("abc"), 1, True, None],
