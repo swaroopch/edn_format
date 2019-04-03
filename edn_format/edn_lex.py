@@ -21,7 +21,9 @@ if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
-_bytes = (bytes if sys.version_info[0] == 2 else lambda s: bytes(s, 'utf-8'))
+    _bytes = lambda s: bytes(s, 'utf-8')
+else:
+    _bytes = bytes
 
 
 ESCAPE_SEQUENCE_RE = re.compile(r'''
