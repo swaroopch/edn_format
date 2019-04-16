@@ -21,6 +21,9 @@ if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
+    def _bytes(s): return bytes(s, 'utf-8')
+else:
+    _bytes = bytes
 
 
 ESCAPE_SEQUENCE_RE = re.compile(r'''
@@ -174,9 +177,10 @@ def t_WHITESPACE(t):
 
 
 def t_CHAR(t):
-    # from "!" to "~" = all printable ASCII chars except the space
-    r"(\\[!-~])"
-    t.value = t.value[1]
+    # uXXXX hex code or from "!" to "~" = all printable ASCII chars except the space
+    # or unicode word chars
+    r"(\\u[0-9A-Fa-f]{4}|\\[!-~\w])"
+    t.value = (t.value[1] if len(t.value) == 2 else _bytes(t.value).decode('raw_unicode_escape'))
     return t
 
 

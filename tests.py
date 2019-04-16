@@ -107,6 +107,10 @@ class EdnTest(unittest.TestCase):
                          r"\c")
         self.check_parse("\n",
                          r"\newline")
+        self.check_parse(u"Σ",
+                         u"\\Σ")
+        self.check_parse(u"λ",
+                         r"\u03bB")
         self.check_parse(Keyword("abc"),
                          ":abc")
         self.check_parse([Keyword("abc"), 1, True, None],
@@ -335,18 +339,18 @@ class EdnTest(unittest.TestCase):
                 loads(dumps({Keyword("a"): {"b": 2}, 3: 4}, keyword_keys=True)))
 
     def test_sort_keys(self):
-            cases = (
-                ('{"a" 4 "b" 5 "c" 3}', OrderedDict([("c", 3), ("b", 5), ("a", 4)])),
-                ('{1 0 2 0 "a" 0}', {"a": 0, 1: 0, 2: 0}),
-                ('[{"a" 1 "b" 1}]', [OrderedDict([("b", 1), ("a", 1)])]),
-            )
+        cases = (
+            ('{"a" 4 "b" 5 "c" 3}', OrderedDict([("c", 3), ("b", 5), ("a", 4)])),
+            ('{1 0 2 0 "a" 0}', {"a": 0, 1: 0, 2: 0}),
+            ('[{"a" 1 "b" 1}]', [OrderedDict([("b", 1), ("a", 1)])]),
+        )
 
-            for expected, data in cases:
-                self.check_dumps(expected, data, sort_keys=True)
+        for expected, data in cases:
+            self.check_dumps(expected, data, sort_keys=True)
 
-            self.check_dumps('{:a 1 :b 1 :c 1 :d 1}',
-                             {"a": 1, "d": 1, "b": 1, "c": 1},
-                             sort_keys=True, keyword_keys=True)
+        self.check_dumps('{:a 1 :b 1 :c 1 :d 1}',
+                         {"a": 1, "d": 1, "b": 1, "c": 1},
+                         sort_keys=True, keyword_keys=True)
 
     def test_sort_sets(self):
         def misordered_set_sequence():
