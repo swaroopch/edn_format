@@ -11,11 +11,12 @@ except ImportError:
 requirements = [str(ir.req) for ir in parse_requirements('requirements.txt', session=False)]
 
 setup(name="edn_format",
-      version="0.6.3",
+      version="0.6.4",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",
       long_description=open('README.md').read(),
+      long_description_content_type='text/markdown',
       url="https://github.com/swaroopch/edn_format",
       install_requires=requirements,
       license="Apache 2.0",
