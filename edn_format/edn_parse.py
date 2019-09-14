@@ -34,14 +34,44 @@ class TaggedElement(object):
         raise NotImplementedError("To be implemented by derived classes")
 
 
-def add_tag(tag_name, tag_class):
+def add_tag(tag_name, tag_fn_or_class):
+    """
+    Add a custom tag handler.
+    """
     assert isinstance(tag_name, basestring)
-    _serializers[tag_name] = tag_class
+    _serializers[tag_name] = tag_fn_or_class
 
 
 def remove_tag(tag_name):
+    """
+    Remove a custom tag handler.
+    """
     assert isinstance(tag_name, basestring)
     del _serializers[tag_name]
+
+
+def tag(tag_name):
+    """
+    Decorator for a function or a class to use as a tagged element.
+
+    Example:
+
+        @tag("dog")
+        def parse_dog(name):
+            return {
+                "kind": "dog",
+                "name": name,
+                "message": "woof-woof",
+            }
+
+        parse("#dog \"Max\"")
+        # => {"kind": "dog", "name": "Max", "message": "woof-woof"}
+    """
+
+    def _tag_decorator(fn_or_cls):
+        _serializers[tag_name] = fn_or_cls
+        return fn_or_cls
+    return _tag_decorator
 
 
 def p_term_leaf(p):

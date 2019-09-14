@@ -12,7 +12,8 @@ import unittest
 import pytz
 
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, TaggedElement, ImmutableDict, ImmutableList, add_tag, \
+    loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, \
+    TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
 
 
@@ -421,6 +422,36 @@ class EdnTest(unittest.TestCase):
             ('[]', '[#_ #_ #_ 1 2 3]'),
         ):
             self.assertEqual(expected, dumps(loads(edn_data)), edn_data)
+
+    def test_custom_tags(self):
+        @tag("dog")
+        def parse_dog(name):
+            return {
+                "kind": "dog",
+                "name": name,
+                "message": "woof-woof",
+            }
+
+        @tag("cat")
+        class Cat(TaggedElement):
+            def __init__(self, name):
+                self.name = name
+
+        dog = loads("#dog \"Max\"")
+        self.assertEqual(
+                {"kind": "dog", "name": "Max", "message": "woof-woof"}, dog)
+
+        cat = loads("#cat \"Alex\"")
+        self.assertIsInstance(cat, Cat)
+        self.assertEqual("Alex", cat.name)
+
+        remove_tag("cat")
+        self.assertRaises(NotImplementedError, lambda: loads("#cat \"Alex\""))
+
+        add_tag("cat", Cat)
+        cat = loads("#cat \"Alex\"")
+        self.assertIsInstance(cat, Cat)
+        self.assertEqual("Alex", cat.name)
 
 
 class EdnInstanceTest(unittest.TestCase):
