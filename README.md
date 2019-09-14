@@ -75,10 +75,12 @@ flake8 --max-line-length=100 --exclude=parsetab.py .
 
 To release a new version:
 
-1. Ensure you have [setup GPG](https://help.github.com/en/articles/generating-a-new-gpg-key)
+1. Ensure you have [setup GPG](https://help.github.com/en/articles/generating-a-new-gpg-key) and [`twine`](https://pypi.org/project/twine/)
 2. Bump up the version number in `setup.py`, e.g. `0.6.3`
 3. Create a git tag: `git tag -s v0.6.3 -m 'Version 0.6.3'` (use [signed tags](https://help.github.com/en/articles/signing-tags))
 4. Verify git tag: `git tag -v v0.6.3`
 5. Push git tag: `git push origin master --tags`
-6. Make sure you have a [~/.pypirc file](http://docs.python.org/2/distutils/packageindex.html#pypirc) with your PyPI credentials.
-7. Run `python setup.py sdist upload`
+6. Clean your `dist/` directory if it already exists
+7. Package the release: `python setup.py sdist bdist_wheel`
+8. Check the package: `twine check dist/*`
+9. Upload the package: `twine upload dist/*`
