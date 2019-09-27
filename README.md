@@ -17,6 +17,8 @@ Implements the [EDN format](https://github.com/edn-format/edn) in Python.
 '#{1 2 3}'
 >>> edn_format.loads("[1 true nil]")
 [1, True, None]
+>>> edn_format.loads_all("1 2 3 4")
+[1, 2, 3, 4]
 ```
 
 
