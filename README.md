@@ -19,6 +19,8 @@ All features of EDN are implemented, including custom tagged elements.
 '#{1 2 3}'
 >>> edn_format.loads("[1 true nil]")
 [1, True, None]
+>>> edn_format.loads_all("1 2 3 4")
+[1, 2, 3, 4]
 ```
 
 

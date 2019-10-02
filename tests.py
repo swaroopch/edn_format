@@ -84,64 +84,67 @@ class EdnTest(unittest.TestCase):
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input))
 
+    def check_parse_all(self, expected_output, actual_input):
+        self.assertEqual(expected_output, edn_parse.parse_all(actual_input))
+
     def check_dumps(self, expected_output, actual_input, **kw):
         self.assertEqual(expected_output, dumps(actual_input, **kw))
 
-    def test_parser(self):
-        self.check_parse(1,
-                         "1")
-        self.check_parse(Symbol("a*b"),
-                         'a*b')
-        self.check_parse("ab",
-                         '"ab"')
-        self.check_parse('a"b',
-                         r'"a\"b"')
-        self.check_parse("blah\n",
-                         '"blah\n"')
-        self.check_parse([1, 2, 3],
-                         "[1 2 3]")
-        self.check_parse({1, 2, 3},
-                         "#{1 2 3}")
-        self.check_parse([1, True, None],
-                         "[1 true nil]")
-        self.check_parse("c",
-                         r"\c")
-        self.check_parse("\n",
-                         r"\newline")
-        self.check_parse(u"Σ",
-                         u"\\Σ")
-        self.check_parse(u"λ",
-                         r"\u03bB")
-        self.check_parse(Keyword("abc"),
-                         ":abc")
-        self.check_parse([Keyword("abc"), 1, True, None],
-                         "[:abc 1 true nil]")
-        self.check_parse((Keyword("abc"), 1, True, None),
-                         "(:abc 1 true nil)")
-        self.check_parse(tuple(), "()")
-        self.check_parse(set(), "#{}")
-        self.check_parse({}, "{}")
-        self.check_parse([], "[]")
-        self.check_parse({"a": [1, 2, 3]},
-                         '{"a" [1 2 3]}')
-        self.check_parse(datetime.datetime(2012, 12, 22, 19, 40, 18, 0,
-                                           tzinfo=pytz.utc),
-                         '#inst "2012-12-22T19:40:18Z"')
-        self.check_parse(datetime.date(2011, 10, 9),
-                         '#inst "2011-10-09"')
-        self.check_parse("|", "\"|\"")
-        self.check_parse("%", "\"%\"")
-        self.check_parse(['bl"ah'], r"""["bl\"ah"]""")
-        self.check_parse("blah\n", '"blah\n"')
-        self.check_parse('"', r'"\""')
-        self.check_parse('\\', r'"\\"')
-        self.check_parse(["abc", "123"], '["abc", "123"]')
-        self.check_parse({"key": "value"}, '{"key" "value"}')
-        self.check_parse(frozenset({ImmutableList([u"ab", u"cd"]),
-                                    ImmutableList([u"ef"])}),
-                         '#{["ab", "cd"], ["ef"]}')
-        self.check_parse(fractions.Fraction(2, 3), "2/3")
-        self.check_parse((2, Symbol('/'), 3), "(2 / 3)")
+    def test_parser_single_expressions(self):
+        for expected, edn_string in (
+            (1, "1"),
+            (Symbol("a*b"), 'a*b'),
+            ("ab", '"ab"'),
+            ('a"b', r'"a\"b"'),
+            ("blah\n", '"blah\n"'),
+            ([1, 2, 3], "[1 2 3]"),
+            ({1, 2, 3}, "#{1 2 3}"),
+            ([1, True, None], "[1 true nil]"),
+            ("c", r"\c"),
+            ("\n", r"\newline"),
+            (u"Σ", u"\\Σ"),
+            (u"λ", r"\u03bB"),
+            (Keyword("abc"), ":abc"),
+            ([Keyword("abc"), 1, True, None], "[:abc 1 true nil]"),
+            ((Keyword("abc"), 1, True, None), "(:abc 1 true nil)"),
+            (tuple(), "()"),
+            (set(), "#{}"),
+            ({}, "{}"),
+            ([], "[]"),
+            ({"a": [1, 2, 3]}, '{"a" [1 2 3]}'),
+            (datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc),
+                '#inst "2012-12-22T19:40:18Z"'),
+            (datetime.date(2011, 10, 9),
+                '#inst "2011-10-09"'),
+            ("|", "\"|\""),
+            ("%", "\"%\""),
+            (['bl"ah'], r"""["bl\"ah"]"""),
+            ("blah\n", '"blah\n"'),
+            ('"', r'"\""'),
+            ('\\', r'"\\"'),
+            (["abc", "123"], '["abc", "123"]'),
+            ({"key": "value"}, '{"key" "value"}'),
+            (frozenset({ImmutableList([u"ab", u"cd"]), ImmutableList([u"ef"])}),
+                '#{["ab", "cd"], ["ef"]}'),
+            (fractions.Fraction(2, 3), "2/3"),
+            ((2, Symbol('/'), 3), "(2 / 3)"),
+        ):
+            self.check_parse(expected, edn_string)
+            self.check_parse_all([expected], edn_string)
+
+    def test_parser_multiple_expressions(self):
+        for expected, edn_string in (
+            ([], ""),
+            ([], "              ,,,,          ,, ,     "),
+            ([1], ",,,,,,,1,,,,,,,,,"),
+            ([1, 2], "1 2"),
+            ([1, 2], "1                    2"),
+            ([True, 42, False, Symbol('end')], "true 42 false end"),
+            ([Symbol("a*b"), 42], 'a*b 42'),
+        ):
+            self.check_parse_all(expected, edn_string)
+            if expected:
+                self.check_parse(expected[0], edn_string)
 
     def check_roundtrip(self, data_input, **kw):
         self.assertEqual(data_input, loads(dumps(data_input, **kw)))
@@ -151,6 +154,10 @@ class EdnTest(unittest.TestCase):
             loads(data_input, **kw)
 
         self.assertEqual('EOF Reached', str(ctx.exception))
+
+    def check_mismatched_delimiters(self):
+        for bad_string in ("[", "(", "{", "(((((())", '"', '"\\"'):
+            self.check_eof(bad_string)
 
     def test_dump(self):
         self.check_roundtrip({1, 2, 3})
@@ -408,7 +415,7 @@ class EdnTest(unittest.TestCase):
             self.assertEqual([1], loads('[1 #_ {}]'.format(edn_data)), edn_data)
             self.assertEqual([1], loads('[#_ {} 1]'.format(edn_data)), edn_data)
 
-            self.check_eof('#_ {}'.format(edn_data))
+            self.assertEqual(None, loads('#_ {}'.format(edn_data)))
 
             for coll in ('[%s]', '(%s)', '{%s}', '#{%s}'):
                 expected = coll % ""

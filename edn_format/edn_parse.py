@@ -24,7 +24,7 @@ if sys.version_info[0] == 3:
 if tokens:
     pass
 
-start = 'expression'
+start = 'expressions'
 
 _serializers = {}
 
@@ -180,7 +180,10 @@ def p_error(p):
         raise EDNDecodeError(p)
 
 
-def parse(text, input_encoding='utf-8'):
+def parse_all(text, input_encoding='utf-8'):
+    """
+    Parse all objects from the text and return a (possibly empty) list.
+    """
     if not isinstance(text, unicode):
         text = text.decode(input_encoding)
 
@@ -188,4 +191,13 @@ def parse(text, input_encoding='utf-8'):
     if __debug__:
         kwargs = dict(debug=True)
     p = ply.yacc.yacc(**kwargs)
-    return p.parse(text, lexer=lex())
+    expressions = p.parse(text, lexer=lex())
+    return list(expressions)
+
+
+def parse(text, input_encoding='utf-8'):
+    """
+    Parse one object from the text. Return None if the text is empty.
+    """
+    expressions = parse_all(text, input_encoding=input_encoding)
+    return expressions[0] if expressions else None
