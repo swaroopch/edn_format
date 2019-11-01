@@ -77,6 +77,7 @@ def tag(tag_name):
 def p_term_leaf(p):
     """term : CHAR
             | STRING
+            | HEX_INTEGER
             | INTEGER
             | FLOAT
             | KEYWORD
