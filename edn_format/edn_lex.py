@@ -215,7 +215,9 @@ def t_RATIO(t):
 
 
 def t_INTEGER(t):
-    r"""[+-]?\d+N?"""
+    # "No integer other than 0 may begin with 0."
+    # https://github.com/edn-format/edn#integers
+    r"""[+-]?(?:0|[1-9]\d*)N?"""
     if t.value.endswith('N'):
         t.value = t.value[:-1]
     t.value = int(t.value)
