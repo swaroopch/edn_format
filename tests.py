@@ -38,6 +38,8 @@ class EdnTest(unittest.TestCase):
                        "true")
         self.check_lex("[LexToken(INTEGER,123,1,0)]",
                        "123")
+        self.check_lex("[LexToken(HEX_INTEGER,1,1,0)]",
+                       "0x1")
         self.check_lex(
             "[LexToken(INTEGER,456,1,0), " +
             "LexToken(SYMBOL,None,1,4), " +
@@ -93,6 +95,8 @@ class EdnTest(unittest.TestCase):
     def test_parser_single_expressions(self):
         for expected, edn_string in (
             (1, "1"),
+            (16768115, "0xFFDC73"),
+            (Symbol("xFF"), "xFF"),
             (Symbol("a*b"), 'a*b'),
             ("ab", '"ab"'),
             ('a"b', r'"a\"b"'),
@@ -138,6 +142,7 @@ class EdnTest(unittest.TestCase):
             ([], "              ,,,,          ,, ,     "),
             ([1], ",,,,,,,1,,,,,,,,,"),
             ([1, 2], "1 2"),
+            ([0, Symbol("x1"), 1], "0 x1 0x1"),
             ([1, 2], "1                    2"),
             ([True, 42, False, Symbol('end')], "true 42 false end"),
             ([Symbol("a*b"), 42], 'a*b 42'),

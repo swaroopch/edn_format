@@ -94,6 +94,7 @@ tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
           'INTEGER',
+          'HEX_INTEGER',
           'FLOAT',
           'RATIO',
           'SYMBOL',
@@ -217,10 +218,16 @@ def t_RATIO(t):
 def t_INTEGER(t):
     # "No integer other than 0 may begin with 0."
     # https://github.com/edn-format/edn#integers
-    r"""[+-]?(?:0|[1-9]\d*)N?"""
+    r"""[+-]?(?:0(?!x)|[1-9]\d*)N?"""
     if t.value.endswith('N'):
         t.value = t.value[:-1]
     t.value = int(t.value)
+    return t
+
+
+def t_HEX_INTEGER(t):
+    r"""[+-]?0x[A-F0-9]+"""
+    t.value = int(t.value, 16)
     return t
 
 
