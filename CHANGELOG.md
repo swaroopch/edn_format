@@ -1,5 +1,10 @@
 # `edn_format` Changelog
 
+## v0.6.5 (2019/11/03)
+
+* Parse integers in hexadecimal notation
+* Disallow `0`-prefixed integers other than zero itself
+
 ## v0.6.4 (2019/09/14)
 
 * Add an `edn_parse.tag` decorator
