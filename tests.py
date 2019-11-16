@@ -384,6 +384,29 @@ class EdnTest(unittest.TestCase):
                              set(seq),
                              sort_sets=True)
 
+    def test_indent(self):
+        self.check_dumps('''\
+{
+  :a 1
+  :b (
+    1
+    2
+    3
+  )
+  :c {
+    :d [
+      1
+      2
+      3
+    ]
+  }
+  :e #{
+    1
+    2
+    3
+  }
+}''', {"a": 1, "b": (1, 2, 3), "c": {"d": [1, 2, 3]}, "e": {1, 2, 3}}, keyword_keys=True, indent=2)
+
     def test_discard(self):
         for expected, edn_data in (
             ('[x]', '[x #_ z]'),
