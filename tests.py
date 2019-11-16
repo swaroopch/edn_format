@@ -385,27 +385,60 @@ class EdnTest(unittest.TestCase):
                              sort_sets=True)
 
     def test_indent(self):
+        fixture = {"a": {"b": 1}}
         self.check_dumps('''\
 {
-  :a 1
-  :b (
+ :a {
+  :b 1
+ }
+}''', fixture, keyword_keys=True, indent=1)
+
+        fixture = (1, 2, 3)
+        self.check_dumps('''\
+(
+  1
+  2
+  3
+)''', fixture, indent=2)
+
+        fixture = [1, 2, 3]
+        self.check_dumps('''\
+[
+   1
+   2
+   3
+]''', fixture, indent=3)
+
+        fixture = {1, 2, 3}
+        self.check_dumps('''\
+#{
     1
     2
     3
-  )
-  :c {
-    :d [
+}''', fixture, indent=4)
+
+        fixture = {"a": 1, "b": {"c": [1, 2, 3]}, "d": {1, 2, 3}, "e": (1, 2, 3)}
+        self.check_dumps('''\
+{
+  :a 1
+  :b {
+    :c [
       1
       2
       3
     ]
   }
-  :e #{
+  :d #{
     1
     2
     3
   }
-}''', {"a": 1, "b": (1, 2, 3), "c": {"d": [1, 2, 3]}, "e": {1, 2, 3}}, keyword_keys=True, indent=2)
+  :e (
+    1
+    2
+    3
+  )
+}''', fixture, keyword_keys=True, sort_keys=True, indent=2)
 
     def test_discard(self):
         for expected, edn_data in (
