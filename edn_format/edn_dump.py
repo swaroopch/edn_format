@@ -48,6 +48,8 @@ for __i in range(0x20):
     ESCAPE_DCT.setdefault(unichr(__i), '\\u{0:04x}'.format(__i))
 del __i
 
+INDENTABLE_STRUCTURES = (tuple, list, ImmutableList, set, frozenset, dict, ImmutableDict)
+
 
 def unicode_escape(string):
     """Return a edn representation of a Python string"""
@@ -67,13 +69,16 @@ def indent_objs(objs, open_symbol, close_symbol, indent, _indent_step, **kwargs)
     result = '{}\n'.format(open_symbol)
 
     for obj in objs:
-        try:
+        if isinstance(obj, INDENTABLE_STRUCTURES):
             result += '{}{}\n'.format(
                 ' ' * _indent_step,
                 seq(obj, indent=indent, _indent_step=_indent_step, **kwargs)
             )
-        except TypeError:
-            result += '{}{}\n'.format(' ' * _indent_step, obj)
+        else:
+            result += '{}{}\n'.format(
+                ' ' * _indent_step,
+                udump(obj, indent=indent, _indent_step=_indent_step, **kwargs)
+            )
 
     result += '{}'.format(' ' * _indent_prev)
     result += '{}'.format(close_symbol)
