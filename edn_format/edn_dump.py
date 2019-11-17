@@ -60,21 +60,22 @@ def seq(obj, **kwargs):
     return ' '.join([udump(i, **kwargs) for i in obj])
 
 
-def indent_objs(objs, open_symbol, close_symbol, **kwargs):
-    indent_prev = kwargs.pop("_indent_step")
-    indent_step = indent_prev + kwargs["indent"]
+def indent_objs(objs, open_symbol, close_symbol, indent, _indent_step, **kwargs):
+    _indent_prev = _indent_step
+    _indent_step = _indent_prev + indent
 
     result = "{}\n".format(open_symbol)
 
     for obj in objs:
         try:
             result += "{}{}\n".format(
-                " " * indent_step, seq(obj, _indent_step=indent_step, **kwargs)
+                " " * _indent_step,
+                seq(obj, indent=indent, _indent_step=_indent_step, **kwargs)
             )
         except TypeError:
-            result += "{}{}\n".format(" " * indent_step, obj)
+            result += "{}{}\n".format(" " * _indent_step, obj)
 
-    result += "{}".format(" " * indent_prev)
+    result += "{}".format(" " * _indent_prev)
     result += "{}".format(close_symbol)
 
     return result
