@@ -452,6 +452,15 @@ class EdnTest(unittest.TestCase):
   )
 }''', fixture, keyword_keys=True, sort_keys=True, sort_sets=True, indent=2)
 
+    def test_indent_complex_edn(self):
+        with open("bench.edn") as edn_file:
+            edn = edn_file.read()
+
+        parsed_edn = loads(edn)
+        pretty_edn = dumps(parsed_edn, indent=2)
+        parsed_pretty_edn = loads(pretty_edn)
+        self.assertEqual(parsed_edn, parsed_pretty_edn)
+
     def test_discard(self):
         for expected, edn_data in (
             ('[x]', '[x #_ z]'),
