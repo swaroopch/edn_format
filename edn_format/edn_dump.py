@@ -125,32 +125,32 @@ def udump(obj,
     elif isinstance(obj, basestring):
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
-        if indent:
-            return _indent_objs(obj, '(', ')', **kwargs)
-        else:
+        if indent is None:
             return '({})'.format(seq(obj, **kwargs))
-    elif isinstance(obj, (list, ImmutableList)):
-        if indent:
-            return _indent_objs(obj, '[', ']', **kwargs)
         else:
+            return _indent_objs(obj, '(', ')', **kwargs)
+    elif isinstance(obj, (list, ImmutableList)):
+        if indent is None:
             return '[{}]'.format(seq(obj, **kwargs))
+        else:
+            return _indent_objs(obj, '[', ']', **kwargs)
     elif isinstance(obj, set) or isinstance(obj, frozenset):
         if sort_sets:
             obj = sorted(obj)
-        if indent:
-            return _indent_objs(obj, '#{', '}', **kwargs)
-        else:
+        if indent is None:
             return '#{{{}}}'.format(seq(obj, **kwargs))
+        else:
+            return _indent_objs(obj, '#{', '}', **kwargs)
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         pairs = obj.items()
         if sort_keys:
             pairs = sorted(pairs, key=lambda p: str(p[0]))
         if keyword_keys:
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
-        if indent:
-            return _indent_objs(pairs, '{', '}', **kwargs)
-        else:
+        if indent is None:
             return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
+        else:
+            return _indent_objs(pairs, '{', '}', **kwargs)
     elif isinstance(obj, fractions.Fraction):
         return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):

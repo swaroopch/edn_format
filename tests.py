@@ -385,32 +385,35 @@ class EdnTest(unittest.TestCase):
                              sort_sets=True)
 
     def test_indent(self):
+        fixture = {"foo": "bar"}
+        self.check_dumps('{"foo" "bar"}', fixture, indent=None)
+
         fixture = {Keyword("a"): {Keyword("b"): "foo"}}
         self.check_dumps('''\
 {
- :a {
-  :b "foo"
- }
-}''', fixture, indent=1)
+:a {
+:b "foo"
+}
+}''', fixture, indent=0)
 
         fixture = (1, Keyword("b"), "foo")
         self.check_dumps('''\
 (
-  1
-  :b
-  "foo"
-)''', fixture, indent=2)
+ 1
+ :b
+ "foo"
+)''', fixture, indent=1)
 
         fixture = [1, Keyword("b"), "foo", {Keyword("foo"): Keyword("bar")}]
         self.check_dumps('''\
 [
-   1
-   :b
-   "foo"
-   {
-      :foo :bar
-   }
-]''', fixture, indent=3)
+  1
+  :b
+  "foo"
+  {
+    :foo :bar
+  }
+]''', fixture, indent=2)
 
         fixture = {1, 2, 3}
         self.check_dumps('''\
