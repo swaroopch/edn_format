@@ -181,24 +181,34 @@ def p_error(p):
         raise EDNDecodeError(p)
 
 
-def parse_all(text, input_encoding='utf-8'):
+def parse_all(text, input_encoding='utf-8', debug=False,
+              write_ply_tables=True):
     """
     Parse all objects from the text and return a (possibly empty) list.
+
+    ``debug`` and ``write_ply_tables`` arguments are passed to the Yacc parser.
+    If ``debug`` is True, the parser writes a ``parser.out`` debugging file.
+    If ``write_ply_tables`` is True, the parser writes grammar tables in a
+    ``parsetab.py`` module on disk and reuse it in subsequent calls. If it
+    can't write this cache file, it'll print a warning, and be a bit less
+    efficient as it'll have to re-generate the tables every time. If you can't
+    let it write its cache, you can disable this warning by passing
+    `write_ply_tables=False`.
     """
     if not isinstance(text, unicode):
         text = text.decode(input_encoding)
 
-    kwargs = ImmutableDict({})
-    if __debug__:
-        kwargs = dict(debug=True)
-    p = ply.yacc.yacc(**kwargs)
+    # See http://www.dabeaz.com/ply/ply.html#ply_nn36
+    p = ply.yacc.yacc(debug=debug, write_tables=write_ply_tables)
     expressions = p.parse(text, lexer=lex())
     return list(expressions)
 
 
-def parse(text, input_encoding='utf-8'):
+def parse(text, **kwargs):
     """
     Parse one object from the text. Return None if the text is empty.
+
+    See parse_all for the accepted arguments.
     """
-    expressions = parse_all(text, input_encoding=input_encoding)
+    expressions = parse_all(text, **kwargs)
     return expressions[0] if expressions else None
