@@ -4,11 +4,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import datetime
 import sys
 import uuid
+from collections import deque
 
 import ply.yacc
 import pyrfc3339
 
 from .edn_lex import tokens, lex
+from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
 
@@ -22,9 +24,9 @@ if sys.version_info[0] == 3:
 if tokens:
     pass
 
-start = 'expression'
+start = 'expressions'
 
-_serializers = dict({})
+_serializers = {}
 
 
 class TaggedElement(object):
@@ -32,32 +34,57 @@ class TaggedElement(object):
         raise NotImplementedError("To be implemented by derived classes")
 
 
-def add_tag(tag_name, tag_class):
+def add_tag(tag_name, tag_fn_or_class):
+    """
+    Add a custom tag handler.
+    """
     assert isinstance(tag_name, basestring)
-    _serializers[tag_name] = tag_class
+    _serializers[tag_name] = tag_fn_or_class
 
 
 def remove_tag(tag_name):
+    """
+    Remove a custom tag handler.
+    """
     assert isinstance(tag_name, basestring)
     del _serializers[tag_name]
+
+
+def tag(tag_name):
+    """
+    Decorator for a function or a class to use as a tagged element.
+
+    Example:
+
+        @tag("dog")
+        def parse_dog(name):
+            return {
+                "kind": "dog",
+                "name": name,
+                "message": "woof-woof",
+            }
+
+        parse("#dog \"Max\"")
+        # => {"kind": "dog", "name": "Max", "message": "woof-woof"}
+    """
+
+    def _tag_decorator(fn_or_cls):
+        _serializers[tag_name] = fn_or_cls
+        return fn_or_cls
+    return _tag_decorator
 
 
 def p_term_leaf(p):
     """term : CHAR
             | STRING
+            | HEX_INTEGER
             | INTEGER
             | FLOAT
-            | BOOLEAN
-            | NIL
             | KEYWORD
             | SYMBOL
+            | RATIO
             | WHITESPACE"""
     p[0] = p[1]
-
-
-def p_empty_vector(p):
-    """vector : VECTOR_START VECTOR_END"""
-    p[0] = ImmutableList([])
 
 
 def p_vector(p):
@@ -65,19 +92,9 @@ def p_vector(p):
     p[0] = ImmutableList(p[2])
 
 
-def p_empty_list(p):
-    """list : LIST_START LIST_END"""
-    p[0] = tuple()
-
-
 def p_list(p):
     """list : LIST_START expressions LIST_END"""
     p[0] = tuple(p[2])
-
-
-def p_empty_set(p):
-    """set : SET_START MAP_OR_SET_END"""
-    p[0] = frozenset()
 
 
 def p_set(p):
@@ -85,28 +102,30 @@ def p_set(p):
     p[0] = frozenset(p[2])
 
 
-def p_empty_map(p):
-    """map : MAP_START MAP_OR_SET_END"""
-    p[0] = ImmutableDict({})
-
-
 def p_map(p):
     """map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
     if len(terms) % 2 != 0:
-        raise SyntaxError('Even number of terms required for map')
+        raise EDNDecodeError('Even number of terms required for map')
     # partition terms in pairs
-    p[0] = ImmutableDict(dict([terms[i:i + 2] for i in range(0, len(terms), 2)]))
+    p[0] = ImmutableDict((terms[i], terms[i+1]) for i in range(0, len(terms), 2))
 
 
-def p_expressions_expressions_expression(p):
-    """expressions : expressions expression"""
-    p[0] = p[1] + [p[2]]
+def p_discarded_expressions(p):
+    """discarded_expressions : DISCARD_TAG expression discarded_expressions
+                             |"""
+    p[0] = deque()
 
 
-def p_expressions_expression(p):
-    """expressions : expression"""
-    p[0] = [p[1]]
+def p_expressions_expression_expressions(p):
+    """expressions : expression expressions"""
+    p[2].appendleft(p[1])
+    p[0] = p[2]
+
+
+def p_expressions_empty(p):
+    """expressions : discarded_expressions"""
+    p[0] = deque()
 
 
 def p_expression(p):
@@ -118,17 +137,25 @@ def p_expression(p):
     p[0] = p[1]
 
 
+def p_expression_discard_expression_expression(p):
+    """expression : DISCARD_TAG expression expression"""
+    p[0] = p[3]
+
+
 def p_expression_tagged_element(p):
     """expression : TAG expression"""
     tag = p[1]
     element = p[2]
 
     if tag == 'inst':
-        if len(element) == 10 and element.count('-') == 2:
+        length = len(element)
+        hyphens_count = element.count('-')
+
+        if length == 10 and hyphens_count == 2:
             output = datetime.datetime.strptime(element, '%Y-%m-%d').date()
-        elif len(element) == 7 and element.count('-') == 1:
+        elif length == 7 and hyphens_count == 1:
             output = datetime.datetime.strptime(element, '%Y-%m').date()
-        elif len(element) == 4 and element.count('-') == 0:
+        elif length == 4 and hyphens_count == 0:
             output = datetime.datetime.strptime(element, '%Y').date()
         else:
             output = pyrfc3339.parse(element)
@@ -143,19 +170,35 @@ def p_expression_tagged_element(p):
     p[0] = output
 
 
+def eof():
+    raise EDNDecodeError('EOF Reached')
+
+
 def p_error(p):
     if p is None:
-        raise SyntaxError('EOF Reached')
+        eof()
     else:
-        raise SyntaxError(p)
+        raise EDNDecodeError(p)
 
 
-def parse(text, input_encoding='utf-8'):
+def parse_all(text, input_encoding='utf-8'):
+    """
+    Parse all objects from the text and return a (possibly empty) list.
+    """
     if not isinstance(text, unicode):
         text = text.decode(input_encoding)
 
     kwargs = ImmutableDict({})
     if __debug__:
-        kwargs = dict({'debug': True})
+        kwargs = dict(debug=True)
     p = ply.yacc.yacc(**kwargs)
-    return p.parse(text, lexer=lex())
+    expressions = p.parse(text, lexer=lex())
+    return list(expressions)
+
+
+def parse(text, input_encoding='utf-8'):
+    """
+    Parse one object from the text. Return None if the text is empty.
+    """
+    expressions = parse_all(text, input_encoding=input_encoding)
+    return expressions[0] if expressions else None

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import collections
+try:
+    import collections.abc as collections_abc
+except ImportError:
+    import collections as collections_abc
 
 
-class ImmutableDict(collections.Mapping):
+class ImmutableDict(collections_abc.Mapping):
     def __init__(self, somedict):
         self.dict = dict(somedict)   # make a copy
         self.hash = None

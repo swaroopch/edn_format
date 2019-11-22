@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import datetime
 import decimal
+import fractions
 import itertools
 import re
 import sys
@@ -62,12 +63,14 @@ def seq(obj, **kwargs):
 def udump(obj,
           string_encoding=DEFAULT_INPUT_ENCODING,
           keyword_keys=False,
-          sort_keys=False):
+          sort_keys=False,
+          sort_sets=False):
 
     kwargs = {
         "string_encoding": string_encoding,
         "keyword_keys": keyword_keys,
         "sort_keys": sort_keys,
+        "sort_sets": sort_sets,
     }
 
     if obj is None:
@@ -89,11 +92,13 @@ def udump(obj,
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
         return '({})'.format(seq(obj, **kwargs))
-    elif isinstance(obj, list):
+    elif isinstance(obj, (list, ImmutableList)):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, ImmutableList):
         return '[{}]'.format(seq(obj, **kwargs))
     elif isinstance(obj, set) or isinstance(obj, frozenset):
+        if sort_sets:
+            obj = sorted(obj)
         return '#{{{}}}'.format(seq(obj, **kwargs))
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         pairs = obj.items()
@@ -103,6 +108,8 @@ def udump(obj,
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
         return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
+    elif isinstance(obj, fractions.Fraction):
+        return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):
         return '#inst "{}"'.format(pyrfc3339.generate(obj, microseconds=True))
     elif isinstance(obj, datetime.date):
@@ -120,11 +127,13 @@ def dump(obj,
          string_encoding=DEFAULT_INPUT_ENCODING,
          output_encoding=DEFAULT_OUTPUT_ENCODING,
          keyword_keys=False,
-         sort_keys=False):
+         sort_keys=False,
+         sort_sets=False):
     outcome = udump(obj,
                     string_encoding=string_encoding,
                     keyword_keys=keyword_keys,
-                    sort_keys=sort_keys)
+                    sort_keys=sort_keys,
+                    sort_sets=sort_sets)
     if __PY3:
         return outcome
     return outcome.encode(output_encoding)

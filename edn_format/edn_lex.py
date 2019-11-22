@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # see http://stackoverflow.com/a/24519338
 import codecs
 import decimal
+import fractions
 import logging
 import re
 import sys
@@ -12,6 +13,7 @@ import sys
 
 import ply.lex
 
+from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 
 
@@ -19,6 +21,9 @@ if sys.version_info[0] == 3:
     long = int
     basestring = str
     unicode = str
+    def _bytes(s): return bytes(s, 'utf-8')
+else:
+    _bytes = bytes
 
 
 ESCAPE_SEQUENCE_RE = re.compile(r'''
@@ -88,10 +93,10 @@ class Symbol(BaseEdnType):
 tokens = ('WHITESPACE',
           'CHAR',
           'STRING',
-          'NIL',
-          'BOOLEAN',
           'INTEGER',
+          'HEX_INTEGER',
           'FLOAT',
+          'RATIO',
           'SYMBOL',
           'KEYWORD',
           'VECTOR_START',
@@ -101,7 +106,8 @@ tokens = ('WHITESPACE',
           'MAP_START',
           'SET_START',
           'MAP_OR_SET_END',
-          'TAG')
+          'TAG',
+          'DISCARD_TAG')
 
 PARTS = {}
 PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
@@ -137,7 +143,7 @@ KEYWORD = (":"
            "[{all}]+"
            ")").format(**PARTS)
 TAG = (r"\#"
-       r"\w"
+       r"[a-zA-Z]"  # https://github.com/edn-format/edn/issues/30#issuecomment-8540641
        "("
        "[{all}]*"
        r"\/"
@@ -145,6 +151,8 @@ TAG = (r"\#"
        "|"
        "[{all}]*"
        ")").format(**PARTS)
+
+DISCARD_TAG = r"\#\_"
 
 t_VECTOR_START = r'\['
 t_VECTOR_END = r'\]'
@@ -170,8 +178,10 @@ def t_WHITESPACE(t):
 
 
 def t_CHAR(t):
-    r"(\\\w)"
-    t.value = t.value[1]
+    # uXXXX hex code or from "!" to "~" = all printable ASCII chars except the space
+    # or unicode word chars
+    r"(\\u[0-9A-Fa-f]{4}|\\[!-~\w])"
+    t.value = (t.value[1] if len(t.value) == 2 else _bytes(t.value).decode('raw_unicode_escape'))
     return t
 
 
@@ -182,41 +192,42 @@ def t_STRING(t):
     return t
 
 
-def t_NIL(t):
-    """nil"""
-    t.value = None
-    return t
-
-
-def t_BOOLEAN(t):
-    r"""(true|false)(?=([,\s\])}]|$))"""
-    if t.value == "false":
-        t.value = False
-    elif t.value == "true":
-        t.value = True
-    return t
-
-
 def t_FLOAT(t):
     r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?"""
     e_value = 0
     if 'e' in t.value or 'E' in t.value:
-        matches = re.search('[eE]([+-]?\d+)M?$', t.value)
+        matches = re.search(r'[eE]([+-]?\d+)M?$', t.value)
         if matches is None:
-            raise SyntaxError('Invalid float : {}'.format(t.value))
+            raise EDNDecodeError('Invalid float : {}'.format(t.value))
         e_value = int(matches.group(1))
     if t.value.endswith('M'):
-        t.value = decimal.Decimal(t.value[:-1]) * pow(1, e_value)
+        ctx = decimal.getcontext()
+        t.value = decimal.Decimal(t.value[:-1]) * ctx.power(1, e_value)
     else:
         t.value = float(t.value) * pow(1, e_value)
     return t
 
 
+def t_RATIO(t):
+    r"""-?\d+/\d+"""
+    numerator, denominator = t.value.split("/", 1)
+    t.value = fractions.Fraction(int(numerator), int(denominator))
+    return t
+
+
 def t_INTEGER(t):
-    r"""[+-]?\d+N?"""
+    # "No integer other than 0 may begin with 0."
+    # https://github.com/edn-format/edn#integers
+    r"""[+-]?(?:0(?!x)|[1-9]\d*)N?"""
     if t.value.endswith('N'):
         t.value = t.value[:-1]
     t.value = int(t.value)
+    return t
+
+
+def t_HEX_INTEGER(t):
+    r"""[+-]?0x[A-F0-9]+"""
+    t.value = int(t.value, 16)
     return t
 
 
@@ -225,9 +236,10 @@ def t_COMMENT(t):
     pass  # ignore
 
 
-def t_DISCARD(t):
-    r'\#_\S+\b'
-    pass  # ignore
+@ply.lex.TOKEN(DISCARD_TAG)
+def t_DISCARD_TAG(t):
+    t.value = t.value[1:]
+    return t
 
 
 @ply.lex.TOKEN(TAG)
@@ -244,12 +256,19 @@ def t_KEYWORD(t):
 
 @ply.lex.TOKEN(SYMBOL)
 def t_SYMBOL(t):
-    t.value = Symbol(t.value)
+    if t.value == "nil":
+        t.value = None
+    elif t.value == "true":
+        t.value = True
+    elif t.value == "false":
+        t.value = False
+    else:
+        t.value = Symbol(t.value)
     return t
 
 
 def t_error(t):
-    raise SyntaxError(
+    raise EDNDecodeError(
         "Illegal character '{c}' with lexpos {p} in the area of ...{a}...".format(
             c=t.value[0], p=t.lexpos, a=t.value[0:100]))
 
@@ -257,8 +276,9 @@ def t_error(t):
 def lex(text=None):
     kwargs = {}
     if __debug__:
-        kwargs = dict(debug=True, debuglog=logging.getLogger(__name__))
-    l = ply.lex.lex(reflags=re.UNICODE, **kwargs)
+        kwargs["debug"] = True
+        kwargs["debuglog"] = logging.getLogger(__name__)
+    lex = ply.lex.lex(reflags=re.UNICODE, **kwargs)
     if text is not None:
-        l.input(text)
-    return l
+        lex.input(text)
+    return lex

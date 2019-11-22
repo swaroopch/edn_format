@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import collections
+try:
+    import collections.abc as collections_abc
+except ImportError:
+    import collections as collections_abc
+import copy as _copy
 
 
-class ImmutableList(collections.MutableSequence, collections.Hashable):
+class ImmutableList(collections_abc.Sequence, collections_abc.Hashable):
     def __init__(self, wrapped_list, copy=True):
+        """Returns an immutable version of the given list. Optionally creates a shallow copy."""
         self._list = list(wrapped_list) if copy else wrapped_list
         self._hash = None
 
@@ -19,21 +24,15 @@ class ImmutableList(collections.MutableSequence, collections.Hashable):
             return self._list == other
 
     def _call_wrapped_list_method(self, method, *args):
-        new_list = list(self._list)
+        new_list = _copy.copy(self._list)
         getattr(new_list, method)(*args)
         return ImmutableList(new_list, copy=False)
 
-    # collection.MutableSequence methods
+    # collection.Sequence methods
     # https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
 
     def __getitem__(self, index):
         return self._list[index]
-
-    def __delitem__(self, *args):
-        return self._call_wrapped_list_method("__delitem__", *args)
-
-    def __setitem__(self, *args):
-        return self._call_wrapped_list_method("__setitem__", *args)
 
     def __len__(self):
         return len(self._list)
