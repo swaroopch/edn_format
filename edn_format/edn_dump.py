@@ -24,8 +24,13 @@ if sys.version_info[0] >= 3:
     basestring = str
     unicode = str
     unichr = chr
+    from io import StringIO
 else:
     __PY3 = False
+    try:
+        from cStringIO import StringIO  # try the C module first, it’s more efficient
+    except ImportError:
+        from StringIO import StringIO
 
 
 DEFAULT_INPUT_ENCODING = 'utf-8'
@@ -65,30 +70,32 @@ def _udump_indent_collection(objs, open_symbol, close_symbol, indent, indent_ste
     indent_prev = indent_step
     indent_step = indent_prev + indent
 
-    result = '{}\n'.format(open_symbol)
+    result = StringIO()
+    result.write('{}\n'.format(open_symbol))
 
     for obj in objs:
+        string_to_indent = None
+
         if isinstance(obj, (dict, ImmutableDict)):
             pairs = obj.items()
-            result += '{}{}\n'.format(
-                ' ' * indent_step,
-                _udump_indent_collection(pairs, '{', '}', indent=indent, indent_step=indent_step, **kwargs)
+            string_to_indent = _udump_indent_collection(
+                pairs, '{', '}', indent=indent, indent_step=indent_step, **kwargs
             )
         elif isinstance(obj, (tuple, list, ImmutableList, set, frozenset)):
-            result += '{}{}\n'.format(
-                ' ' * indent_step,
-                seq(obj, indent=indent, indent_step=indent_step, **kwargs)
+            string_to_indent = seq(
+                obj, indent=indent, indent_step=indent_step, **kwargs
             )
         else:
-            result += '{}{}\n'.format(
-                ' ' * indent_step,
-                udump(obj, indent=indent, indent_step=indent_step, **kwargs)
+            string_to_indent = udump(
+                obj, indent=indent, indent_step=indent_step, **kwargs
             )
 
-    result += '{}'.format(' ' * indent_prev)
-    result += '{}'.format(close_symbol)
+        result.write('{}{}\n'.format(' ' * indent_step, string_to_indent))
 
-    return result
+    result.write('{}'.format(' ' * indent_prev))
+    result.write('{}'.format(close_symbol))
+
+    return result.getvalue()
 
 
 def udump(obj,
