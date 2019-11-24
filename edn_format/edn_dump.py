@@ -60,7 +60,8 @@ def seq(obj, **kwargs):
     return ' '.join([udump(i, **kwargs) for i in obj])
 
 
-def _indent_objs(objs, open_symbol, close_symbol, indent, indent_step, **kwargs):
+def _udump_indent_collection(objs, open_symbol, close_symbol, indent, indent_step, **kwargs):
+    """Return an indented representation of a Python object"""
     indent_prev = indent_step
     indent_step = indent_prev + indent
 
@@ -71,7 +72,7 @@ def _indent_objs(objs, open_symbol, close_symbol, indent, indent_step, **kwargs)
             pairs = obj.items()
             result += '{}{}\n'.format(
                 ' ' * indent_step,
-                _indent_objs(pairs, '{', '}', indent=indent, indent_step=indent_step, **kwargs)
+                _udump_indent_collection(pairs, '{', '}', indent=indent, indent_step=indent_step, **kwargs)
             )
         elif isinstance(obj, (tuple, list, ImmutableList, set, frozenset)):
             result += '{}{}\n'.format(
@@ -128,19 +129,19 @@ def udump(obj,
         if indent is None:
             return '({})'.format(seq(obj, **kwargs))
         else:
-            return _indent_objs(obj, '(', ')', **kwargs)
+            return _udump_indent_collection(obj, '(', ')', **kwargs)
     elif isinstance(obj, (list, ImmutableList)):
         if indent is None:
             return '[{}]'.format(seq(obj, **kwargs))
         else:
-            return _indent_objs(obj, '[', ']', **kwargs)
+            return _udump_indent_collection(obj, '[', ']', **kwargs)
     elif isinstance(obj, set) or isinstance(obj, frozenset):
         if sort_sets:
             obj = sorted(obj)
         if indent is None:
             return '#{{{}}}'.format(seq(obj, **kwargs))
         else:
-            return _indent_objs(obj, '#{', '}', **kwargs)
+            return _udump_indent_collection(obj, '#{', '}', **kwargs)
     elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
         pairs = obj.items()
         if sort_keys:
@@ -150,7 +151,7 @@ def udump(obj,
         if indent is None:
             return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
         else:
-            return _indent_objs(pairs, '{', '}', **kwargs)
+            return _udump_indent_collection(pairs, '{', '}', **kwargs)
     elif isinstance(obj, fractions.Fraction):
         return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):
