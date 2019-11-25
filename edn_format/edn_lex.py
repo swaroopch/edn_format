@@ -193,7 +193,7 @@ def t_STRING(t):
 
 
 def t_FLOAT(t):
-    r"""[+-]?\d+(?:\.\d+([eE][+-]?\d+)?|([eE][+-]?\d+))M?|[+-]?\d+M"""
+    r"""[+-]?\d+(?:(?:\.\d+([eE][+-]?\d+)?|[eE][+-]?\d+)M?|M)"""
     e_value = 0
     if 'e' in t.value or 'E' in t.value:
         matches = re.search(r'[eE]([+-]?\d+)M?$', t.value)
