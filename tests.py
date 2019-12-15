@@ -3,7 +3,7 @@
 # from __future__ import absolute_import, division, print_function, unicode_literals
 
 from collections import OrderedDict
-from uuid import uuid4
+from uuid import uuid4, UUID
 import random
 import datetime
 import fractions
@@ -385,6 +385,95 @@ class EdnTest(unittest.TestCase):
             self.check_dumps("#{{{}}}".format(" ".join(str(i) for i in sorted(seq))),
                              set(seq),
                              sort_sets=True)
+
+    def test_indent(self):
+        fixture = {"foo": "bar"}
+        self.check_dumps('{"foo" "bar"}', fixture, indent=None)
+
+        fixture = {Keyword("a"): {Keyword("b"): "foo"}}
+        self.check_dumps('''\
+{
+:a {
+:b "foo"
+}
+}''', fixture, indent=0)
+
+        fixture = (1, Keyword("b"), "foo")
+        self.check_dumps('''\
+(
+ 1
+ :b
+ "foo"
+)''', fixture, indent=1)
+
+        fixture = [1, Keyword("b"), "foo", {Keyword("foo"): Keyword("bar")}]
+        self.check_dumps('''\
+[
+  1
+  :b
+  "foo"
+  {
+    :foo :bar
+  }
+]''', fixture, indent=2)
+
+        fixture = {1, 2, 3}
+        self.check_dumps('''\
+#{
+    1
+    2
+    3
+}''', fixture, indent=4, sort_sets=True)
+
+        fixture = [{"a": 42}]
+        self.check_dumps('''\
+[
+  {
+    :a 42
+  }
+]''', fixture, keyword_keys=True, indent=2)
+
+        fixture = [[1, 2, 3]]
+        self.check_dumps('''\
+[
+  [
+    1
+    2
+    3
+  ]
+]''', fixture, indent=2)
+
+        fixture = {
+            "a": "foo",
+            "b": {"c": [Keyword("a"), Keyword("b"), Keyword("c")]},
+            "d": {1, 2, 3},
+            "e": (
+                datetime.date(2011, 10, 9),
+                UUID("urn:uuid:1e4856a2-085e-45df-93e1-41a0c7aeab2e"),
+                datetime.datetime(2012, 12, 22, 19, 40, 18, 0, tzinfo=pytz.utc)
+            )
+        }
+        self.check_dumps('''\
+{
+  :a "foo"
+  :b {
+    :c [
+      :a
+      :b
+      :c
+    ]
+  }
+  :d #{
+    1
+    2
+    3
+  }
+  :e (
+    #inst "2011-10-09"
+    #uuid "1e4856a2-085e-45df-93e1-41a0c7aeab2e"
+    #inst "2012-12-22T19:40:18.000000Z"
+  )
+}''', fixture, keyword_keys=True, sort_keys=True, sort_sets=True, indent=2)
 
     def test_discard(self):
         for expected, edn_data in (

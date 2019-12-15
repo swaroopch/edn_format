@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import datetime
 import decimal
 import fractions
-import itertools
 import re
 import sys
 import uuid
@@ -56,6 +55,21 @@ def unicode_escape(string):
     return '"' + ESCAPE.sub(replace, string) + '"'
 
 
+def indent_lines(lines, open_sym, close_sym, indent, indent_step):
+    indent_prev = indent_step
+    indent_step = indent_prev + indent
+    # open symbol should be in the same line as current one
+    result = [open_sym]
+
+    for line in lines:
+        result.append(indent_step * ' ' + line)
+
+    # close symbol should be indented one line before the current one
+    result.append(indent_prev * ' ' + close_sym)
+
+    return '\n'.join(result)
+
+
 def seq(obj, **kwargs):
     return ' '.join([udump(i, **kwargs) for i in obj])
 
@@ -64,13 +78,17 @@ def udump(obj,
           string_encoding=DEFAULT_INPUT_ENCODING,
           keyword_keys=False,
           sort_keys=False,
-          sort_sets=False):
+          sort_sets=False,
+          indent=None,
+          indent_step=0):
 
     kwargs = {
         "string_encoding": string_encoding,
         "keyword_keys": keyword_keys,
         "sort_keys": sort_keys,
         "sort_sets": sort_sets,
+        "indent": indent,
+        "indent_step": indent_step + (indent or 0),
     }
 
     if obj is None:
@@ -91,21 +109,40 @@ def udump(obj,
     elif isinstance(obj, basestring):
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
-        return '({})'.format(seq(obj, **kwargs))
+        lines = [udump(o, **kwargs) for o in obj]
+        if indent is None:
+            return '({})'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '(', ')', indent, indent_step)
     elif isinstance(obj, (list, ImmutableList)):
-        return '[{}]'.format(seq(obj, **kwargs))
-    elif isinstance(obj, set) or isinstance(obj, frozenset):
+        lines = [udump(o, **kwargs) for o in obj]
+        if indent is None:
+            return '[{}]'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '[', ']', indent, indent_step)
+    elif isinstance(obj, (set, frozenset)):
         if sort_sets:
             obj = sorted(obj)
-        return '#{{{}}}'.format(seq(obj, **kwargs))
-    elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
+
+        lines = [udump(o, **kwargs) for o in obj]
+        if indent is None:
+            return '#{{{}}}'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '#{', '}', indent, indent_step)
+    elif isinstance(obj, (dict, ImmutableDict)):
         pairs = obj.items()
+
         if sort_keys:
             pairs = sorted(pairs, key=lambda p: str(p[0]))
+
         if keyword_keys:
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
-        return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
+        lines = [seq(p, **kwargs) for p in pairs]
+        if indent is None:
+            return '{{{}}}'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '{', '}', indent, indent_step)
     elif isinstance(obj, fractions.Fraction):
         return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):
@@ -126,12 +163,14 @@ def dump(obj,
          output_encoding=DEFAULT_OUTPUT_ENCODING,
          keyword_keys=False,
          sort_keys=False,
-         sort_sets=False):
+         sort_sets=False,
+         indent=None):
     outcome = udump(obj,
                     string_encoding=string_encoding,
                     keyword_keys=keyword_keys,
                     sort_keys=sort_keys,
-                    sort_sets=sort_sets)
+                    sort_sets=sort_sets,
+                    indent=indent)
     if __PY3:
         return outcome
     return outcome.encode(output_encoding)
