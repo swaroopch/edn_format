@@ -71,7 +71,7 @@ def indent_lines(lines, open_sym, close_sym, indent, indent_step):
 
 
 def seq(obj, **kwargs):
-    return ' '.join([udump(i, **kwargs) for i in obj])
+    return [udump(i, **kwargs) for i in obj]
 
 
 def udump(obj,
@@ -109,13 +109,13 @@ def udump(obj,
     elif isinstance(obj, basestring):
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
-        lines = [udump(o, **kwargs) for o in obj]
+        lines = seq(obj, **kwargs)
         if indent is None:
             return '({})'.format(' '.join(lines))
         else:
             return indent_lines(lines, '(', ')', indent, indent_step)
     elif isinstance(obj, (list, ImmutableList)):
-        lines = [udump(o, **kwargs) for o in obj]
+        lines = seq(obj, **kwargs)
         if indent is None:
             return '[{}]'.format(' '.join(lines))
         else:
@@ -124,7 +124,7 @@ def udump(obj,
         if sort_sets:
             obj = sorted(obj)
 
-        lines = [udump(o, **kwargs) for o in obj]
+        lines = seq(obj, **kwargs)
         if indent is None:
             return '#{{{}}}'.format(' '.join(lines))
         else:
@@ -138,7 +138,7 @@ def udump(obj,
         if keyword_keys:
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
-        lines = [seq(p, **kwargs) for p in pairs]
+        lines = [' '.join(seq(p, **kwargs)) for p in pairs]
         if indent is None:
             return '{{{}}}'.format(' '.join(lines))
         else:
