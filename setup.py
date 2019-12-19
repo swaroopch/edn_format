@@ -23,7 +23,7 @@ setup(name="edn_format",
       packages=['edn_format'],
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Apache Software License',
           'Topic :: Software Development',
