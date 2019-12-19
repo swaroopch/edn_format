@@ -1,5 +1,12 @@
 # `edn_format` Changelog
 
+## Dev
+
+* Update float regex to handle `M` suffix
+* Contributor setup : Migrate from Vagrant to Docker
+* Update Development Status to "5 - Production/Stable"
+* Run Travis tests on Python 3.8
+
 ## v0.6.5 (2019/11/03)
 
 * Parse integers in hexadecimal notation
