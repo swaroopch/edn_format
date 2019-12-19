@@ -1,0 +1,4 @@
+# https://github.com/hadolint/hadolint#configure
+
+ignored:
+  - DL3013 # https://github.com/hadolint/hadolint/wiki/DL3013

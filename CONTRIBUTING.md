@@ -2,34 +2,12 @@
 
 ## Setup ##
 
-1. Make sure you have a working Python installation (2 or 3). Use either
-   [Virtualenv][], Vagrant, or a similar tool to create an isolated
-   environment:
-    ```bash
-    # 1. One-time: Install Vagrant
-    #
-    # macOS
-    # Install Homebrew from https://brew.sh
-    # brew cask install virtualbox vagrant
-    #
-    # All OSes
-    # Install from https://www.vagrantup.com/downloads.html
+If you have [Docker installed](https://docs.docker.com/install/#supported-platforms):
 
-    # 2. One-time: Install Vagrant plugin
-    vagrant plugin install vagrant-vbguest
-
-    # 3. This is all you need
-    vagrant up
-
-    # 4. To access the dev environment via ssh
-    vagrant ssh
-    cd /vagrant
-    ```
-
-2. Install `edn_format`’s dependencies: `pip install -r requirements.txt`
-3. Install `flake8`: `pip install flake8`
-
-[Virtualenv]: https://virtualenv.pypa.io/en/stable/#virtualenv
+``` shell
+docker build -t swaroopch/edn_format .
+docker run --rm -v $PWD:/app swaroopch/edn_format python tests.py
+```
 
 ## Tests ##
 
