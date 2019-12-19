@@ -2,7 +2,7 @@ dist: bionic  # latest LTS as per https://wiki.ubuntu.com/Releases
 language: python
 python:
   - "2.7"
-  - "3.7"
+  - "3.8"
 install:
   - "pip install -r requirements.txt"
   - "pip install flake8"
