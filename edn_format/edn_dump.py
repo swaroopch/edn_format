@@ -68,13 +68,13 @@ def indent_lines(lines, open_sym, close_sym, indent, indent_step):
     """
     indent_prev = indent_step
     indent_step = indent_prev + indent
-    # open symbol should be in the same line as current one
+    # open symbol should not be indented
     result = [open_sym]
 
     indent_spaces = indent_step * ' '
     result += [indent_spaces + line for line in lines]
 
-    # close symbol should be indented one line before the current one
+    # close symbol should be indented using the previous indentation level
     result += [indent_prev * ' ' + close_sym]
 
     return '\n'.join(result)
@@ -99,7 +99,7 @@ def udump(obj,
     to False) converts the keys from a dict from string to keywords.
     ``sort_keys`` when True (defaults to False) sort dict keys alphabetically.
     ``sort_sets`` when True (defaults to False) sort sets alphabetically.
-    ``indent`` when set to an positive integer (defaults to None) represents
+    ``indent`` when set to a positive integer (defaults to None) represents
     the number of spaces used to indent the object. ``indent_step`` (defaults
     to 0) represents the current indentation level when ``indent`` is different
     from None.
