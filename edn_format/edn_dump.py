@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import datetime
 import decimal
 import fractions
-import itertools
 import re
 import sys
 import uuid
@@ -56,21 +55,62 @@ def unicode_escape(string):
     return '"' + ESCAPE.sub(replace, string) + '"'
 
 
+def indent_lines(lines, open_sym, close_sym, indent, indent_step):
+    """
+    Indents a data structure.
+
+    ``lines`` is an array of strings composed of each element of the data
+    structure. ``open_sym`` and ``close_sym`` are strings representing the
+    opening and closing symbol of the data structure (i.e.: for a dict it
+    would be '{' and '}', respectively). ``indent`` is an integer representing
+    the number of spaces used to indent. ``indent_step`` is an integer
+    representing the current level of indentation.
+    """
+    indent_prev = indent_step
+    indent_step = indent_prev + indent
+    # open symbol should not be indented
+    result = [open_sym]
+
+    indent_spaces = indent_step * ' '
+    result += [indent_spaces + line for line in lines]
+
+    # close symbol should be indented using the previous indentation level
+    result += [indent_prev * ' ' + close_sym]
+
+    return '\n'.join(result)
+
+
 def seq(obj, **kwargs):
-    return ' '.join([udump(i, **kwargs) for i in obj])
+    return [udump(i, **kwargs) for i in obj]
 
 
 def udump(obj,
           string_encoding=DEFAULT_INPUT_ENCODING,
           keyword_keys=False,
           sort_keys=False,
-          sort_sets=False):
+          sort_sets=False,
+          indent=None,
+          indent_step=0):
+    """
+    Dumps a formatted representation of a Python object.
 
+    ``string_encoding`` (defaults to 'utf-8') is the encoding to be used if the
+    object are bytes instead of strings. ``keyword_keys`` when True (defaults
+    to False) converts the keys from a dict from string to keywords.
+    ``sort_keys`` when True (defaults to False) sort dict keys alphabetically.
+    ``sort_sets`` when True (defaults to False) sort sets alphabetically.
+    ``indent`` when set to a positive integer (defaults to None) represents
+    the number of spaces used to indent the object. ``indent_step`` (defaults
+    to 0) represents the current indentation level when ``indent`` is different
+    from None.
+    """
     kwargs = {
         "string_encoding": string_encoding,
         "keyword_keys": keyword_keys,
         "sort_keys": sort_keys,
         "sort_sets": sort_sets,
+        "indent": indent,
+        "indent_step": indent_step + (indent or 0),
     }
 
     if obj is None:
@@ -91,21 +131,40 @@ def udump(obj,
     elif isinstance(obj, basestring):
         return unicode_escape(obj)
     elif isinstance(obj, tuple):
-        return '({})'.format(seq(obj, **kwargs))
+        lines = seq(obj, **kwargs)
+        if indent is None:
+            return '({})'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '(', ')', indent, indent_step)
     elif isinstance(obj, (list, ImmutableList)):
-        return '[{}]'.format(seq(obj, **kwargs))
-    elif isinstance(obj, set) or isinstance(obj, frozenset):
+        lines = seq(obj, **kwargs)
+        if indent is None:
+            return '[{}]'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '[', ']', indent, indent_step)
+    elif isinstance(obj, (set, frozenset)):
         if sort_sets:
             obj = sorted(obj)
-        return '#{{{}}}'.format(seq(obj, **kwargs))
-    elif isinstance(obj, dict) or isinstance(obj, ImmutableDict):
+
+        lines = seq(obj, **kwargs)
+        if indent is None:
+            return '#{{{}}}'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '#{', '}', indent, indent_step)
+    elif isinstance(obj, (dict, ImmutableDict)):
         pairs = obj.items()
+
         if sort_keys:
             pairs = sorted(pairs, key=lambda p: str(p[0]))
+
         if keyword_keys:
             pairs = ((Keyword(k) if isinstance(k, (bytes, basestring)) else k, v) for k, v in pairs)
 
-        return '{{{}}}'.format(seq(itertools.chain.from_iterable(pairs), **kwargs))
+        lines = [' '.join(seq(p, **kwargs)) for p in pairs]
+        if indent is None:
+            return '{{{}}}'.format(' '.join(lines))
+        else:
+            return indent_lines(lines, '{', '}', indent, indent_step)
     elif isinstance(obj, fractions.Fraction):
         return '{}/{}'.format(obj.numerator, obj.denominator)
     elif isinstance(obj, datetime.datetime):
@@ -126,12 +185,14 @@ def dump(obj,
          output_encoding=DEFAULT_OUTPUT_ENCODING,
          keyword_keys=False,
          sort_keys=False,
-         sort_sets=False):
+         sort_sets=False,
+         indent=None):
     outcome = udump(obj,
                     string_encoding=string_encoding,
                     keyword_keys=keyword_keys,
                     sort_keys=sort_keys,
-                    sort_sets=sort_sets)
+                    sort_sets=sort_sets,
+                    indent=indent)
     if __PY3:
         return outcome
     return outcome.encode(output_encoding)
