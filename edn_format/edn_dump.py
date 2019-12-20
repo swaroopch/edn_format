@@ -56,6 +56,16 @@ def unicode_escape(string):
 
 
 def indent_lines(lines, open_sym, close_sym, indent, indent_step):
+    """
+    Indents a data structure.
+
+    ``lines`` is an array of strings composed of each element of the data
+    structure. ``open_sym`` and ``close_sym`` are strings representing the
+    opening and closing symbol of the data structure (i.e.: for a dict it
+    would be '{' and '}', respectively). ``indent`` is an integer representing
+    the number of spaces used to indent. ``indent_step`` is an integer
+    representing the current level of indentation.
+    """
     indent_prev = indent_step
     indent_step = indent_prev + indent
     # open symbol should be in the same line as current one
@@ -81,7 +91,19 @@ def udump(obj,
           sort_sets=False,
           indent=None,
           indent_step=0):
+    """
+    Dumps a formatted representation of a Python object.
 
+    ``string_encoding`` (defaults to 'utf-8') is the encoding to be used if the
+    object are bytes instead of strings. ``keyword_keys`` when True (defaults
+    to False) converts the keys from a dict from string to keywords.
+    ``sort_keys`` when True (defaults to False) sort dict keys alphabetically.
+    ``sort_sets`` when True (defaults to False) sort sets alphabetically.
+    ``indent`` when set to an positive integer (defaults to None) represents
+    the number of spaces used to indent the object. ``indent_step`` (defaults
+    to 0) represents the current indentation level when ``indent`` is different
+    from None.
+    """
     kwargs = {
         "string_encoding": string_encoding,
         "keyword_keys": keyword_keys,
