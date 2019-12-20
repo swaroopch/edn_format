@@ -11,7 +11,7 @@ except ImportError:
 requirements = [str(ir.req) for ir in parse_requirements('requirements.txt', session=False)]
 
 setup(name="edn_format",
-      version="0.6.5",
+      version="0.7.0",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",

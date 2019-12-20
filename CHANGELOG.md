@@ -1,6 +1,6 @@
 # `edn_format` Changelog
 
-## Dev
+## v0.7.0 (2019/12/20)
 
 * Add pretty-printing with `indent` parameter added to `dumps`
 * Update float regex to handle `M` suffix
