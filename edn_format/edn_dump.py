@@ -71,11 +71,11 @@ def indent_lines(lines, open_sym, close_sym, indent, indent_step):
     # open symbol should be in the same line as current one
     result = [open_sym]
 
-    for line in lines:
-        result.append(indent_step * ' ' + line)
+    indent_spaces = indent_step * ' '
+    result += [indent_spaces + line for line in lines]
 
     # close symbol should be indented one line before the current one
-    result.append(indent_prev * ' ' + close_sym)
+    result += [indent_prev * ' ' + close_sym]
 
     return '\n'.join(result)
 
