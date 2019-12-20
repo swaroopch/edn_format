@@ -2,6 +2,7 @@
 
 ## Dev
 
+* Add pretty-printing with `indent` parameter added to `dumps`
 * Update float regex to handle `M` suffix
 * Contributor setup : Migrate from Vagrant to Docker
 * Update Development Status to "5 - Production/Stable"
