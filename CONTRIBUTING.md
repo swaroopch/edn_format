@@ -33,6 +33,6 @@ To release a new version:
 4. Verify git tag: `git tag -v v0.7.0`
 5. Push git tag: `git push origin master --tags`
 6. Clean your `dist/` directory if it already exists
-7. Package the release: `python setup.py sdist`
+7. Package the release: `python setup.py sdist bdist_wheel`
 8. Check the package: `twine check dist/*`
 9. Upload the package: `twine upload dist/*`
