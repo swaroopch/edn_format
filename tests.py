@@ -27,6 +27,28 @@ class ConsoleTest(unittest.TestCase):
         self.assertFalse(is_exception)
 
 
+class KeywordTest(unittest.TestCase):
+    def test_name(self):
+        for name in ("foo", "a/b", "a/b/c", "a:::::::b"):
+            self.assertEqual(name, Keyword(name).name)
+
+    def test_namespace(self):
+        self.assertIsNone(Keyword("foo").namespace)
+        self.assertEqual("a", Keyword("a/b").namespace)
+        self.assertEqual("a", Keyword("a/b/d").namespace)
+
+    def test_with_namespace(self):
+        for (expected, keyword, namespace) in (
+            ("k", "k", None),
+            ("k", "n/k", None),
+            ("n/k", "k", "n"),
+            ("n/k", "x/k", "n"),
+            ("n/a/b/c", "x/a/b/c", "n"),
+        ):
+            self.assertEqual(Keyword(expected),
+                             Keyword(keyword).with_namespace(namespace))
+
+
 class EdnTest(unittest.TestCase):
     def check_lex(self, expected_output, actual_input):
         self.assertEqual(expected_output, str(list(edn_lex.lex(actual_input))))

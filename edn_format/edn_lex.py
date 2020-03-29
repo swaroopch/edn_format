@@ -79,6 +79,37 @@ class Keyword(BaseEdnType):
     def __str__(self):
         return ':{}'.format(self.name)
 
+    @property
+    def namespace(self):
+        """
+        Return the keyword's namespace. This may be ``None``.
+        """
+        if "/" in self.name:
+            return self.name.split("/", 1)[0]
+
+    def with_namespace(self, ns):
+        """
+        Return a new keyword with the given namespace. Use ``None`` or an empty
+        string to remove it:
+
+            >>> Keyword("foo/a").with_namespace("bar")
+            Keyword("bar/a")
+
+            >>> Keyword("a").with_namespace("bar")
+            Keyword("bar/a")
+
+            >>> Keyword("a/b").with_namespace(None)
+            Keyword("b")
+        """
+        name = self.name
+        if "/" in name:
+            name = name.split("/", 1)[1]
+
+        if not ns:
+            return self.__class__(name)
+
+        return self.__class__("%s/%s" % (ns, name))
+
 
 class Symbol(BaseEdnType):
     def __init__(self, name):
