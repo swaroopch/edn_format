@@ -138,7 +138,8 @@ tokens = ('WHITESPACE',
           'SET_START',
           'MAP_OR_SET_END',
           'TAG',
-          'DISCARD_TAG')
+          'DISCARD_TAG',
+          'MAP_NAMESPACE_TAG')
 
 PARTS = {}
 PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
@@ -184,6 +185,8 @@ TAG = (r"\#"
        ")").format(**PARTS)
 
 DISCARD_TAG = r"\#\_"
+# https://clojure.org/reference/reader#_maps
+MAP_NAMESPACE_TAG = "#:[{all}]+".format(**PARTS)
 
 t_VECTOR_START = r'\['
 t_VECTOR_END = r'\]'
@@ -276,6 +279,12 @@ def t_DISCARD_TAG(t):
 @ply.lex.TOKEN(TAG)
 def t_TAG(t):
     t.value = t.value[1:]
+    return t
+
+
+@ply.lex.TOKEN(MAP_NAMESPACE_TAG)
+def t_MAP_NAMESPACE_TAG(t):
+    t.value = t.value[2:]
     return t
 
 

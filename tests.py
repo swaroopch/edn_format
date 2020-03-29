@@ -104,12 +104,18 @@ class EdnTest(unittest.TestCase):
 
         self.check_lex("[LexToken(RATIO,Fraction(2, 3),1,0)]",
                        "2/3")
+        self.check_lex("[LexToken(MAP_NAMESPACE_TAG,'a',1,0), "
+                       "LexToken(MAP_START,'{',1,3), "
+                       "LexToken(MAP_OR_SET_END,'}',1,4)]",
+                       "#:a{}")
 
     def check_parse(self, expected_output, actual_input):
-        self.assertEqual(expected_output, edn_parse.parse(actual_input))
+        self.assertEqual(expected_output, edn_parse.parse(actual_input),
+                         actual_input)
 
     def check_parse_all(self, expected_output, actual_input):
-        self.assertEqual(expected_output, edn_parse.parse_all(actual_input))
+        self.assertEqual(expected_output, edn_parse.parse_all(actual_input),
+                         actual_input)
 
     def check_dumps(self, expected_output, actual_input, **kw):
         self.assertEqual(expected_output, dumps(actual_input, **kw))
@@ -154,6 +160,13 @@ class EdnTest(unittest.TestCase):
                 '#{["ab", "cd"], ["ef"]}'),
             (fractions.Fraction(2, 3), "2/3"),
             ((2, Symbol('/'), 3), "(2 / 3)"),
+
+            ({}, "#:foo{}"),
+            ({"a": "b"}, "#:foo{\"a\" \"b\"}"),
+            ({Keyword("k"): 42}, "#:foo{:_/k 42}"),
+            ({Keyword("bar/k"): 42}, "#:foo{:bar/k 42}"),
+            ({Keyword("foo/k"): 42}, "#:foo{:k 42}"),
+            ({Keyword("foo/k"): {Keyword("k"): 1}}, "#:foo{:k {:k 1}}"),
         ):
             self.check_parse(expected, edn_string)
             self.check_parse_all([expected], edn_string)

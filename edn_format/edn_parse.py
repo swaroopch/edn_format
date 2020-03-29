@@ -9,7 +9,7 @@ from collections import deque
 import ply.yacc
 import pyrfc3339
 
-from .edn_lex import tokens, lex
+from .edn_lex import tokens, lex, Keyword
 from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
@@ -102,13 +102,44 @@ def p_set(p):
     p[0] = frozenset(p[2])
 
 
-def p_map(p):
-    """map : MAP_START expressions MAP_OR_SET_END"""
+def p_simple_map(p):
+    """simple_map : MAP_START expressions MAP_OR_SET_END"""
     terms = p[2]
     if len(terms) % 2 != 0:
         raise EDNDecodeError('Even number of terms required for map')
     # partition terms in pairs
     p[0] = ImmutableDict((terms[i], terms[i+1]) for i in range(0, len(terms), 2))
+
+
+def p_map(p):
+    """map : simple_map"""
+    p[0] = p[1]
+
+
+def _apply_map_namespace_tag(ns, k):
+    """
+    Helper for the p_map_with_namespace_tag rule.
+    Apply a namespace tag on a map key.
+    """
+    if not isinstance(k, Keyword):
+        return k
+
+    if k.namespace:
+        # https://clojure.org/reference/reader#_maps
+        if k.namespace == "_":
+            return k.with_namespace(None)
+
+        return k
+
+    return k.with_namespace(ns)
+
+
+def p_map_with_namespace_tag(p):
+    """map : MAP_NAMESPACE_TAG simple_map"""
+    ns = p[1]
+    p[0] = ImmutableDict((
+        (_apply_map_namespace_tag(ns, k), v)
+        for k, v in p[2].items()))
 
 
 def p_discarded_expressions(p):
