@@ -39,3 +39,11 @@ usable:
 - [@bitemyapp](https://github.com/bitemyapp)
 - [@jashugan](https://github.com/jashugan)
 - [@exilef](https://github.com/exilef)
+
+## FAQ ##
+
+### Why immutable list & dict? ###
+
+IIRC, it was related to https://github.com/edn-format/edn#rationale :
+
+> edn will yield distinct object identities when read, unless a reader implementation goes out of its way to make such a promise. Thus **the resulting values should be considered immutable**, and a reader implementation should yield values that ensure this, to the extent possible.
