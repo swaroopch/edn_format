@@ -1,5 +1,14 @@
 # `edn_format` Changelog
 
+## v0.7.2 (2020/05/04)
+
+* Fix an issue on how we read the requirements when installing the package
+
+## v0.7.1 (2020/04/04)
+
+* Add support for map namespace syntax
+* Add `Keyword.namespace` and `Keyword#with_namespace`
+
 ## v0.7.0 (2019/12/20)
 
 * Add pretty-printing with `indent` parameter added to `dumps`

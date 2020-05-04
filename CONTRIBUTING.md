@@ -29,10 +29,11 @@ To release a new version:
 
 1. Ensure you have [setup GPG](https://help.github.com/en/articles/generating-a-new-gpg-key) and [`twine`](https://pypi.org/project/twine/)
 2. Bump up the version number in `setup.py`, e.g. `0.7.0`
-3. Create a git tag: `git tag -s v0.7.0 -m 'Version 0.7.0'` (use [signed tags](https://help.github.com/en/articles/signing-tags))
-4. Verify git tag: `git tag -v v0.7.0`
-5. Push git tag: `git push origin master --tags`
-6. Clean your `dist/` directory if it already exists
-7. Package the release: `python setup.py sdist bdist_wheel`
-8. Check the package: `twine check dist/*`
-9. Upload the package: `twine upload dist/*`
+3. Fill the `CHANGELOG.md`
+4. Create a git tag: `git tag -s v0.7.0 -m 'Version 0.7.0'` (use [signed tags](https://help.github.com/en/articles/signing-tags))
+5. Verify git tag: `git tag -v v0.7.0`
+6. Push git tag: `git push origin master --tags`
+7. Clean your `dist/` directory if it already exists
+8. Package the release: `python setup.py sdist bdist_wheel`
+9. Check the package: `twine check dist/*`
+10. Upload the package: `twine upload dist/*`
