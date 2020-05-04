@@ -3,12 +3,9 @@ try:
 except ImportError:
     from distutils.core import setup
 
-try:
-    from pip.req import parse_requirements
-except ImportError:
-    from pip._internal.req import parse_requirements
+with open("requirements.txt") as f:
+    requirements = f.read().strip().split("\n")
 
-requirements = [str(ir.req) for ir in parse_requirements('requirements.txt', session=False)]
 
 setup(name="edn_format",
       version="0.7.1",
