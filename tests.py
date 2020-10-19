@@ -12,7 +12,7 @@ import unittest
 import pytz
 
 from edn_format import edn_lex, edn_parse, \
-    loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, \
+    loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, Char, \
     TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
 
@@ -132,10 +132,10 @@ class EdnTest(unittest.TestCase):
             ([1, 2, 3], "[1 2 3]"),
             ({1, 2, 3}, "#{1 2 3}"),
             ([1, True, None], "[1 true nil]"),
-            ("c", r"\c"),
-            ("\n", r"\newline"),
-            (u"Σ", u"\\Σ"),
-            (u"λ", r"\u03bB"),
+            (Char("c"), r"\c"),
+            (Char("\n"), r"\newline"),
+            (Char(u"Σ"), u"\\Σ"),
+            (Char(u"λ"), r"\u03bB"),
             (Keyword("abc"), ":abc"),
             ([Keyword("abc"), 1, True, None], "[:abc 1 true nil]"),
             ((Keyword("abc"), 1, True, None), "(:abc 1 true nil)"),
@@ -181,6 +181,7 @@ class EdnTest(unittest.TestCase):
             ([1, 2], "1                    2"),
             ([True, 42, False, Symbol('end')], "true 42 false end"),
             ([Symbol("a*b"), 42], 'a*b 42'),
+            ([Char("a"), Char("b"), Char("c")], r"\a \b \c"),
         ):
             self.check_parse_all(expected, edn_string)
             if expected:
@@ -219,8 +220,7 @@ class EdnTest(unittest.TestCase):
         self.check_roundtrip(u'\b\f\n\r\t"\\')
 
     def test_round_trip_conversion(self):
-        EDN_LITERALS = [
-            [r"\c", '"c"'],
+        edn_literals = [
             ["[ :ghi ]", "[:ghi]"],
             ["[:a #_foo 42]", "[:a 42]"],
             ["123N", "123"],
@@ -233,14 +233,11 @@ class EdnTest(unittest.TestCase):
             ["3e10", "30000000000.0"],
         ]
 
-        for literal in EDN_LITERALS:
+        for literal in edn_literals:
             step1 = literal[0]
             step2 = loads(step1)
             step3 = dumps(step2)
-            if isinstance(literal[1], list):
-                self.assertIn(step3, literal[1])
-            else:
-                self.assertEqual(literal[1], step3)
+            self.assertEqual(literal[1], step3)
 
     def test_round_trip_sets(self):
         step1 = '#{:a (1 2 3) :b}'
@@ -306,6 +303,13 @@ class EdnTest(unittest.TestCase):
             "/",
             "1/3",
             '"1/3"',
+            '"c"',
+            r'"\n"',
+            r"\c",
+            r"\n",
+            r"\newline",
+            r"\tab",
+            r"\uAA0A",
         )
 
         class TagDate(TaggedElement):
@@ -329,12 +333,29 @@ class EdnTest(unittest.TestCase):
             step3 = dumps(step2)
             self.assertEqual(step1, step3)
 
+    def check_char(self, expected, name):
+        edn_data = "\\{}".format(name)
+        parsed = loads(edn_data)
+        self.assertIsInstance(parsed, str)
+        self.assertEqual(expected, parsed, edn_data)
+
+        self.assertIsInstance(parsed, Char)
+        self.assertEqual(Char(expected), parsed, edn_data)
+
     def test_chars(self):
         # 33-126 = printable ASCII range, except space (code 32)
         for i in range(33, 127):
             ch = chr(i)
-            edn_data = "\\{}".format(ch)
-            self.assertEqual(ch, loads(edn_data), edn_data)
+            self.check_char(ch, ch)
+
+        for expected, name in (
+                (" ", "space"),
+                ("\n", "newline"),
+                ("\r", "return"),
+                ("\t", "tab"),
+                (u"\uAA0A", "uAA0A"),
+        ):
+            self.check_char(expected, name)
 
     def test_exceptions(self):
         with self.assertRaises(EDNDecodeError):
@@ -525,7 +546,7 @@ class EdnTest(unittest.TestCase):
             ('[42]', '[42 #_ {:a [1 2 3 4] true false 1 #inst "2017"}]'),
             ('#{1}', '#{1 #_foo}'),
             ('"#_ foo"', '"#_ foo"'),
-            ('["#" _]', r'[\#_]'),
+            (r'[\# _]', r'[\#_]'),
             ('[_]', r'[#_\#_]'),
             ('[1]', '[1 #_\n\n42]'),
             ('{}', '{#_ 1}'),
@@ -620,6 +641,15 @@ class ImmutableListTest(unittest.TestCase):
 
         y = ImmutableList([3, 1, 4])
         self.assertTrue(y.sort() == [1, 3, 4])
+
+
+class CharTest(unittest.TestCase):
+    def test_new_ok(self):
+        for c in " abc123\x12$*\n\r!\"{":
+            self.assertEqual(c, Char(c), c)
+
+    def test_new_fail(self):
+        self.assertRaises(AssertionError, lambda: Char("some string"))
 
 
 if __name__ == "__main__":
