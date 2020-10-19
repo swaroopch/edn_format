@@ -12,6 +12,7 @@ import pyrfc3339
 
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
+from .char import Char
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
@@ -42,6 +43,12 @@ ESCAPE_DCT = {
     '\r': '\\r',
     '\t': '\\t',
 }
+SPECIAL_CHARS = {
+    "\n": r"\newline",
+    "\r": r"\return",
+    " ": r"\space",
+    "\t": r"\tab",
+}
 
 for __i in range(0x20):
     ESCAPE_DCT.setdefault(unichr(__i), '\\u{0:04x}'.format(__i))
@@ -53,6 +60,19 @@ def unicode_escape(string):
     def replace(match):
         return ESCAPE_DCT[match.group(0)]
     return '"' + ESCAPE.sub(replace, string) + '"'
+
+
+def dump_char(c):
+    """Return an EDN representation of a Char."""
+    # 33-126 = printable ASCII range, except space (code 32)
+    if ord(c) in range(33, 127):
+        return "\\{}".format(c)
+
+    if c in SPECIAL_CHARS:
+        return SPECIAL_CHARS[c]
+
+    # [2:] to strip the '0x' prefix
+    return "\\u{}".format(hex(ord(c))[2:].upper().rjust(4, "0"))
 
 
 def indent_lines(lines, open_sym, close_sym, indent, indent_step):
@@ -123,6 +143,8 @@ def udump(obj,
         return '{}M'.format(obj)
     elif isinstance(obj, (Keyword, Symbol)):
         return unicode(obj)
+    elif isinstance(obj, Char):
+        return dump_char(obj)
     # CAVEAT LECTOR! In Python 3 'basestring' is alised to 'str' above.
     # Furthermore, in Python 2 bytes is an instance of 'str'/'basestring' while
     # in Python 3 it is not.

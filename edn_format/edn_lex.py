@@ -15,6 +15,7 @@ import ply.lex
 
 from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
+from .char import Char
 
 
 if sys.version_info[0] == 3:
@@ -201,13 +202,14 @@ t_ignore = ''.join([" ", "\t", "\n", ","])
 def t_WHITESPACE(t):
     r"(\\newline)|(\\return)|(\\space)|(\\tab)"
     if t.value == r"\newline":
-        t.value = "\n"
+        t.value = Char("\n")
     elif t.value == r"\return":
-        t.value = "\r"
+        t.value = Char("\r")
     elif t.value == r"\space":
-        t.value = " "
+        t.value = Char(" ")
     elif t.value == r"\tab":
-        t.value = "\t"
+        t.value = Char("\t")
+
     return t
 
 
@@ -215,7 +217,7 @@ def t_CHAR(t):
     # uXXXX hex code or from "!" to "~" = all printable ASCII chars except the space
     # or unicode word chars
     r"(\\u[0-9A-Fa-f]{4}|\\[!-~\w])"
-    t.value = (t.value[1] if len(t.value) == 2 else _bytes(t.value).decode('raw_unicode_escape'))
+    t.value = Char(t.value[1] if len(t.value) == 2 else _bytes(t.value).decode('raw_unicode_escape'))
     return t
 
 
