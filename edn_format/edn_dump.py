@@ -16,16 +16,7 @@ from .char import Char
 from .edn_lex import Keyword, Symbol
 from .edn_parse import TaggedElement
 
-
-# alias Python 2 types to their corresponding types in Python 3 if necessary
-if sys.version_info[0] >= 3:
-    __PY3 = True
-    long = int
-    basestring = str
-    unicode = str
-    unichr = chr
-else:
-    __PY3 = False
+from .compat import _PY3, long, basestring, unicode, unichr
 
 
 DEFAULT_INPUT_ENCODING = 'utf-8'
@@ -216,6 +207,6 @@ def dump(obj,
                     sort_keys=sort_keys,
                     sort_sets=sort_sets,
                     indent=indent)
-    if __PY3:
+    if _PY3:
         return outcome
     return outcome.encode(output_encoding)

@@ -14,11 +14,7 @@ from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
 
-
-if sys.version_info[0] == 3:
-    long = int
-    basestring = str
-    unicode = str
+from .compat import basestring, unicode
 
 # Dummy statement to indicate that 'tokens' is used.
 if tokens:
