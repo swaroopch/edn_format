@@ -1,5 +1,10 @@
 # `edn_format` Changelog
 
+## v0.7.3 (2020/10/20)
+
+* Add a `Char` class to deal with EDN characters.
+  It subclasses `str` so it’s backward compatible.
+
 ## v0.7.2 (2020/05/04)
 
 * Fix an issue on how we read the requirements when installing the package
