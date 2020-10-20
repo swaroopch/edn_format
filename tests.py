@@ -17,9 +17,7 @@ from edn_format import edn_lex, edn_parse, \
     TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
 
-is_python3 = sys.version_info[0] == 3
-if is_python3:
-    unicode = str
+from edn_format.compat import _PY3, unicode
 
 
 class ConsoleTest(unittest.TestCase):
@@ -72,7 +70,7 @@ class EdnTest(unittest.TestCase):
             "LexToken(SYMBOL,None,1,4), " +
             "LexToken(SYMBOL,False,1,8)]",
             "456 nil false")
-        self.check_lex("[LexToken(CHAR,'c',1,0)]" if is_python3 else "[LexToken(CHAR,u'c',1,0)]",
+        self.check_lex("[LexToken(CHAR,'c',1,0)]" if _PY3 else "[LexToken(CHAR,u'c',1,0)]",
                        r"\c")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
                        r":abc")

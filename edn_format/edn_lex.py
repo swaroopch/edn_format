@@ -17,14 +17,7 @@ from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 from .char import Char
 
-
-if sys.version_info[0] == 3:
-    long = int
-    basestring = str
-    unicode = str
-    def _bytes(s): return bytes(s, 'utf-8')
-else:
-    _bytes = bytes
+from .compat import unicode, _bytes
 
 
 ESCAPE_SEQUENCE_RE = re.compile(r'''
