@@ -72,7 +72,8 @@ def dump_char(c):
         return SPECIAL_CHARS[c]
 
     # [2:] to strip the '0x' prefix
-    return "\\u{}".format(hex(ord(c))[2:].upper().rjust(4, "0"))
+    # str("0") because it must be an str and not a unicode in Python 2.
+    return "\\u{}".format(hex(ord(c))[2:].upper().rjust(4, str("0")))
 
 
 def indent_lines(lines, open_sym, close_sym, indent, indent_step):
