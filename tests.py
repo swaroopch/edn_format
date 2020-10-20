@@ -4,6 +4,7 @@
 
 from collections import OrderedDict
 from uuid import uuid4, UUID
+import sys
 import random
 import datetime
 import fractions
@@ -15,6 +16,10 @@ from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, Char, \
     TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
+
+is_python3 = sys.version_info[0] == 3
+if is_python3:
+    unicode = str
 
 
 class ConsoleTest(unittest.TestCase):
@@ -67,7 +72,7 @@ class EdnTest(unittest.TestCase):
             "LexToken(SYMBOL,None,1,4), " +
             "LexToken(SYMBOL,False,1,8)]",
             "456 nil false")
-        self.check_lex("[LexToken(CHAR,'c',1,0)]",
+        self.check_lex("[LexToken(CHAR,'c',1,0)]" if is_python3 else "[LexToken(CHAR,u'c',1,0)]",
                        r"\c")
         self.check_lex("[LexToken(KEYWORD,Keyword(abc),1,0)]",
                        r":abc")
@@ -336,7 +341,7 @@ class EdnTest(unittest.TestCase):
     def check_char(self, expected, name):
         edn_data = "\\{}".format(name)
         parsed = loads(edn_data)
-        self.assertIsInstance(parsed, str)
+        self.assertIsInstance(parsed, unicode)
         self.assertEqual(expected, parsed, edn_data)
 
         self.assertIsInstance(parsed, Char)

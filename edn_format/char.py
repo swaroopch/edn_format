@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-class Char(str):
+import sys
+
+if sys.version_info[0] == 3:
+    unicode = str
+
+
+class Char(unicode):
     """
     This class represents a one-character string.
     """
