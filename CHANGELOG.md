@@ -1,5 +1,9 @@
 # `edn_format` Changelog
 
+## v0.7.4 (2020/10/21)
+
+* `Char` subclasses `unicode` instead of `str` in Python 2 in order to support unicode characters
+
 ## v0.7.3 (2020/10/20)
 
 * Add a `Char` class to deal with EDN characters.

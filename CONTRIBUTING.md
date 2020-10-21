@@ -28,8 +28,8 @@ Run a linter over the code with:
 To release a new version:
 
 1. Ensure you have [setup GPG](https://help.github.com/en/articles/generating-a-new-gpg-key) and [`twine`](https://pypi.org/project/twine/)
-2. Bump up the version number in `setup.py`, e.g. `0.7.0`
-3. Fill the `CHANGELOG.md`
+2. Bump up the version number in [`setup.py`](./setup.py), e.g. `0.7.0`
+3. Fill the [`CHANGELOG.md`](./CHANGELOG.md)
 4. Create a git tag: `git tag -s v0.7.0 -m 'Version 0.7.0'` (use [signed tags](https://help.github.com/en/articles/signing-tags))
 5. Verify git tag: `git tag -v v0.7.0`
 6. Push git tag: `git push origin master --tags`
