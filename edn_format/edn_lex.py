@@ -8,7 +8,6 @@ import decimal
 import fractions
 import logging
 import re
-import sys
 
 
 import ply.lex

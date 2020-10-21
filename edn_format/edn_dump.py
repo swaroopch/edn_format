@@ -5,7 +5,6 @@ import datetime
 import decimal
 import fractions
 import re
-import sys
 import uuid
 
 import pyrfc3339

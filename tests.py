@@ -4,7 +4,6 @@
 
 from collections import OrderedDict
 from uuid import uuid4, UUID
-import sys
 import random
 import datetime
 import fractions
