@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 
 setup(name="edn_format",
-      version="0.7.4",
+      version="0.7.5",
       author="Swaroop C H",
       author_email="swaroop@swaroopch.com",
       description="EDN format reader and writer in Python",

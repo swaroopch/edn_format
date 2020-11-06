@@ -1,5 +1,10 @@
 # `edn_format` Changelog
 
+## v0.7.5 (2020/11/06)
+
+* No changes to library code
+* Migrated from Travis to GitHub Actions, to enable running tests on creating pull request + easy publishing to PyPI.
+
 ## v0.7.4 (2020/10/21)
 
 * `Char` subclasses `unicode` instead of `str` in Python 2 in order to support unicode characters
