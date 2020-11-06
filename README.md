@@ -4,7 +4,7 @@ Implements the [EDN format](https://github.com/edn-format/edn) in Python.
 
 All features of EDN are implemented, including custom tagged elements.
 
-[![Build Status](https://travis-ci.org/swaroopch/edn_format.svg?branch=master)](https://travis-ci.org/swaroopch/edn_format)
+[![Build Status](https://github.com/swaroopch/edn_format/workflows/Build/badge.svg)
 [![PyPI version](https://img.shields.io/pypi/v/edn_format.svg)](https://pypi.org/project/edn_format/)
 
 ## Installation ##
