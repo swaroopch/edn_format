@@ -23,9 +23,11 @@ Run a linter over the code with:
 
     flake8 --max-line-length=100 --exclude=parsetab.py .
 
-## Release a new version ##
+## Release a new version with GitHub ##
 
-To release a new version:
+1. Create a new tag starting with `v`, e.g. `v0.7.5` (see `.github/workflows/publish-pypi.yml`)
+
+## Release a new version without GitHub ##
 
 1. Ensure you have [setup GPG](https://help.github.com/en/articles/generating-a-new-gpg-key) and [`twine`](https://pypi.org/project/twine/)
 2. Bump up the version number in [`setup.py`](./setup.py), e.g. `0.7.0`
