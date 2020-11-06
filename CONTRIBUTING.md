@@ -25,7 +25,9 @@ Run a linter over the code with:
 
 ## Release a new version with GitHub ##
 
-1. Create a new tag starting with `v`, e.g. `v0.7.5` (see `.github/workflows/publish-pypi.yml`)
+1. Bump up the version number in [`setup.py`](./setup.py), e.g. `0.7.0`
+2. Fill the [`CHANGELOG.md`](./CHANGELOG.md)
+3. Create a new tag starting with `v`, e.g. `v0.7.5` (see `.github/workflows/publish-pypi.yml`)
 
 ## Release a new version without GitHub ##
 
