@@ -157,7 +157,7 @@ def udump(obj,
             return indent_lines(lines, '[', ']', indent, indent_step)
     elif isinstance(obj, (set, frozenset)):
         if sort_sets:
-            obj = sorted(obj)
+            obj = sorted(obj, key=lambda v: str(v))
 
         lines = seq(obj, **kwargs)
         if indent is None:
