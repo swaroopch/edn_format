@@ -72,6 +72,47 @@ class Keyword(BaseEdnType):
     def __str__(self):
         return ':{}'.format(self.name)
 
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other):
+        if not isinstance(other, Keyword):
+            return False
+        return self.name == other.name
+
+    def __cmp__(self, other):
+        if not isinstance(other, Keyword):
+            return NotImplemented
+        if self.name < other.name:
+            return -1
+        if self.name > other.name:
+            return +1
+        return 0
+
+    def __lt__(self, other):
+        cmp = self.__cmp__(other)
+        if cmp is NotImplemented:
+            return NotImplemented
+        return cmp < 0
+
+    def __le__(self, other):
+        cmp = self.__cmp__(other)
+        if cmp is NotImplemented:
+            return NotImplemented
+        return cmp <= 0
+
+    def __gt__(self, other):
+        cmp = self.__cmp__(other)
+        if cmp is NotImplemented:
+            return NotImplemented
+        return cmp > 0
+
+    def __ge__(self, other):
+        cmp = self.__cmp__(other)
+        if cmp is NotImplemented:
+            return NotImplemented
+        return cmp >= 0
+
     @property
     def namespace(self):
         """
