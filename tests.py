@@ -2,12 +2,12 @@
 # TODO: Tests pass on Python 3.6, Disabled to not break tests on 2.7 :-(
 # from __future__ import absolute_import, division, print_function, unicode_literals
 
-from collections import OrderedDict
-from uuid import uuid4, UUID
-import random
 import datetime
 import fractions
+import random
 import unittest
+from collections import OrderedDict
+from uuid import uuid4, UUID
 
 import pytz
 
@@ -15,7 +15,6 @@ from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, Char, \
     TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
-
 from edn_format.compat import _PY3, unicode
 
 
@@ -630,6 +629,18 @@ class EdnInstanceTest(unittest.TestCase):
         self.assertTrue("db/id" == "db/id")
         self.assertTrue(Keyword("db/id") == Keyword("db/id"))
         self.assertTrue(Symbol("db/id") == Symbol("db/id"))
+
+
+class ImmutableDictTest(unittest.TestCase):
+    def test_mutation(self):
+        x = ImmutableDict({})
+
+        def mutate():
+            nonlocal x
+            # noinspection PyUnresolvedReferences
+            x["foo"] = "bar"
+
+        self.assertRaises(TypeError, mutate)
 
 
 class ImmutableListTest(unittest.TestCase):
