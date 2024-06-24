@@ -15,11 +15,6 @@ class ImmutableDict(collections_abc.Mapping):
     def __getitem__(self, key):
         return self.dict[key]
 
-    def __setitem__(self, key, value):
-        modifiable = dict(self.dict)
-        modifiable[key] = value
-        return ImmutableDict(modifiable)
-
     def __repr__(self):
         return self.dict.__repr__()
 
