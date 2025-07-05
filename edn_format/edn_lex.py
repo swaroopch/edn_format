@@ -256,7 +256,7 @@ def t_INTEGER(t):
 
 
 def t_HEX_INTEGER(t):
-    r"""[+-]?0x[A-F0-9]+"""
+    r"""[+-]?0x[0-9A-Fa-f]+"""
     t.value = int(t.value, 16)
     return t
 
