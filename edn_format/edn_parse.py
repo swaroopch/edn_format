@@ -8,7 +8,7 @@ from collections import deque
 import ply.yacc
 import pyrfc3339
 
-from .edn_lex import tokens, lex, Keyword
+from .edn_lex import tokens, lex, Keyword, MetadataValue
 from .exceptions import EDNDecodeError
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
@@ -194,6 +194,11 @@ def p_expression_tagged_element(p):
             u"Don't know how to handle tag ImmutableDict({})".format(tag))
 
     p[0] = output
+
+
+def p_expression_metadata(p):
+    """expression : CARET expression expression"""
+    p[0] = MetadataValue(metadata=p[2], value=p[3])
 
 
 def eof():

@@ -1,5 +1,12 @@
 # `edn_format` Changelog
 
+## Unreleased
+
+* Add support for EDN metadata (`^{...} value`). A new `MetadataValue` class
+  wraps a value with its metadata; the lexer recognizes `^` as a metadata
+  prefix and the parser produces `MetadataValue` instances. `dumps` serializes
+  `MetadataValue` back to the canonical `^M V` form.
+
 ## v0.7.5 (2020/11/06)
 
 * No changes to library code

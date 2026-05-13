@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from .edn_lex import Keyword, Symbol
+from .edn_lex import Keyword, MetadataValue, Symbol
 from .edn_parse import parse as loads, parse_all as loads_all
 from .edn_parse import add_tag, remove_tag, tag, TaggedElement
 from .edn_dump import dump as dumps
@@ -14,6 +14,7 @@ __all__ = (
     'ImmutableList',
     'ImmutableDict',
     'Keyword',
+    'MetadataValue',
     'Symbol',
     'Char',
     'TaggedElement',
