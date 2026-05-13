@@ -113,6 +113,33 @@ class Symbol(BaseEdnType):
         return self._name
 
 
+class MetadataValue(object):
+    """An EDN value annotated with metadata, serialized as ``^{metadata} value``."""
+
+    __slots__ = ('metadata', 'value')
+
+    def __init__(self, metadata, value):
+        self.metadata = metadata
+        self.value = value
+
+    def __eq__(self, other):
+        if not isinstance(other, MetadataValue):
+            return False
+        return self.metadata == other.metadata and self.value == other.value
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        meta = (ImmutableDict(self.metadata)
+                if isinstance(self.metadata, dict)
+                else self.metadata)
+        return hash((MetadataValue, meta, self.value))
+
+    def __repr__(self):
+        return 'MetadataValue({!r}, {!r})'.format(self.metadata, self.value)
+
+
 # http://www.dabeaz.com/ply/ply.html
 tokens = ('WHITESPACE',
           'CHAR',
@@ -132,7 +159,8 @@ tokens = ('WHITESPACE',
           'MAP_OR_SET_END',
           'TAG',
           'DISCARD_TAG',
-          'MAP_NAMESPACE_TAG')
+          'MAP_NAMESPACE_TAG',
+          'CARET')
 
 PARTS = {}
 PARTS["non_nums"] = r"\w.*+!\-_?$%&=:#<>@"
@@ -188,6 +216,7 @@ t_LIST_END = r'\)'
 t_MAP_START = r'\{'
 t_SET_START = r'\#\{'
 t_MAP_OR_SET_END = r'\}'
+t_CARET = r'\^'
 t_ignore = ''.join([" ", "\t", "\n", ","])
 
 

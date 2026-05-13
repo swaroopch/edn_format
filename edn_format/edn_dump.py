@@ -12,7 +12,7 @@ import pyrfc3339
 from .immutable_dict import ImmutableDict
 from .immutable_list import ImmutableList
 from .char import Char
-from .edn_lex import Keyword, Symbol
+from .edn_lex import Keyword, MetadataValue, Symbol
 from .edn_parse import TaggedElement
 
 from .compat import _PY3, long, basestring, unicode, unichr
@@ -124,7 +124,14 @@ def udump(obj,
         "indent_step": indent_step + (indent or 0),
     }
 
-    if obj is None:
+    if isinstance(obj, MetadataValue):
+        # EDN metadata `^M V`. Both metadata and value serialize at the same
+        # nesting depth as the MetadataValue itself (don't bump indent_step).
+        same_level = dict(kwargs, indent_step=indent_step)
+        meta_str = udump(obj.metadata, **same_level)
+        value_str = udump(obj.value, **same_level)
+        return '^{} {}'.format(meta_str, value_str)
+    elif obj is None:
         return 'nil'
     elif isinstance(obj, bool):
         return 'true' if obj else 'false'

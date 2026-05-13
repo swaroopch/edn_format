@@ -13,7 +13,7 @@ import pytz
 
 from edn_format import edn_lex, edn_parse, \
     loads, dumps, Keyword, Symbol, ImmutableDict, ImmutableList, Char, \
-    TaggedElement, add_tag, remove_tag, tag, \
+    MetadataValue, TaggedElement, add_tag, remove_tag, tag, \
     EDNDecodeError
 
 from edn_format.compat import _PY3, unicode
@@ -110,6 +110,13 @@ class EdnTest(unittest.TestCase):
                        "LexToken(MAP_START,'{',1,3), "
                        "LexToken(MAP_OR_SET_END,'}',1,4)]",
                        "#:a{}")
+        self.check_lex("[LexToken(CARET,'^',1,0), "
+                       "LexToken(MAP_START,'{',1,1), "
+                       "LexToken(MAP_OR_SET_END,'}',1,2), "
+                       "LexToken(VECTOR_START,'[',1,4), "
+                       "LexToken(INTEGER,1,1,5), "
+                       "LexToken(VECTOR_END,']',1,6)]",
+                       "^{} [1]")
 
     def check_parse(self, expected_output, actual_input):
         self.assertEqual(expected_output, edn_parse.parse(actual_input),
@@ -169,6 +176,27 @@ class EdnTest(unittest.TestCase):
             ({Keyword("bar/k"): 42}, "#:foo{:bar/k 42}"),
             ({Keyword("foo/k"): 42}, "#:foo{:k 42}"),
             ({Keyword("foo/k"): {Keyword("k"): 1}}, "#:foo{:k {:k 1}}"),
+
+            (MetadataValue(ImmutableDict({Keyword("tag"): Keyword("foo")}),
+                           ImmutableList([1, 2, 3])),
+                "^{:tag :foo} [1 2 3]"),
+            (MetadataValue(ImmutableDict({}), ImmutableList([1, 2])),
+                "^{} [1 2]"),
+            (ImmutableList([
+                MetadataValue(ImmutableDict({Keyword("a"): 1}),
+                              ImmutableDict({})),
+                MetadataValue(ImmutableDict({Keyword("b"): 2}),
+                              ImmutableList([])),
+             ]),
+                "[^{:a 1} {} ^{:b 2} []]"),
+            (MetadataValue(
+                ImmutableDict({Keyword("meta"): MetadataValue(
+                    ImmutableDict({Keyword("inner"): True}),
+                    ImmutableDict({}))}),
+                Keyword("foo")),
+                "^{:meta ^{:inner true} {}} :foo"),
+            # `^` inside a string literal is not metadata syntax.
+            ("^not-meta", '"^not-meta"'),
         ):
             self.check_parse(expected, edn_string)
             self.check_parse_all([expected], edn_string)
@@ -312,6 +340,8 @@ class EdnTest(unittest.TestCase):
             r"\newline",
             r"\tab",
             r"\uAA0A",
+            "^{:tag :foo} [1 2 3]",
+            "^{} [1 2]",
         )
 
         class TagDate(TaggedElement):
@@ -652,6 +682,45 @@ class CharTest(unittest.TestCase):
 
     def test_new_fail(self):
         self.assertRaises(AssertionError, lambda: Char("some string"))
+
+
+class MetadataTest(unittest.TestCase):
+    def test_dumps_simple_keyword_metadata(self):
+        obj = MetadataValue({Keyword("tag"): Keyword("foo")}, [1, 2, 3])
+        self.assertEqual(dumps(obj), "^{:tag :foo} [1 2 3]")
+
+    def test_dumps_empty_metadata_map(self):
+        obj = MetadataValue({}, [1, 2])
+        self.assertEqual(dumps(obj), "^{} [1 2]")
+
+    def test_dumps_metadata_on_map_value(self):
+        obj = MetadataValue({Keyword("source"): "test"},
+                            {Keyword("type"): Keyword("node")})
+        self.assertEqual(dumps(obj), '^{:source "test"} {:type :node}')
+
+    def test_dumps_metadata_nested_in_list(self):
+        inner = MetadataValue({Keyword("tag"): Keyword("x")},
+                              {Keyword("a"): 1})
+        obj = [inner, {Keyword("b"): 2}]
+        self.assertEqual(dumps(obj), "[^{:tag :x} {:a 1} {:b 2}]")
+
+    def test_dumps_metadata_on_keyword(self):
+        obj = MetadataValue({Keyword("doc"): "a keyword"}, Keyword("my-kw"))
+        self.assertEqual(dumps(obj), '^{:doc "a keyword"} :my-kw')
+
+    def test_dumps_metadata_with_indent(self):
+        # With indent set, the metadata map itself is multi-line formatted just
+        # like any other map: indentation is applied at every level uniformly.
+        obj = MetadataValue({Keyword("tag"): Keyword("foo")}, [1, 2])
+        self.assertEqual(dumps(obj, indent=2),
+                         "^{\n  :tag :foo\n} [\n  1\n  2\n]")
+
+    def test_metadata_value_equality(self):
+        a = MetadataValue({Keyword("x"): 1}, [1, 2])
+        b = MetadataValue({Keyword("x"): 1}, [1, 2])
+        self.assertEqual(a, b)
+        c = MetadataValue({Keyword("x"): 2}, [1, 2])
+        self.assertNotEqual(a, c)
 
 
 if __name__ == "__main__":
