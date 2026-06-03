@@ -719,8 +719,13 @@ class MetadataTest(unittest.TestCase):
         a = MetadataValue({Keyword("x"): 1}, [1, 2])
         b = MetadataValue({Keyword("x"): 1}, [1, 2])
         self.assertEqual(a, b)
+        # metadata is transparent: two MetadataValues with the same wrapped value
+        # compare equal regardless of differing metadata annotations
         c = MetadataValue({Keyword("x"): 2}, [1, 2])
-        self.assertNotEqual(a, c)
+        self.assertEqual(a, c)
+        # transparent comparison with the raw value
+        self.assertEqual(a, [1, 2])
+        self.assertNotEqual(a, [1, 2, 3])
 
 
 if __name__ == "__main__":

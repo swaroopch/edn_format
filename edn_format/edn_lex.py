@@ -124,20 +124,17 @@ class MetadataValue(object):
 
     def __eq__(self, other):
         if not isinstance(other, MetadataValue):
-            return False
-        return self.metadata == other.metadata and self.value == other.value
+            return other == self.value
+        return self.value == other.value
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __hash__(self):
-        meta = (ImmutableDict(self.metadata)
-                if isinstance(self.metadata, dict)
-                else self.metadata)
-        return hash((MetadataValue, meta, self.value))
+        return hash(self.value)
 
     def __repr__(self):
-        return 'MetadataValue({!r}, {!r})'.format(self.metadata, self.value)
+        return '{}({!r}, {!r})'.format(self.__class__.__name__, self.metadata, self.value)
 
 
 # http://www.dabeaz.com/ply/ply.html
