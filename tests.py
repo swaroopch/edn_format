@@ -403,6 +403,24 @@ class EdnTest(unittest.TestCase):
         ):
             self.assertEqual(edn_data, dumps(loads(edn_data)), edn_data)
 
+    def test_symbolic_values(self):
+        import math
+
+        # Parsing the EDN symbolic values yields the matching float.
+        self.assertEqual(float("inf"), loads("##Inf"))
+        self.assertEqual(float("-inf"), loads("##-Inf"))
+        self.assertTrue(math.isnan(loads("##NaN")))
+
+        # Dumping non-finite floats produces the symbolic values, so that
+        # round-tripping does not silently turn them into Symbols.
+        self.assertEqual("##Inf", dumps(float("inf")))
+        self.assertEqual("##-Inf", dumps(float("-inf")))
+        self.assertEqual("##NaN", dumps(float("nan")))
+
+        self.check_roundtrip(float("inf"))
+        self.check_roundtrip(float("-inf"))
+        self.assertTrue(math.isnan(loads(dumps(float("nan")))))
+
     def test_keyword_keys(self):
         unchanged = (
             None,
