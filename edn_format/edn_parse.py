@@ -75,6 +75,7 @@ def p_term_leaf(p):
             | HEX_INTEGER
             | INTEGER
             | FLOAT
+            | SYMBOLIC_VALUE
             | KEYWORD
             | SYMBOL
             | RATIO

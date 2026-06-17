@@ -144,6 +144,7 @@ tokens = ('WHITESPACE',
           'INTEGER',
           'HEX_INTEGER',
           'FLOAT',
+          'SYMBOLIC_VALUE',
           'RATIO',
           'SYMBOL',
           'KEYWORD',
@@ -215,6 +216,15 @@ t_SET_START = r'\#\{'
 t_MAP_OR_SET_END = r'\}'
 t_CARET = r'\^'
 t_ignore = ''.join([" ", "\t", "\n", ","])
+
+
+def t_SYMBOLIC_VALUE(t):
+    # https://clojure.org/reference/reader#_symbolic_values
+    r"\#\#(-Inf|Inf|NaN)"
+    t.value = {"##Inf": float("inf"),
+               "##-Inf": float("-inf"),
+               "##NaN": float("nan")}[t.value]
+    return t
 
 
 def t_WHITESPACE(t):

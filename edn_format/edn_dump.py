@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import datetime
 import decimal
 import fractions
+import math
 import re
 import uuid
 
@@ -135,6 +136,12 @@ def udump(obj,
         return 'nil'
     elif isinstance(obj, bool):
         return 'true' if obj else 'false'
+    elif isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
+        # EDN symbolic values; https://clojure.org/reference/reader#_symbolic_values
+        # A bare `inf`/`nan` would read back as a Symbol, breaking round-tripping.
+        if math.isnan(obj):
+            return '##NaN'
+        return '##Inf' if obj > 0 else '##-Inf'
     elif isinstance(obj, (int, long, float)):
         return unicode(obj)
     elif isinstance(obj, decimal.Decimal):
