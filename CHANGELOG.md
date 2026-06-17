@@ -1,11 +1,15 @@
 # `edn_format` Changelog
 
-## Unreleased
+## v0.8.0 (2026/06/17)
 
 * Add support for EDN metadata (`^{...} value`). A new `MetadataValue` class
   wraps a value with its metadata; the lexer recognizes `^` as a metadata
   prefix and the parser produces `MetadataValue` instances. `dumps` serializes
-  `MetadataValue` back to the canonical `^M V` form.
+  `MetadataValue` back to the canonical `^M V` form. (by @dgshep)
+* Fix t_HEX_INTEGER to accept lower-case digits a-f (by @mdbenito)
+* Support EDN symbolic values so non-finite floats round-trip (by @gaoflow)
+* Disallow `[]=` on `ImmutableDict`
+* Support Python 3.10+
 
 ## v0.7.5 (2020/11/06)
 
